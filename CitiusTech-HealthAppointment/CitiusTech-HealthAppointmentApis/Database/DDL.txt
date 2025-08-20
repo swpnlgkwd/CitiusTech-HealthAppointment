@@ -1,118 +1,219 @@
-﻿-- 1. Patients (unchanged, but enriched)
+﻿------------------------------------------------
+-- Lookup Tables
+------------------------------------------------
+CREATE TABLE Gender (
+    gender_id INT PRIMARY KEY,
+    gender_name NVARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Specialty (
+    specialty_id INT PRIMARY KEY,
+    specialty_name NVARCHAR(100) NOT NULL
+);
+
+CREATE TABLE RiskType (
+    risk_type_id INT PRIMARY KEY,
+    risk_type_name NVARCHAR(100) NOT NULL
+);
+
+CREATE TABLE RiskLevel (
+    risk_level_id INT PRIMARY KEY,
+    risk_level_name NVARCHAR(50) NOT NULL -- e.g., Low / Medium / High
+);
+
+CREATE TABLE AppointmentStatus (
+    status_id INT PRIMARY KEY,
+    status_name NVARCHAR(50) NOT NULL
+);
+/* Suggested values: (1=Booked, 2=Rescheduled, 3=Cancelled, 4=Completed, 5=NoShow) */
+
+CREATE TABLE AppointmentType (
+    type_id INT PRIMARY KEY,
+    type_name NVARCHAR(50) NOT NULL
+);
+/* Suggested values: (1=Consultation, 2=Follow-up, 3=Telehealth, 4=Emergency) */
+
+CREATE TABLE DeliveryStatus (
+    delivery_status_id INT PRIMARY KEY,
+    delivery_status_name NVARCHAR(50) NOT NULL
+);
+/* Suggested values: (1=Sent, 2=Failed, 3=Delivered) */
+
+CREATE TABLE ChangedByRole (
+    role_id INT PRIMARY KEY,
+    role_name NVARCHAR(50) NOT NULL
+);
+/* Suggested values: (1=Patient, 2=Provider, 3=Scheduler, 4=System) */
+
+
+------------------------------------------------
+-- Core Entities
+------------------------------------------------
 CREATE TABLE Patient (
     patient_id INT IDENTITY PRIMARY KEY,
     full_name NVARCHAR(150) NOT NULL,
     dob DATE NULL,
-    gender NVARCHAR(10) NULL,
+    gender_id INT NULL FOREIGN KEY REFERENCES Gender(gender_id),
     email NVARCHAR(150) NULL,
     phone NVARCHAR(50) NULL,
     address NVARCHAR(250) NULL,
     created_at DATETIME2 DEFAULT SYSUTCDATETIME()
 );
 
--- 2. Providers (unchanged)
 CREATE TABLE Provider (
     provider_id INT IDENTITY PRIMARY KEY,
     full_name NVARCHAR(150) NOT NULL,
-    specialty NVARCHAR(100) NULL,
+    specialty_id INT NULL FOREIGN KEY REFERENCES Specialty(specialty_id),
     contact_email NVARCHAR(150) NULL,
     contact_phone NVARCHAR(50) NULL,
     is_active BIT DEFAULT 1
 );
 
--- 3. Appointment Status lookup (same as before)
-CREATE TABLE AppointmentStatus (
-    status_id INT PRIMARY KEY,
-    status_name NVARCHAR(50) NOT NULL
-);
--- Values: (1=Booked, 2=Rescheduled, 3=Cancelled, 4=Completed, 5=NoShow)
 
--- 4. Appointment Type lookup
-CREATE TABLE AppointmentType (
-    type_id INT PRIMARY KEY,
-    type_name NVARCHAR(50) NOT NULL
+------------------------------------------------
+-- Scheduling (create before Appointment so slot FK compiles)
+------------------------------------------------
+CREATE TABLE ProviderSchedule (
+    ScheduleId INT IDENTITY(1,1) PRIMARY KEY,
+    ProviderId INT NOT NULL,
+    ScheduleDate DATE NOT NULL,
+    StartTime TIME NOT NULL,
+    EndTime TIME NOT NULL,
+    SlotDurationMinutes INT NOT NULL DEFAULT 60, -- 60-minute default
+    created_at DATETIME2 DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_ProviderSchedule_Provider
+        FOREIGN KEY (ProviderId) REFERENCES Provider(provider_id),
+    -- Guards: positive duration and divisible by slot length
+    CONSTRAINT CK_ProviderSchedule_Time
+        CHECK (
+            DATEDIFF(MINUTE, StartTime, EndTime) > 0
+            AND DATEDIFF(MINUTE, StartTime, EndTime) % SlotDurationMinutes = 0
+        )
 );
--- Values: (1=Consultation, 2=Follow-up, 3=Telehealth, 4=Emergency)
 
--- 5. Appointments (enriched with reminder tracking)
+CREATE TABLE ProviderSlots (
+    SlotId INT IDENTITY(1,1) PRIMARY KEY,
+    ScheduleId INT NOT NULL,
+    SlotStart TIME NOT NULL,
+    SlotEnd TIME NOT NULL,
+    IsBooked BIT NOT NULL DEFAULT 0,
+    CONSTRAINT FK_ProviderSlots_Schedule
+        FOREIGN KEY (ScheduleId) REFERENCES ProviderSchedule(ScheduleId)
+            ON DELETE CASCADE,
+    CONSTRAINT CK_ProviderSlots_Time
+        CHECK (SlotEnd > SlotStart)
+);
+
+-- Ensure no duplicate slots per schedule
+CREATE UNIQUE INDEX UX_ProviderSlots_Schedule_Slot
+    ON ProviderSlots (ScheduleId, SlotStart, SlotEnd);
+
+
+------------------------------------------------
+-- Appointments (now tied to slots)
+------------------------------------------------
 CREATE TABLE Appointment (
     appointment_id INT IDENTITY PRIMARY KEY,
-    patient_id INT NOT NULL FOREIGN KEY REFERENCES Patient(patient_id),
-    provider_id INT NOT NULL FOREIGN KEY REFERENCES Provider(provider_id),
+    patient_id INT NOT NULL,
+    provider_id INT NOT NULL,
+    slot_id INT NOT NULL,  -- Enforce booking against a concrete slot
     start_utc DATETIME2 NOT NULL,
     end_utc DATETIME2 NOT NULL,
-    status_id INT NOT NULL FOREIGN KEY REFERENCES AppointmentStatus(status_id),
-    type_id INT NOT NULL FOREIGN KEY REFERENCES AppointmentType(type_id),
+    status_id INT NOT NULL,
+    type_id INT NOT NULL,
     notes NVARCHAR(MAX) NULL,
-    reminder_sent BIT DEFAULT 0,         -- ✅ for reducing missed appointments
+    reminder_sent BIT DEFAULT 0,
     reminder_sent_at DATETIME2 NULL,
     created_at DATETIME2 DEFAULT SYSUTCDATETIME(),
-    updated_at DATETIME2 NULL
+    updated_at DATETIME2 NULL,
+    CONSTRAINT FK_Appointment_Patient
+        FOREIGN KEY (patient_id) REFERENCES Patient(patient_id),
+    CONSTRAINT FK_Appointment_Provider
+        FOREIGN KEY (provider_id) REFERENCES Provider(provider_id),
+    CONSTRAINT FK_Appointment_Slot
+        FOREIGN KEY (slot_id) REFERENCES ProviderSlots(SlotId),
+    CONSTRAINT FK_Appointment_Status
+        FOREIGN KEY (status_id) REFERENCES AppointmentStatus(status_id),
+    CONSTRAINT FK_Appointment_Type
+        FOREIGN KEY (type_id) REFERENCES AppointmentType(type_id),
+    CONSTRAINT CK_Appointment_Time
+        CHECK (end_utc > start_utc)
 );
 
--- 6. Provider Schedule (availability)
-CREATE TABLE ProviderSchedule (
-    schedule_id INT IDENTITY PRIMARY KEY,
-    provider_id INT NOT NULL FOREIGN KEY REFERENCES Provider(provider_id),
-    day_of_week TINYINT NOT NULL, -- 1=Mon ... 7=Sun
-    start_time_local TIME NOT NULL,
-    end_time_local TIME NOT NULL,
-    slot_duration_minutes INT NOT NULL DEFAULT 30
-);
+-- Helpful FKs indexes
+CREATE INDEX IX_Appointment_patient_id ON Appointment(patient_id);
+CREATE INDEX IX_Appointment_provider_id ON Appointment(provider_id);
+CREATE INDEX IX_Appointment_slot_id ON Appointment(slot_id);
+CREATE INDEX IX_Appointment_status_id ON Appointment(status_id);
+CREATE INDEX IX_Appointment_type_id ON Appointment(type_id);
 
--- 7. Provider Exceptions (vacations, training, leave)
+
+------------------------------------------------
+-- Provider Exceptions (vacations, leave)
+------------------------------------------------
 CREATE TABLE ProviderException (
     exception_id INT IDENTITY PRIMARY KEY,
     provider_id INT NOT NULL FOREIGN KEY REFERENCES Provider(provider_id),
     start_utc DATETIME2 NOT NULL,
     end_utc DATETIME2 NOT NULL,
-    reason NVARCHAR(200) NULL
+    reason NVARCHAR(200) NULL,
+    created_at DATETIME2 DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT CK_ProviderException_Time
+        CHECK (end_utc > start_utc)
 );
 
--- 8. Appointment History (tracking reschedules/cancellations)
+
+------------------------------------------------
+-- Appointment History
+------------------------------------------------
 CREATE TABLE AppointmentHistory (
     history_id INT IDENTITY PRIMARY KEY,
     appointment_id INT NOT NULL FOREIGN KEY REFERENCES Appointment(appointment_id),
     old_start_utc DATETIME2 NULL,
     old_end_utc DATETIME2 NULL,
-    old_status_id INT NULL,
+    old_status_id INT NULL FOREIGN KEY REFERENCES AppointmentStatus(status_id),
     new_start_utc DATETIME2 NULL,
     new_end_utc DATETIME2 NULL,
-    new_status_id INT NULL,
+    new_status_id INT NULL FOREIGN KEY REFERENCES AppointmentStatus(status_id),
     changed_at DATETIME2 DEFAULT SYSUTCDATETIME(),
-    changed_by NVARCHAR(150) NULL -- "Patient", "Scheduler"
+    changed_by_role_id INT NULL FOREIGN KEY REFERENCES ChangedByRole(role_id)
 );
 
--- 9. Patient Medical History (conditions, treatments, allergies, etc.)
+
+------------------------------------------------
+-- Patient Medical Data
+------------------------------------------------
 CREATE TABLE PatientHistory (
     history_id INT IDENTITY PRIMARY KEY,
     patient_id INT NOT NULL FOREIGN KEY REFERENCES Patient(patient_id),
-    condition NVARCHAR(150) NOT NULL,   -- e.g. "Diabetes", "Hypertension"
+    condition NVARCHAR(150) NOT NULL,
     notes NVARCHAR(MAX) NULL,
     diagnosed_on DATE NULL,
     last_updated DATETIME2 DEFAULT SYSUTCDATETIME()
 );
 
--- 10. Patient Risk Factors (structured risk model)
 CREATE TABLE PatientRiskFactor (
     risk_id INT IDENTITY PRIMARY KEY,
     patient_id INT NOT NULL FOREIGN KEY REFERENCES Patient(patient_id),
-    risk_type NVARCHAR(100) NOT NULL,   -- e.g. "Smoking", "High BMI", "Age > 65"
-    risk_level NVARCHAR(50) NOT NULL,   -- Low / Medium / High
-    identified_on DATE DEFAULT GETDATE()
+    risk_type_id INT NOT NULL FOREIGN KEY REFERENCES RiskType(risk_type_id),
+    risk_level_id INT NOT NULL FOREIGN KEY REFERENCES RiskLevel(risk_level_id),
+    identified_on DATE DEFAULT CAST(SYSUTCDATETIME() AS DATE),
+    created_at DATETIME2 DEFAULT SYSUTCDATETIME()
 );
 
--- 11. Patient Risk Score (dynamic, predictive)
 CREATE TABLE PatientRiskScore (
     score_id INT IDENTITY PRIMARY KEY,
     patient_id INT NOT NULL FOREIGN KEY REFERENCES Patient(patient_id),
-    score INT NOT NULL,                 -- numeric score (0-100)
-    category NVARCHAR(50) NOT NULL,     -- Low / Medium / High
-    reason NVARCHAR(MAX) NULL,          -- e.g. "Frequent no-shows + Hypertension"
+    score INT NOT NULL,  -- numeric score (0-100)
+    risk_level_id INT NOT NULL FOREIGN KEY REFERENCES RiskLevel(risk_level_id),
+    reason NVARCHAR(MAX) NULL,
     calculated_at DATETIME2 DEFAULT SYSUTCDATETIME()
 );
 
--- 12. Notifications / Reminders (for missed appointment reduction)
+
+------------------------------------------------
+-- Notifications
+------------------------------------------------
 CREATE TABLE NotificationLog (
     notification_id INT IDENTITY PRIMARY KEY,
     patient_id INT NOT NULL FOREIGN KEY REFERENCES Patient(patient_id),
@@ -120,63 +221,29 @@ CREATE TABLE NotificationLog (
     channel NVARCHAR(50) NOT NULL, -- e.g., SMS, Email, App
     message NVARCHAR(MAX) NOT NULL,
     sent_at DATETIME2 DEFAULT SYSUTCDATETIME(),
-    delivery_status NVARCHAR(50) NULL -- Sent, Failed, Delivered
+    delivery_status_id INT NULL FOREIGN KEY REFERENCES DeliveryStatus(delivery_status_id)
 );
 
--- 13. Patient Login / Credentials
+CREATE INDEX IX_NotificationLog_patient_id ON NotificationLog(patient_id);
+CREATE INDEX IX_NotificationLog_appointment_id ON NotificationLog(appointment_id);
+CREATE INDEX IX_NotificationLog_delivery_status_id ON NotificationLog(delivery_status_id);
+
+
+------------------------------------------------
+-- Authentication
+------------------------------------------------
 CREATE TABLE PatientLogin (
     login_id INT IDENTITY PRIMARY KEY,
     patient_id INT NOT NULL FOREIGN KEY REFERENCES Patient(patient_id),
     username NVARCHAR(100) NOT NULL UNIQUE,
     password_hash NVARCHAR(255) NOT NULL,
-    password_salt NVARCHAR(255) NULL,
-    email NVARCHAR(150) NULL,          -- secondary email for recovery
-    phone NVARCHAR(50) NULL,           -- for OTP-based login
+    password_salt NVARCHAR(255) NOT NULL,
+    email NVARCHAR(150) NULL,        -- secondary email for recovery
+    phone NVARCHAR(50) NULL,         -- for OTP-based login
     last_login DATETIME2 NULL,
+    failed_attempts INT DEFAULT 0,
+    lockout_until DATETIME2 NULL,
     is_active BIT DEFAULT 1,
-    created_at DATETIME2 DEFAULT SYSUTCDATETIME()
+    created_at DATETIME2 DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT UQ_PatientLogin_patient UNIQUE (patient_id) -- one login per patient
 );
-
-
-
-✅ How This Supports Requirements
-1. Reduce Missed Appointments
-
-Appointment.reminder_sent + NotificationLog → ensures every appointment gets tracked for reminders (SMS/Email).
-
-If status = NoShow, this gets logged in history → feeds risk scoring.
-
-2. History of Patient
-
-PatientHistory → stores chronic conditions, past diagnoses.
-
-AppointmentHistory → complete timeline of interactions (missed, rescheduled, completed).
-
-3. Risk Factors + Readmission Prediction
-
-PatientRiskFactor → structured risk entries (smoking, chronic illness, age, etc.).
-
-PatientRiskScore → AI-driven score for likelihood of missed appointments or readmission.
-
-Input for ML model = history of no-shows, appointment gaps, chronic conditions.
-
-Example Queries:
-
-Patients with high missed appointment rate:
-
-SELECT p.full_name, COUNT(*) AS missed_count
-FROM Appointment a
-JOIN Patient p ON p.patient_id = a.patient_id
-WHERE a.status_id = 5 -- NoShow
-GROUP BY p.full_name
-HAVING COUNT(*) > 3;
-
-
-Patients high risk of readmission:
-
-SELECT p.full_name, r.score, r.category, r.reason
-FROM PatientRiskScore r
-JOIN Patient p ON p.patient_id = r.patient_id
-WHERE r.category = 'High'
-ORDER BY r.score DESC;
-

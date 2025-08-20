@@ -1,0 +1,134 @@
+﻿------------------------------------------------
+-- Lookup Tables Seed Data
+------------------------------------------------
+INSERT INTO Gender (gender_id, gender_name) VALUES
+(1, 'Male'),
+(2, 'Female'),
+(3, 'Other');
+
+INSERT INTO Specialty (specialty_id, specialty_name) VALUES
+(1, 'Cardiology'),
+(2, 'Dermatology'),
+(3, 'Orthopedics'),
+(4, 'Pediatrics'),
+(5, 'General Medicine');
+
+INSERT INTO RiskType (risk_type_id, risk_type_name) VALUES
+(1, 'Smoking'),
+(2, 'Obesity'),
+(3, 'Diabetes'),
+(4, 'Hypertension');
+
+INSERT INTO RiskLevel (risk_level_id, risk_level_name) VALUES
+(1, 'Low'),
+(2, 'Medium'),
+(3, 'High');
+
+INSERT INTO AppointmentStatus (status_id, status_name) VALUES
+(1, 'Booked'),
+(2, 'Rescheduled'),
+(3, 'Cancelled'),
+(4, 'Completed'),
+(5, 'NoShow');
+
+INSERT INTO AppointmentType (type_id, type_name) VALUES
+(1, 'Consultation'),
+(2, 'Follow-up'),
+(3, 'Telehealth'),
+(4, 'Emergency');
+
+INSERT INTO DeliveryStatus (delivery_status_id, delivery_status_name) VALUES
+(1, 'Sent'),
+(2, 'Failed'),
+(3, 'Delivered');
+
+INSERT INTO ChangedByRole (role_id, role_name) VALUES
+(1, 'Patient'),
+(2, 'Provider'),
+(3, 'Scheduler'),
+(4, 'System');
+
+------------------------------------------------
+-- Core Entities (Patients & Providers)
+------------------------------------------------
+INSERT INTO Patient (full_name, dob, gender_id, email, phone, address)
+VALUES
+('John Doe', '1985-05-15', 1, 'john.doe@example.com', '555-1001', '123 Main St, Springfield'),
+('Jane Smith', '1990-09-21', 2, 'jane.smith@example.com', '555-1002', '456 Oak Ave, Springfield'),
+('Robert Brown', '1978-12-05', 1, 'robert.brown@example.com', '555-1003', '789 Pine Rd, Springfield');
+
+INSERT INTO Provider (full_name, specialty_id, contact_email, contact_phone)
+VALUES
+('Dr. Alice Johnson', 1, 'alice.johnson@hospital.com', '555-2001'),
+('Dr. Mark Wilson', 2, 'mark.wilson@hospital.com', '555-2002'),
+('Dr. Emily Davis', 5, 'emily.davis@hospital.com', '555-2003');
+
+------------------------------------------------
+-- Provider Schedules & Slots (1-day sample)
+------------------------------------------------
+-- Dr. Alice Johnson, 9am - 12pm (1h slots)
+INSERT INTO ProviderSchedule (ProviderId, ScheduleDate, StartTime, EndTime, SlotDurationMinutes)
+VALUES (1, '2025-08-22', '09:00', '12:00', 60);
+
+-- Slots for above schedule (3 slots)
+INSERT INTO ProviderSlots (ScheduleId, SlotStart, SlotEnd)
+VALUES
+(1, '09:00', '10:00'),
+(1, '10:00', '11:00'),
+(1, '11:00', '12:00');
+
+-- Dr. Mark Wilson, 1pm - 3pm (30m slots)
+INSERT INTO ProviderSchedule (ProviderId, ScheduleDate, StartTime, EndTime, SlotDurationMinutes)
+VALUES (2, '2025-08-22', '13:00', '15:00', 30);
+
+-- Slots for above schedule (4 slots)
+INSERT INTO ProviderSlots (ScheduleId, SlotStart, SlotEnd)
+VALUES
+(2, '13:00', '13:30'),
+(2, '13:30', '14:00'),
+(2, '14:00', '14:30'),
+(2, '14:30', '15:00');
+
+------------------------------------------------
+-- Sample Appointments
+------------------------------------------------
+INSERT INTO Appointment (patient_id, provider_id, slot_id, start_utc, end_utc, status_id, type_id, notes)
+VALUES
+(1, 1, 1, '2025-08-22T09:00:00Z', '2025-08-22T10:00:00Z', 1, 1, 'Initial consultation for chest pain'),
+(2, 1, 2, '2025-08-22T10:00:00Z', '2025-08-22T11:00:00Z', 1, 2, 'Follow-up visit for cardiology'),
+(3, 2, 5, '2025-08-22T13:30:00Z', '2025-08-22T14:00:00Z', 1, 3, 'Telehealth consult for skin rash');
+
+------------------------------------------------
+-- Patient Medical History & Risks
+------------------------------------------------
+INSERT INTO PatientHistory (patient_id, condition, notes, diagnosed_on)
+VALUES
+(1, 'Hypertension', 'Patient is on medication for blood pressure', '2020-01-15'),
+(2, 'Diabetes', 'Patient is managing with diet and insulin', '2019-06-10');
+
+INSERT INTO PatientRiskFactor (patient_id, risk_type_id, risk_level_id)
+VALUES
+(1, 4, 2), -- Hypertension, Medium
+(2, 3, 3); -- Diabetes, High
+
+INSERT INTO PatientRiskScore (patient_id, score, risk_level_id, reason)
+VALUES
+(1, 65, 2, 'Moderate blood pressure issues'),
+(2, 85, 3, 'High diabetes-related risk');
+
+------------------------------------------------
+-- Notifications
+------------------------------------------------
+INSERT INTO NotificationLog (patient_id, appointment_id, channel, message, delivery_status_id)
+VALUES
+(1, 1, 'Email', 'Reminder: Your appointment with Dr. Alice Johnson at 9:00 AM.', 3),
+(2, 2, 'SMS', 'Reminder: Your follow-up appointment with Dr. Alice Johnson at 10:00 AM.', 3);
+
+------------------------------------------------
+-- Authentication
+------------------------------------------------
+INSERT INTO PatientLogin (patient_id, username, password_hash, password_salt, email, phone)
+VALUES
+(1, 'johndoe', 'hashed_pw1', 'salt1', 'john.doe@example.com', '555-1001'),
+(2, 'janesmith', 'hashed_pw2', 'salt2', 'jane.smith@example.com', '555-1002'),
+(3, 'robertbrown', 'hashed_pw3', 'salt3', 'robert.brown@example.com', '555-1003');
