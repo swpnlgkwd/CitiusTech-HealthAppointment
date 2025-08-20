@@ -15,7 +15,6 @@
     <Folder Include="Agent\" />
     <Folder Include="Business\Interfaces\" />
     <Folder Include="Dal\" />
-    <Folder Include="Database\" />
     <Folder Include="Dto\" />
   </ItemGroup>
 
