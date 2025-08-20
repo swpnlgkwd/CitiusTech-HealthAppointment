@@ -1,4 +1,4 @@
-﻿namespace CitiusTech_HealthAppointmentApis.Dto
+﻿namespace CitiusTech_HealthAppointmentApis.DAL
 {
     public class Class
     {
