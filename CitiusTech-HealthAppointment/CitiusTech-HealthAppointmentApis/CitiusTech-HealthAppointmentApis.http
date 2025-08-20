@@ -1,0 +1,6 @@
+@CitiusTech_HealthAppointmentApis_HostAddress = http://localhost:5053
+
+GET {{CitiusTech_HealthAppointmentApis_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
