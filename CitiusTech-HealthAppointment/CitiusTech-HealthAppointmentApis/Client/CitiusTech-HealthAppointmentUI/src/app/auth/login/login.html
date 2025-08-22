@@ -1,0 +1,50 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h3 class="card-title text-center mb-4 fw-bold">🔐 Login</h3>
+
+          <div *ngIf="error" class="alert alert-danger py-2 px-3 mb-3">{{ error }}</div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="off" novalidate>
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="username">Username</label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="username"
+                formControlName="username"
+                [ngClass]="{'is-invalid': loginForm.get('username')?.invalid && loginForm.get('username')?.touched}"
+                required
+                autofocus
+              >
+              <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="invalid-feedback">
+                Username is required.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold" for="password">Password</label>
+              <input
+                type="password"
+                class="form-control form-control-lg"
+                id="password"
+                formControlName="password"
+                [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
+                required
+              >
+              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="invalid-feedback">
+                Password is required.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg" [disabled]="loginForm.invalid">Login</button>
+          </form>
+
+          <p class="text-center mt-4 mb-0">
+            Don’t have an account? <a (click)="goToRegister()" class="link-primary fw-semibold">Register</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
