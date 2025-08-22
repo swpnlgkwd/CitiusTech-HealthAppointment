@@ -1,0 +1,41 @@
+<div class="container mt-4">
+  <h2 class="mb-4">
+    📅 Calendar ({{ userRole | titlecase }})
+  </h2>
+
+  <div *ngIf="events.length === 0" class="alert alert-info">
+    No appointments found.
+  </div>
+
+  <div class="row">
+    <div *ngFor="let ev of events" class="col-md-6 col-lg-4 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ ev.title }}</h5>
+          <p class="card-text mb-1">
+            <i class="bi bi-calendar-event"></i>
+            {{ ev.start | date: 'fullDate' }} <br>
+            <i class="bi bi-clock"></i>
+            {{ ev.start | date: 'shortTime' }}
+          </p>
+
+          <!-- Only show patient name for staff -->
+          <p *ngIf="userRole === 'staff'" class="mb-1">
+            <i class="bi bi-person-circle"></i>
+            Patient: <strong>{{ ev.patientName }}</strong>
+          </p>
+
+          <!-- Risk flag with badge -->
+          <span class="badge"
+                [ngClass]="{
+                  'bg-success': ev.riskFlag === 'low',
+                  'bg-warning text-dark': ev.riskFlag === 'medium',
+                  'bg-danger': ev.riskFlag === 'high'
+                }">
+            Risk: {{ ev.riskFlag | titlecase }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

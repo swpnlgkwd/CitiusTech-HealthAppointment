@@ -1,0 +1,59 @@
+<div class="chat-container" [class.open]="isOpen">
+  <!-- Floating Chat Toggle Button -->
+  <button class="chat-toggle-btn btn btn-primary shadow-lg rounded-circle" *ngIf="!isOpen"
+          (click)="toggleChat()">
+    <i class="bi bi-chat-dots"></i>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window shadow-lg" *ngIf="isOpen">
+    <!-- Header -->
+    <div class="chat-header d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-robot me-2"></i>
+        <span>MediMate</span>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-outline-light me-2 rounded-4" (click)="refreshChat()">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-light rounded-4" (click)="toggleChat()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="chat-body">
+      <div *ngFor="let msg of messages"
+           [ngClass]="{'user-msg': msg.sender==='user', 'bot-msg': msg.sender==='bot'}"
+           class="chat-bubble animate__animated animate__fadeIn"
+           [style.justify-self]="msg.sender == 'bot' ? 'start' : 'end'">
+
+        <!-- Message Text -->
+        <div class="msg-text">
+          <i *ngIf="msg.sender==='user'" class="bi bi-person-circle"></i> 
+          <i *ngIf="msg.sender==='bot'" class="bi bi-robot"></i> &nbsp;:
+          {{ msg.text }}</div>
+        <div class="msg-time">{{ msg.time }}</div>
+
+        <!-- Icon Below Each Message -->
+        <!-- <div class="msg-icon text-muted small mt-1" [ngClass]="{'text-end': msg.sender==='user', 'text-start': msg.sender==='bot'}">
+          <i *ngIf="msg.sender==='user'" class="bi bi-person-circle"></i>
+          <i *ngIf="msg.sender==='bot'" class="bi bi-robot"></i>
+        </div> -->
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="chat-footer d-flex">
+      <input formControlName="message"
+             type="text"
+             class="form-control rounded-pill me-2"
+             placeholder="Type a message..." />
+      <button type="submit" class="btn btn-primary rounded-circle" [disabled]="chatForm.invalid">
+        <i class="bi bi-send"></i>
+      </button>
+    </form>
+  </div>
+</div>
