@@ -138,7 +138,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent
                 name: _agentName,
                 instructions: instructions
                 //,
-                //tools: ToolDefinitions.All
+                //tools: FunctionToolDefinitions.All
             );
 
             var newAgent = newAgentResponse?.Value
