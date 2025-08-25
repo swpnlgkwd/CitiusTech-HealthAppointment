@@ -1,7 +1,8 @@
-﻿using Azure.AI.Agents.Persistent;
+﻿using Azure.AI.Agents;
+using Azure.AI.Agents.Persistent;
 using System.Text.Json;
 
-namespace HospitalSchedulingApp.Common.Handlers.Interfaces
+namespace CitiusTech_HealthAppointmentApis.Common.Handlers.Interfaces
 {
     /// <summary>
     /// Defines a common interface for tool handlers used by the agent.

@@ -1,9 +1,11 @@
-using Microsoft.Extensions.Logging;
+using Azure.AI.Agents;
+using Azure.AI.Agents.Persistent;
+using CitiusTech_HealthAppointmentApis.Common.Handlers.Interfaces;
 using System.Text.Json;
 
 namespace CitiusTech_HealthAppointmentApis.Common.Handlers
 {
-    public abstract class BaseToolHandler
+    public abstract class BaseToolHandler : IToolHandler
     {
         protected readonly ILogger _logger;
 
@@ -12,26 +14,34 @@ namespace CitiusTech_HealthAppointmentApis.Common.Handlers
             _logger = logger;
         }
 
+        // Each handler must provide ToolName + HandleAsync
         public abstract string ToolName { get; }
+
         public abstract Task<ToolOutput?> HandleAsync(RequiredFunctionToolCall call, JsonElement root);
 
-        protected ToolOutput CreateSuccess(string? id, string message, object result)
-            => new ToolOutput { Id = id, Success = true, Message = message, Result = result };
+        // 🔴 Common error response builder
+        protected ToolOutput CreateError(string callId, string message)
+        {
+            var errorJson = JsonSerializer.Serialize(new
+            {
+                success = false,
+                error = message
+            });
 
-        protected ToolOutput CreateError(string? id, string message)
-            => new ToolOutput { Id = id, Success = false, Message = message };
-    }
+            return new ToolOutput(callId, errorJson);
+        }
 
-    public class ToolOutput
-    {
-        public string? Id { get; set; }
-        public bool Success { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public object? Result { get; set; }
-    }
+        // 🟢 Common success response builder
+        protected ToolOutput? CreateSuccess(string callId, string message, object? data = null)
+        {
+            var response = JsonSerializer.Serialize(new
+            {
+                success = true,
+                message,
+                data
+            });
 
-    public class RequiredFunctionToolCall
-    {
-        public string Id { get; set; }
+            return new ToolOutput(callId, response);
+        }
     }
 }

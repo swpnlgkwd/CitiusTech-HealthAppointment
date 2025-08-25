@@ -3,6 +3,11 @@ using Azure.Identity;
 using CitiusTech_HealthAppointmentApis.Agent;
 using CitiusTech_HealthAppointmentApis.Agent.AgentStore;
 using System.Text.Json.Serialization;
+using CitiusTech_HealthAppointmentApis.Common.Handlers.Interfaces;
+using CitiusTech_HealthAppointmentApis.Common.Handlers;
+using CitiusTech_HealthAppointmentApis.Agent.Handlers.AppointmentBooking;
+using CitiusTech_HealthAppointmentApis.Services.Interfaces;
+using CitiusTech_HealthAppointmentApis.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,13 +42,19 @@ builder.Services.AddSingleton<IAgentStore, FileAgentStore>();
 builder.Services.AddSingleton<IAgentManager, AgentManager>();
 
 
-// Register PersistentAgentsClient (singleton – shared across app)
+// Register PersistentAgentsClient (singleton ï¿½ shared across app)
 
 builder.Services.AddSingleton<PersistentAgentsClient>(sp =>
 {
     var endpoint = configuration["ProjectEndpoint"];
     return new PersistentAgentsClient(endpoint, new DefaultAzureCredential());
 });
+
+// Register services here
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+// Tool Handlers
+builder.Services.AddScoped<IToolHandler, ResolveAppointmentBookingToolHandler>();
 
 var app = builder.Build();
 

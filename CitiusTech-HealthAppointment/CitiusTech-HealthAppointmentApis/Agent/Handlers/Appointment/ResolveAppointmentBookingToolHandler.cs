@@ -1,18 +1,20 @@
-﻿using CitiusTech_HealthAppointmentApis.Common.Handlers;
+﻿using System.Text.Json;
+using Azure.AI.Agents;
+using Azure.AI.Agents.Persistent;
+using CitiusTech_HealthAppointmentApis.Common.Handlers;
 using CitiusTech_HealthAppointmentApis.Common.Exceptions;
 using CitiusTech_HealthAppointmentApis.Common.Extensions;
 using CitiusTech_HealthAppointmentApis.Services.Interfaces;
 using CitiusTech_HealthAppointmentApis.Agent.Tools.AppointmentBooking;
-using System.Text.Json;
 
 namespace CitiusTech_HealthAppointmentApis.Agent.Handlers.AppointmentBooking
 {
-    public class ResolveResolveAppointmentBookingToolHandler : BaseToolHandler
+    public class ResolveAppointmentBookingToolHandler : BaseToolHandler
     {
         private readonly IAppointmentService _appointmentService;
-        public ResolveResolveAppointmentBookingToolHandler(
+        public ResolveAppointmentBookingToolHandler(
             IAppointmentService appointmentService,
-            ILogger<ResolveResolveAppointmentBookingToolHandler> logger)
+            ILogger<ResolveAppointmentBookingToolHandler> logger)
             : base(logger)
         {
             _appointmentService = appointmentService;
@@ -33,7 +35,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handlers.AppointmentBooking
                 string? notes = root.FetchString("notes");
 
                 if (!patientIdNullable.HasValue || !providerIdNullable.HasValue || !slotIdNullable.HasValue || !statusIdNullable.HasValue || !typeIdNullable.HasValue)
-                    return CreateError(call?.Id, "❌ Invalid input parameters.");
+                    return CreateError(call.Id, "❌ Invalid input parameters.");
 
                 int patientId = patientIdNullable.Value;
                 int providerId = providerIdNullable.Value;
@@ -43,23 +45,23 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handlers.AppointmentBooking
                 
                 // ...existing code... ̰
                 if (patientId <= 0 || providerId <= 0 || slotId <= 0 || statusId <= 0 || typeId <= 0)
-                    return CreateError(call?.Id, "❌ Invalid input parameters.");
+                    return CreateError(call.Id, "❌ Invalid input parameters.");
 
                 var result = await _appointmentService.AppointmentBookingAsync(patientId, providerId, slotId, statusId, typeId, notes);
 
                 if (result == null)
-                    return CreateError(call?.Id, "⚠️ Unable to book appointment. Please check slot availability.");
+                    return CreateError(call.Id, "⚠️ Unable to book appointment. Please check slot availability.");
 
-                return CreateSuccess(call?.Id, "✅ Appointment booked successfully.", result);
+                return CreateSuccess(call.Id, "✅ Appointment booked successfully.", result);
             }
             catch (BusinessRuleException brex)
             {
-                return CreateError(call?.Id, $"⚠️ {brex.Message}");
+                return CreateError(call.Id, $"⚠️ {brex.Message}");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "AppointmentBooking: Unexpected error occurred.");
-                return CreateError(call?.Id, "❌ An internal error occurred while booking appointment.");
+                return CreateError(call.Id, "❌ An internal error occurred while booking appointment.");
             }
         }
     }

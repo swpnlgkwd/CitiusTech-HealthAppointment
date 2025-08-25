@@ -8,18 +8,18 @@ namespace CitiusTech_HealthAppointmentApis.Controllers
     [Route("api/appointment")]
     public class AppointmentController : ControllerBase
     {
-        private readonly ResolveResolveAppointmentBookingToolHandler _handler;
+        private readonly ResolveAppointmentBookingToolHandler _handler;
 
-        public AppointmentController(ResolveResolveAppointmentBookingToolHandler handler)
+        public AppointmentController(ResolveAppointmentBookingToolHandler handler)
         {
             _handler = handler;
         }
 
-        [HttpPost("book")]
-        public async Task<IActionResult> Book([FromBody] JsonElement payload)
-        {
-            var output = await _handler.HandleAsync(null, payload);
-            return Ok(output);
-        }
+        // [HttpPost("book")]
+        // public async Task<IActionResult> Book([FromBody] JsonElement payload)
+        // {
+        //     // var output = await _handler.HandleAsync(null, payload);
+        //     return Ok(output);
+        // }
     }
 }

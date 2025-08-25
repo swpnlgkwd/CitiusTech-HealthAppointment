@@ -15,6 +15,6 @@ namespace CitiusTech_HealthAppointmentApis.Services.Interfaces
         public DateTime EndUtc { get; set; }
         public int StatusId { get; set; }
         public int TypeId { get; set; }
-        public string Confirmation { get; set; }
+        public string Confirmation { get; set; } = string.Empty;
     }
 }
