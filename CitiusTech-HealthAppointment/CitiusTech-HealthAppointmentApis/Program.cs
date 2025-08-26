@@ -2,6 +2,8 @@ using Azure.AI.Agents.Persistent;
 using Azure.Identity;
 using CitiusTech_HealthAppointmentApis.Agent;
 using CitiusTech_HealthAppointmentApis.Agent.AgentStore;
+using CitiusTech_HealthAppointmentApis.Agent.Handler;
+using CitiusTech_HealthAppointmentApis.Agent.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -91,9 +93,22 @@ builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<IToolHandler, ResolveNaturalLanguageDateToolHandler>();
+builder.Services.AddScoped<IAgentService, AgentService>(sp =>
+{
+    var client = sp.GetRequiredService<PersistentAgentsClient>();
+    var agentManager = sp.GetRequiredService<IAgentManager>();
+    var agent = agentManager.GetAgentAsync().Result; // returns a PersistentAgent (already built)      
+    var logger = sp.GetRequiredService<ILogger<AgentService>>();
+    var toolHandlers = sp.GetServices<IToolHandler>();
+    //var acv = sp.GetRequiredService<IAgentConversationService>();
+    //var ucx = sp.GetRequiredService<IUserContextService>();
 
+    return new AgentService(client, agent, toolHandlers, logger);
+});
 
 // Register PersistentAgentsClient (singleton – shared across app)
+
 
 builder.Services.AddSingleton<PersistentAgentsClient>(sp =>
 {
@@ -102,6 +117,7 @@ builder.Services.AddSingleton<PersistentAgentsClient>(sp =>
 });
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

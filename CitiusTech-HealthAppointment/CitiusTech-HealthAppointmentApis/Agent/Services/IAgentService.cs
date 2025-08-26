@@ -12,10 +12,10 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
 
         Task<ToolOutput?> GetResolvedToolOutputAsync(RequiredToolCall toolCall);
 
-        Task DeleteThreadForUserAsync();
+        //Task DeleteThreadForUserAsync();
 
         Task<string> FetchOrCreateThreadForUser(int? staffId = null);
 
-        Task<string> Refresh();
+        //Task<string> Refresh();
     }
 }
