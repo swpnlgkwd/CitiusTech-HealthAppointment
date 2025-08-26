@@ -1,5 +1,6 @@
 ﻿using Azure.AI.Agents.Persistent;
 using CitiusTech_HealthAppointmentApis.Agent.Handler;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -69,14 +70,14 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
         private async Task<T> CallAzureApiAsync<T>(Func<Task<T>> apiCall, string apiName, string? details = null)
         {
             _apiCallCount++;
-            _logger.LogInformation("Azure API call #{Count} - {ApiName} {Details}", _apiCallCount, apiName, details ?? "");
+            _logger.LogInformation("⛅Azure API call #{Count} - {ApiName} {Details}", _apiCallCount, apiName, details ?? "");
 
             var stopwatch = Stopwatch.StartNew();
             var result = await apiCall();
             stopwatch.Stop();
 
             _logger.LogInformation("{ApiName} completed in {ElapsedMilliseconds} ms", apiName, stopwatch.ElapsedMilliseconds);
-
+            _logger.LogInformation("__________________________________________________");
             return result;
         }
 

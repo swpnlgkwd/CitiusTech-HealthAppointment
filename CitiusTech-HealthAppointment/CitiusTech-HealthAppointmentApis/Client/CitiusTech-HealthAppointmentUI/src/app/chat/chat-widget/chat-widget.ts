@@ -86,17 +86,28 @@ export class ChatWidgetComponent implements OnInit {
     // Show typing indicator
     this.isBotTyping = true;
 
-    // Simulate bot response with delay
-    setTimeout(() => {
-      this.isBotTyping = false;
-      this.messages.push({
-        sender: 'bot',
-        text: 'This is a simulated bot reply.',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        quickReplies: [{label:'Book Appointment', value:''}, {label:'View History', value:'Cancel'}]
-      });
-      this.scrollToBottom();
-    }, 2000); // delay for effect
+    this.agentService.askAgent(userMessage).subscribe({
+      next: (response) => {
+        this.messages.push({
+          sender: 'bot',
+          text: response.reply || '🤖 (No reply)',
+          time: this.getCurrentTime(),
+          quickReplies: [{ label: 'Book Appointment', value: '' }, { label: 'View History', value: 'Cancel' }]
+        });
+        this.isBotTyping = false;
+        this.cdRef.detectChanges();
+        this.scrollToBottom();
+      },
+      error: (error) => {
+        console.error('Agent error:', error);
+        this.isBotTyping = false;
+        this.messages.push({
+          sender: 'bot',
+          text: '⚠️ Something went wrong. Please try again later.',
+          time: this.getCurrentTime()
+        });
+      }
+    });
   }
 
   handleActionClick(s: SmartSuggestion): void {

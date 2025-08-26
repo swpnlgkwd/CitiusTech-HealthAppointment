@@ -145,3 +145,29 @@
   color: white;
 }
 
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.chat-bubble {
+  animation: popIn 0.3s ease-out;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background-color: #0d6efd;
+    border: 3px solid #f1f1f1;
+    border-radius: 5px;
+    background-clip: content-box;
+    cursor: pointer;
+}
+
+.chat-body::-webkit-scrollbar {
+    width: 10px;
+}
