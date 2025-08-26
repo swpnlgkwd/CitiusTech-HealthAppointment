@@ -7,7 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E555FBC1-42F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{FD10926F-8E9D-471B-8B46-862DEEE358F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CitiusTech-HealthAppointmentApis", "CitiusTech-HealthAppointmentApis\CitiusTech-HealthAppointmentApis.csproj", "{D93FD7DA-3806-4502-B744-EFD0B68E5D12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CitiusTech-HealthAppointmentApis", "CitiusTech-HealthAppointmentApis\CitiusTech-HealthAppointmentApis.csproj", "{D93FD7DA-3806-4502-B744-EFD0B68E5D12}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatientAppointments.Infrastructure", "PatientAppointments.Infrastructure\PatientAppointments.Infrastructure.csproj", "{DD50CEBA-9C65-484E-BF11-5971429ACCE5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PatientAppointments.Core", "PatientAppointments.Core\PatientAppointments.Core.csproj", "{1F9C887B-E0E3-4289-B9FC-1A2F68273D51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientAppointments.Business", "PatioentAppointments.Business\PatientAppointments.Business.csproj", "{5CFA7FDD-1220-4815-8B7D-7FDD42C6BCCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +25,18 @@ Global
 		{D93FD7DA-3806-4502-B744-EFD0B68E5D12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D93FD7DA-3806-4502-B744-EFD0B68E5D12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D93FD7DA-3806-4502-B744-EFD0B68E5D12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD50CEBA-9C65-484E-BF11-5971429ACCE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD50CEBA-9C65-484E-BF11-5971429ACCE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD50CEBA-9C65-484E-BF11-5971429ACCE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD50CEBA-9C65-484E-BF11-5971429ACCE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F9C887B-E0E3-4289-B9FC-1A2F68273D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F9C887B-E0E3-4289-B9FC-1A2F68273D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F9C887B-E0E3-4289-B9FC-1A2F68273D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F9C887B-E0E3-4289-B9FC-1A2F68273D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CFA7FDD-1220-4815-8B7D-7FDD42C6BCCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CFA7FDD-1220-4815-8B7D-7FDD42C6BCCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CFA7FDD-1220-4815-8B7D-7FDD42C6BCCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CFA7FDD-1220-4815-8B7D-7FDD42C6BCCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -26,6 +44,9 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FD10926F-8E9D-471B-8B46-862DEEE358F1} = {E555FBC1-42FD-4FB0-A6EB-DBB764F05D78}
 		{D93FD7DA-3806-4502-B744-EFD0B68E5D12} = {FD10926F-8E9D-471B-8B46-862DEEE358F1}
+		{DD50CEBA-9C65-484E-BF11-5971429ACCE5} = {FD10926F-8E9D-471B-8B46-862DEEE358F1}
+		{1F9C887B-E0E3-4289-B9FC-1A2F68273D51} = {FD10926F-8E9D-471B-8B46-862DEEE358F1}
+		{5CFA7FDD-1220-4815-8B7D-7FDD42C6BCCA} = {FD10926F-8E9D-471B-8B46-862DEEE358F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {65273159-5261-42AB-B8DC-42594267E90A}

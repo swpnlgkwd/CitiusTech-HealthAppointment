@@ -10,13 +10,19 @@
   <ItemGroup>
     <PackageReference Include="Azure.AI.Agents.Persistent" Version="1.2.0-beta.2" />
     <PackageReference Include="Azure.Identity" Version="1.15.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.19" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Business\Interfaces\" />
-    <Folder Include="Dal\" />
     <Folder Include="Dto\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PatientAppointments.Core\PatientAppointments.Core.csproj" />
+    <ProjectReference Include="..\PatientAppointments.Infrastructure\PatientAppointments.Infrastructure.csproj" />
+    <ProjectReference Include="..\PatioentAppointments.Business\PatientAppointments.Business.csproj" />
   </ItemGroup>
 
 </Project>
