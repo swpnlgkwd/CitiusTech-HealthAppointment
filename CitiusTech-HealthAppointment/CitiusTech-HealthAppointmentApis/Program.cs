@@ -2,12 +2,57 @@ using Azure.AI.Agents.Persistent;
 using Azure.Identity;
 using CitiusTech_HealthAppointmentApis.Agent;
 using CitiusTech_HealthAppointmentApis.Agent.AgentStore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using PatientAppointments.Business.Contracts;
+using PatientAppointments.Business.Services;
+using PatientAppointments.Core.Contracts;
+using PatientAppointments.Core.Contracts.Repositories;
+using PatientAppointments.Infrastructure;
+using PatientAppointments.Infrastructure.Data;
+using PatientAppointments.Infrastructure.Identity;
+using PatientAppointments.Infrastructure.Repositories;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Read configuration
 var configuration = builder.Configuration;
+
+
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt => {
+    opt.User.RequireUniqueEmail = true;
+    opt.Password.RequireNonAlphanumeric = false;
+}).AddEntityFrameworkStores<AppDbContext>()
+  .AddDefaultTokenProviders();
+
+var keyBytes = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => {
+        o.RequireHttpsMetadata = false;
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("RequireAdmin", p => p.RequireRole("Admin"));
+    options.AddPolicy("RequireDoctor", p => p.RequireRole("Doctor"));
+    options.AddPolicy("RequirePatient", p => p.RequireRole("Patient"));
+});
 
 builder.Services.AddCors(options =>
 {
@@ -35,6 +80,17 @@ builder.Services.AddSwaggerGen();
 // Register Agent infrastructure
 builder.Services.AddSingleton<IAgentStore, FileAgentStore>(); 
 builder.Services.AddSingleton<IAgentManager, AgentManager>();
+
+// Business
+builder.Services.AddScoped<IAppointmentManager, AppointmentManager>();
+builder.Services.AddScoped<IAuthManager, AuthManager>();
+
+// DI
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 
 // Register PersistentAgentsClient (singleton – shared across app)
