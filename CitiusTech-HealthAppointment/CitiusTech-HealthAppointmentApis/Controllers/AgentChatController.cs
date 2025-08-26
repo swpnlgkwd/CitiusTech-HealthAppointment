@@ -8,7 +8,7 @@ namespace CitiusTech_HealthAppointmentApis.Controllers
 {
 
     [ApiController]
-    //[Route("api/[controller]")]
+    [Route("api/[controller]")]
     //[Authorize]
     public class AgentChatController : ControllerBase
     {

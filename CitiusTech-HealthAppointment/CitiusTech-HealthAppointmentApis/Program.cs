@@ -107,8 +107,16 @@ builder.Services.AddScoped<IAgentService, AgentService>(sp =>
     return new AgentService(client, agent, toolHandlers, logger);
 });
 
-// Register PersistentAgentsClient (singleton – shared across app)
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin() // ?? allows any origin
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddSingleton<PersistentAgentsClient>(sp =>
 {
@@ -127,7 +135,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-
+app.UseCors("AllowAll");
 app.MapControllers();
 
 // Ensure the agent is created at startup
