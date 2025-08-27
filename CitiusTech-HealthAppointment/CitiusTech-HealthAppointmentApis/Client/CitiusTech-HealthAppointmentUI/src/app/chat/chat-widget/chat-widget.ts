@@ -25,7 +25,7 @@ export class ChatWidgetComponent implements OnInit {
   @ViewChild('chatContainer') chatContainer!: ElementRef;
   isOpen = false;
   chatForm: FormGroup;
-  isBotTyping = false;
+  isBotTyping = true;
   messages: ChatMessage[] = [];
 
   constructor(private fb: FormBuilder, private agentService: AgentService, private smartSuggestionService: SmartSuggestionsService,
@@ -80,6 +80,8 @@ export class ChatWidgetComponent implements OnInit {
     // Push user message
     this.messages.push({ sender: 'user', text: userMessage, time: currentTime });
     this.scrollToBottom();
+    
+    this.removePreviousQuickReplies();
 
     this.chatForm.reset();
 
@@ -92,7 +94,7 @@ export class ChatWidgetComponent implements OnInit {
           sender: 'bot',
           text: response.reply || '🤖 (No reply)',
           time: this.getCurrentTime(),
-          quickReplies: [{ label: 'Book Appointment', value: '' }, { label: 'View History', value: 'Cancel' }]
+          quickReplies: [{ label: 'Book Appointment', value: 'Book an appointment' }, { label: 'View History', value: 'Show my appointment history' }]
         });
         this.isBotTyping = false;
         this.cdRef.detectChanges();
@@ -141,6 +143,9 @@ export class ChatWidgetComponent implements OnInit {
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
     }, 1500);
+
+    this.scrollToBottom();
+    this.removePreviousQuickReplies()
   }
 
 
@@ -192,4 +197,13 @@ export class ChatWidgetComponent implements OnInit {
     });
   }
 
+  removePreviousQuickReplies(): void {
+    // Only remove quick replies from the last bot message (if any)
+    for (let i = this.messages.length - 1; i >= 0; i--) {
+      if (this.messages[i].sender === 'bot' && this.messages[i].quickReplies) {
+        delete this.messages[i].quickReplies;
+        break;
+      }
+    }
+  }
 }

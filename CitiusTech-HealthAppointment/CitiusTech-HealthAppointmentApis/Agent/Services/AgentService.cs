@@ -77,7 +77,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
             stopwatch.Stop();
 
             _logger.LogInformation("{ApiName} completed in {ElapsedMilliseconds} ms", apiName, stopwatch.ElapsedMilliseconds);
-            _logger.LogInformation("__________________________________________________");
+            _logger.LogInformation("_________________________________________________________________________");
             return result;
         }
 

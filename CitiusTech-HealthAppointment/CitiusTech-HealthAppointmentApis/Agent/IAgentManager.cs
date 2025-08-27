@@ -19,6 +19,6 @@ namespace CitiusTech_HealthAppointmentApis.Agent
         /// </summary>
         /// <returns>The <see cref="PersistentAgent"/> instance.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the agent has not yet been initialized.</exception>
-        Task<PersistentAgent> GetAgentAsync();
+        PersistentAgent GetAgent();
     }
 }
