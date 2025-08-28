@@ -59,7 +59,7 @@
 
     <!-- Footer -->
     <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="chat-footer d-flex">
-      <input formControlName="message" type="text" class="form-control rounded-pill me-2"
+      <input formControlName="message" [attr.disabled]="isBotTyping ? true : null" type="text" class="form-control rounded-pill me-2"
         placeholder="Type a message..." />
       <button type="submit" class="btn btn-primary rounded-circle" [disabled]="chatForm.invalid">
         <i class="bi bi-send"></i>

@@ -1,11 +1,11 @@
 ﻿using Azure.AI.Agents.Persistent;
-using CitiusTech_HealthAppointmentApis.Agent.Tools;
+using CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools;
 using CitiusTech_HealthAppointmentApis.Common;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace CitiusTech_HealthAppointmentApis.Agent.Handler
+namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
 {
     /// <summary>
     /// Handler to resolve natural language date(s) into a standardized date range (yyyy-MM-dd).

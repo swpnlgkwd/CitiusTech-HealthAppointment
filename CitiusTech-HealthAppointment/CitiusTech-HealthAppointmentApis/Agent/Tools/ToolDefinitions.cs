@@ -1,4 +1,6 @@
 ﻿using Azure.AI.Agents.Persistent;
+using CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools;
+using HospitalSchedulingApp.Agent.Tools.HelperTools;
 
 namespace CitiusTech_HealthAppointmentApis.Agent.Tools
 {
@@ -26,7 +28,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
             //SubmitShiftSwapRequestTool.GetTool(),
             //UnassignedShiftFromStaffTool.GetTool(),
             //AddNewPlannedShiftTool.GetTool(),
-             //ResolveRelativeDateTool.GetTool(),
+            ResolveRelativeDateTool.GetTool(),
             //DepartmentNameResolverTool.GetTool(),
             //GetShiftScheduleTool.GetTool(),
             //StaffNameResolverTool.GetTool(),

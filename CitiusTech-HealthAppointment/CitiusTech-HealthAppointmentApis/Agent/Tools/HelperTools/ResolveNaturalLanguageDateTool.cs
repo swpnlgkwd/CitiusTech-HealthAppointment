@@ -1,7 +1,7 @@
 ﻿using Azure.AI.Agents.Persistent;
 using System.Text.Json;
 
-namespace CitiusTech_HealthAppointmentApis.Agent.Tools
+namespace CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools
 {
     public static class ResolveNaturalLanguageDateTool
     {
