@@ -1,6 +1,4 @@
-﻿using Azure.AI.Agents;
 using Azure.AI.Agents.Persistent;
-using CitiusTech_HealthAppointmentApis.Agent.Tools.AppointmentBooking;
 
 namespace CitiusTech_HealthAppointmentApis.Agent.Tools
 {
@@ -8,7 +6,43 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
     {
         public static IReadOnlyList<FunctionToolDefinition> All => new[]
         {
-            ResolveAppointmentBookingTool.GetTool()
+            //FilterShiftScheduleTool.GetTool(),
+            //ResolveDepartmentInfoTool.GetTool(),
+            //ResolveStaffInfoByNameTool.GetTool(),
+            //ResolveRelativeDateTool.GetTool(),
+            //SearchAvailableStaffTool.GetTool(),
+            //SubmitLeaveRequestTool.GetTool(),
+            //CancelLeaveRequestTool.GetTool(),
+            //ResolveLeaveStatusTool.GetTool(),
+            //ResolveShiftTypeTool.GetTool(),
+            //ResolveShiftStatusTool.GetTool(),
+            //ResolveLeaveTypeTool.GetTool(),
+            //FetchLeaveRequestTool.GetTool(),
+            //ApproveOrRejectLeaveRequestTool.GetTool(),
+            //AssignShiftToStaffTool.GetTool(),
+            //ResolveLoggedInUserRoleTool.GetTool(),
+            //ResolveStaffReferenceTool.GetTool(),
+            ResolveNaturalLanguageDateTool.GetTool(),
+            //SubmitShiftSwapRequestTool.GetTool(),
+            //UnassignedShiftFromStaffTool.GetTool(),
+            //AddNewPlannedShiftTool.GetTool(),
+             //ResolveRelativeDateTool.GetTool(),
+            //DepartmentNameResolverTool.GetTool(),
+            //GetShiftScheduleTool.GetTool(),
+            //StaffNameResolverTool.GetTool(),
+            //FindAvailableStaffTool.GetTool(),
+            //ViewPendingLeaveRequestsTool.GetTool(),
+            //UncoverShiftsTool.GetTool(),
+            //ApplyForLeaveTool.GetTool(),
+            //ApproveOrRejectLeaveRequestTool.GetTool(),
+            //AssignStaffToShiftTool.GetTool(),
+            //ResolveStaffReferenceTool.GetTool()
+            //AssignStaffToShiftTool.GetTool(),
+            //AutoReplaceShiftsForLeaveTool.GetTool(),
+ 
+            //ShiftSwapTool.GetTool(),
+            //UncoverShiftsTool.GetTool(),
+            //ViewPendingLeaveRequestsTool.GetTool()
         };
     }
 }
