@@ -6,9 +6,22 @@ using System.Threading.Tasks;
 
 namespace PatientAppointments.Business.Dtos
 {
-    public record AppointmentDto(int Id, int DoctorId, int PatientId, DateTime ScheduledAt, string Status);
+    //public record AppointmentDto(int Id, int DoctorId, int PatientId, DateTime ScheduledAt, string Status);
 
-    public record CreateAppointmentDto(int DoctorId, int PatientId, DateTime ScheduledAt);
+    //public record CreateAppointmentDto(int DoctorId, int PatientId, DateTime ScheduledAt);
 
-    public record UpdateAppointmentDto(int Id, DateTime ScheduledAt, string Status);
+    //public record UpdateAppointmentDto(int Id, DateTime ScheduledAt, string Status);
+    public class AppointmentDto
+    {
+        public int AppointmentId { get; set; }
+        public int PatientId { get; set; }
+        public int ProviderId { get; set; }
+        public int SlotId { get; set; }
+        public DateTime StartUtc { get; set; }
+        public DateTime EndUtc { get; set; }
+        public int StatusId { get; set; }
+        public int TypeId { get; set; }
+        public string? Notes { get; set; } = string.Empty;
+    }
+    
 }

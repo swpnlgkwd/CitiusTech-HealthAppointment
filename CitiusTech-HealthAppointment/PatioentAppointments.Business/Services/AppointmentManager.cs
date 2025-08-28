@@ -2,11 +2,6 @@
 using PatientAppointments.Business.Dtos;
 using PatientAppointments.Core.Contracts;
 using PatientAppointments.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PatientAppointments.Business.Services
 {
@@ -19,39 +14,41 @@ namespace PatientAppointments.Business.Services
             _uow = uow;
         }
 
-        public async Task<AppointmentDto> CreateAsync(CreateAppointmentDto dto)
+        public async Task<AppointmentDto> CreateAsync(AppointmentDto dto)
         {
             var appointment = new Appointment
             {
                 AppointmentId = 0,
-                DoctorId = dto.DoctorId,
+                ProviderId = dto.ProviderId,
                 PatientId = dto.PatientId,
-                AppointmentDate = dto.ScheduledAt,
-                Status = "Scheduled"
+                SlotId = dto.SlotId,
+                StatusId = 0,
+                StartUtc = dto.StartUtc,
+                EndUtc = dto.EndUtc,
+                Notes = dto.Notes,
+                TypeId = dto.TypeId
             };
-
             await _uow.Appointments.AddAsync(appointment);
             await _uow.CompleteAsync();
-
-            return new AppointmentDto(appointment.AppointmentId, appointment.DoctorId, appointment.PatientId, appointment.AppointmentDate, appointment.Status);
+            return dto;
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetByDoctorAsync(Guid doctorId)
+        public async Task<IEnumerable<AppointmentDto>> GetByDoctorAsync(int doctorId)
         {
             throw new NotImplementedException("This method is not implemented yet. Please implement it according to your requirements.");
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetByPatientAsync(Guid patientId)
+        public async Task<IEnumerable<AppointmentDto>> GetByPatientAsync(int patientId)
         {
             throw new NotImplementedException("This method is not implemented yet. Please implement it according to your requirements.");
         }
 
-        public async Task<AppointmentDto> UpdateAsync(UpdateAppointmentDto dto)
+        public async Task<AppointmentDto> UpdateAsync(AppointmentDto dto)
         {
             throw new NotImplementedException("This method is not implemented yet. Please implement it according to your requirements.");
         }
 
-        public async Task<bool> CancelAsync(Guid id)
+        public async Task<bool> CancelAsync(int id)
         {
             throw new NotImplementedException("This method is not implemented yet. Please implement it according to your requirements.");
         }
