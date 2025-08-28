@@ -106,6 +106,7 @@ builder.Services.Scan(scan => scan
 
 builder.Services.AddScoped<IToolHandler, ResolveNaturalLanguageDateToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveRelativeDateToolHandler>();
+builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
 
 builder.Services.AddScoped<IAgentService, AgentService>(sp =>
 {

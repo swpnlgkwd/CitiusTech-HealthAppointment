@@ -25,6 +25,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
             //ResolveLoggedInUserRoleTool.GetTool(),
             //ResolveStaffReferenceTool.GetTool(),
             ResolveNaturalLanguageDateTool.GetTool(),
+            ResolveDoctorInfoByNameTool.GetTool(),
             //SubmitShiftSwapRequestTool.GetTool(),
             //UnassignedShiftFromStaffTool.GetTool(),
             //AddNewPlannedShiftTool.GetTool(),
