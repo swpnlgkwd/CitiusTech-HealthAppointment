@@ -12,11 +12,9 @@ using Microsoft.IdentityModel.Tokens;
 using PatientAppointments.Business.Contracts;
 using PatientAppointments.Business.Services;
 using PatientAppointments.Core.Contracts;
-using PatientAppointments.Core.Contracts.Repositories;
 using PatientAppointments.Infrastructure;
 using PatientAppointments.Infrastructure.Data;
 using PatientAppointments.Infrastructure.Identity;
-using PatientAppointments.Infrastructure.Repositories;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -53,7 +51,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(options => {
     options.AddPolicy("RequireAdmin", p => p.RequireRole("Admin"));
-    options.AddPolicy("RequireDoctor", p => p.RequireRole("Doctor"));
+    options.AddPolicy("RequireDoctor", p => p.RequireRole("Provider"));
     options.AddPolicy("RequirePatient", p => p.RequireRole("Patient"));
 });
 
