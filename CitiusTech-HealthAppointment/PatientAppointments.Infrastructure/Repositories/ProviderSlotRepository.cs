@@ -3,7 +3,8 @@ using PatientAppointments.Core.Entities;
 using PatientAppointments.Infrastructure.Data;
 
 namespace PatientAppointments.Infrastructure.Repositories {
-    public class DoctorRepository : GenericRepository<Doctor>, IDoctorRepository {
-        public DoctorRepository(AppDbContext ctx) : base(ctx) { }
+    public class ProviderSlotRepository : GenericRepository<ProviderSlot>, IProviderSlotRepository
+    {
+        public ProviderSlotRepository(AppDbContext ctx) : base(ctx) { }
     }
 }
