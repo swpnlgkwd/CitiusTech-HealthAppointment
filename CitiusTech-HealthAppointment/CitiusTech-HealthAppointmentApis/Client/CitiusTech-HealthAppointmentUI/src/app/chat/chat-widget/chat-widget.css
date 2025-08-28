@@ -88,3 +88,86 @@
   font-size: 0.8rem;
   opacity: 0.7;
 }
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dots {
+  display: flex;
+  gap: 4px;
+}
+
+.dots span {
+  width: 8px;
+  height: 8px;
+  background: #6c757d;
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.3s infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0.7);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem; /* adds spacing both vertically & horizontally */
+}
+
+.quick-replies .btn {
+  font-size: 0.8rem;
+  border-radius: 50px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  padding: 0.25rem 0.75rem;
+}
+
+.quick-replies .btn:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.chat-bubble {
+  animation: popIn 0.3s ease-out;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background-color: #0d6efd;
+    border: 3px solid #f1f1f1;
+    border-radius: 5px;
+    background-clip: content-box;
+    cursor: pointer;
+}
+
+.chat-body::-webkit-scrollbar {
+    width: 10px;
+}

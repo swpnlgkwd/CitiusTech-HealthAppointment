@@ -1,5 +1,6 @@
 ﻿using Azure.AI.Agents.Persistent;
 using CitiusTech_HealthAppointmentApis.Agent.AgentStore;
+using CitiusTech_HealthAppointmentApis.Agent.Tools;
 
 namespace CitiusTech_HealthAppointmentApis.Agent
 {
@@ -136,9 +137,8 @@ namespace CitiusTech_HealthAppointmentApis.Agent
             var newAgentResponse = await _client.Administration.CreateAgentAsync(
                 model: modelDeployment,
                 name: _agentName,
-                instructions: instructions
-                //,
-                //tools: ToolDefinitions.All
+                instructions: instructions,
+                tools: ToolDefinitions.All
             );
 
             var newAgent = newAgentResponse?.Value
