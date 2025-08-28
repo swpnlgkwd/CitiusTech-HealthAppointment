@@ -12,9 +12,11 @@ namespace PatientAppointments.Infrastructure.Data {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Patient> Patients { get; set; } = default!;
-        public DbSet<Doctor> Doctors { get; set; } = default!;
+        public DbSet<Provider> Provider { get; set; } = default!;
         public DbSet<Appointment> Appointments { get; set; } = default!;
         public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+        public DbSet<ProviderSchedule> ProviderSchedule { get; set; } = default!;
+        public DbSet<ProviderSlot> ProviderSlot { get; set; } = default!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {

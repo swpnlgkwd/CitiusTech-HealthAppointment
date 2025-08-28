@@ -9,10 +9,10 @@ namespace PatientAppointments.Business.Contracts
 {
     public interface IAppointmentManager
     {
-        Task<AppointmentDto> CreateAsync(CreateAppointmentDto dto);
-        Task<IEnumerable<AppointmentDto>> GetByDoctorAsync(Guid doctorId);
-        Task<IEnumerable<AppointmentDto>> GetByPatientAsync(Guid patientId);
-        Task<AppointmentDto> UpdateAsync(UpdateAppointmentDto dto);
-        Task<bool> CancelAsync(Guid id);
+        Task<AppointmentDto> CreateAsync(AppointmentDto dto);
+        Task<IEnumerable<AppointmentDto>> GetByDoctorAsync(int doctorId);
+        Task<IEnumerable<AppointmentDto>> GetByPatientAsync(int patientId);
+        Task<AppointmentDto> UpdateAsync(AppointmentDto dto);
+        Task<bool> CancelAsync(int id);
     }
 }

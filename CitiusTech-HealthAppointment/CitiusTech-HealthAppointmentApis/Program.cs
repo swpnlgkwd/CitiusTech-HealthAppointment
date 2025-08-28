@@ -81,15 +81,25 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IAgentStore, FileAgentStore>(); 
 builder.Services.AddSingleton<IAgentManager, AgentManager>();
 
-// Business
-builder.Services.AddScoped<IAppointmentManager, AppointmentManager>();
-builder.Services.AddScoped<IAuthManager, AuthManager>();
-
-// DI
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+// Register UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Business
+builder.Services.Scan(scan => scan
+    .FromAssembliesOf(typeof(IAppointmentManager)) // any type from the assembly containing your managers
+    .AddClasses(classes => classes.Where(t => t.Name.EndsWith("Manager")))
+        .AsImplementedInterfaces()
+        .WithScopedLifetime()
+);
+
+
+// DI Auto
+builder.Services.Scan(scan => scan
+    .FromAssembliesOf(typeof(AppDbContext)) // or any type in Infrastructure project
+    .AddClasses(classes => classes.Where(t => t.Name.EndsWith("Repository")))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime()
+);
 
 
 
@@ -119,5 +129,12 @@ using (var scope = app.Services.CreateScope())
 {
     var agentManager = scope.ServiceProvider.GetRequiredService<IAgentManager>();
     await agentManager.EnsureAgentExistsAsync();
+
+    //Seeder for logins
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    await DbSeeder.SeedAsync(context, userManager, roleManager);
 }
 app.Run();
