@@ -3,6 +3,7 @@ using CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools;
 using CitiusTech_HealthAppointmentApis.Common;
 using PatientAppointments.Business.Dtos;
 using PatientAppointments.Core.Entities;
+using CitiusTech_HealthAppointmentApis.Agent.Services;
 using System.Text.Json;
 
 namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
@@ -13,26 +14,31 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
     /// </summary>
     public class ResolveDoctorSpecialityToolHandler : BaseToolHandler
     {
-        private readonly Dictionary<string, string> _symptomDepartmentMap = new(StringComparer.OrdinalIgnoreCase)
-        {
-            { "chest pain", "Cardiology" },
-            { "heart", "Cardiology" },
-            { "skin rash", "Dermatology" },
-            { "acne", "Dermatology" },
-            { "fever", "GeneralMedicine" },
-            { "flu", "GeneralMedicine" },
-            { "fracture", "Orthopedics" },
-            { "bone pain", "Orthopedics" },
-            { "asthma", "Pulmonology" },
-            { "breathing", "Pulmonology" },
-            { "pregnancy", "Gynecology" },
-            { "child", "Pediatrics" }
-        };
+        // private readonly Dictionary<string, string> _symptomDepartmentMap = new(StringComparer.OrdinalIgnoreCase)
+        // {
+        //     { "chest pain", "Cardiology" },
+        //     { "heart", "Cardiology" },
+        //     { "skin rash", "Dermatology" },
+        //     { "acne", "Dermatology" },
+        //     { "fever", "GeneralMedicine" },
+        //     { "flu", "GeneralMedicine" },
+        //     { "fracture", "Orthopedics" },
+        //     { "bone pain", "Orthopedics" },
+        //     { "asthma", "Pulmonology" },
+        //     { "breathing", "Pulmonology" },
+        //     { "pregnancy", "Gynecology" },
+        //     { "child", "Pediatrics" }
+        // };
 
+        private readonly IDoctorSpecialityResolverService _resolverService;
+ 
         public ResolveDoctorSpecialityToolHandler(
-            ILogger<ResolveDoctorSpecialityToolHandler> logger
-        ) : base(logger) { }
-
+            IDoctorSpecialityResolverService resolverService,
+            ILogger<ResolveDoctorSpecialityToolHandler> logger)
+            : base(logger)
+        {
+            _resolverService = resolverService;
+        }
         /// <summary>
         /// Tool name as defined in the schema.
         /// </summary>
@@ -53,10 +59,12 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
                     return CreateError(call.Id, "❌ Symptoms input is required.");
                 }
 
-                // 🔍 Match against dictionary
-                var matchedDepartment = _symptomDepartmentMap
-                    .FirstOrDefault(kvp => symptoms.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase))
-                    .Value;
+                var matchedDepartment = await _resolverService.ResolveDepartmentAsync(symptoms);
+
+                // // 🔍 Match against dictionary
+                // var matchedDepartment = _symptomDepartmentMap
+                //     .FirstOrDefault(kvp => symptoms.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase))
+                //     .Value;
 
                 if (string.IsNullOrWhiteSpace(matchedDepartment))
                 {
