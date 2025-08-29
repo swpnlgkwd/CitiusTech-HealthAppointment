@@ -29,8 +29,8 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
 
             // 1️⃣ Ask the agent for a department suggestion
             var prompt = $"Patient symptoms: '{symptoms}'. " +
-                         $"From these departments {string.Join(", ", await _db.Departments.Select(d => d.Name).ToListAsync())}, " +
-                         $"suggest the most appropriate one. Return only the department name.";
+                        $"From these departments {string.Join(", ", await _db.Departments.Select(d => d.Name).ToListAsync())}, " +
+                        $"suggest the most appropriate one. Return only the department name.";
 
             var response = await _agentService.GetAgentResponseAsync(MessageRole.User, prompt);
 
