@@ -18,11 +18,16 @@
                 Username is required.
               </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
               <label class="form-label fw-semibold" for="password">Password</label>
-              <input type="password" class="form-control form-control-lg" id="password" formControlName="password"
+              <input [type]="showPassword ? 'text' : 'password'" class="form-control form-control-lg" id="password" formControlName="password"
                 [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
                 required>
+                <button type="button" *ngIf="loginForm.get('password')?.value"
+                class="btn btn-sm position-absolute end-0 translate-middle-y me-4 btn-pswd-vsbl"
+                (click)="togglePasswordVisibility()" tabindex="-1">
+                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
               <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
                 class="invalid-feedback">
                 Password is required.
@@ -34,7 +39,7 @@
                 <span *ngIf="loading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
                 {{ loading ? 'Logging in...' : 'Login' }}
               </button>
-              <span class="d-block mt-3 p-2 w-100 text-center text-danger">{{errorMessage}}</span>
+              <span class="d-block mt-3 p-2 w-100 text-center text-danger" *ngIf="isError">Login failed. please check your credentials.</span>
             </div>
           </form>
 

@@ -15,21 +15,24 @@ export class LoginComponent {
   loginForm: FormGroup;
   error: string = '';
   loading: boolean = false;
-  errorMessage: string = "";
+  isError: boolean = false;
+  showPassword: boolean = false;
+;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+  }
 
-    this.loginForm.valueChanges.subscribe(() => {
-      this.errorMessage = '';
-    });
+    togglePasswordVisibility(): void {
+      this.showPassword = !this.showPassword;
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
+      this.isError = false;
       this.loading = true;
       const { username, password } = this.loginForm.value;
       this.authService.login(username, password).subscribe({
@@ -42,7 +45,7 @@ export class LoginComponent {
         },
         error: () => {
           this.loading = false;
-          this.errorMessage = 'Login failed. please check your credentials.';
+          this.isError = true;
           this.loginForm.reset();
         },
       });

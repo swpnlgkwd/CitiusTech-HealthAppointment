@@ -18,10 +18,11 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Email Id</label>
-              <input type="email" class="form-control" formControlName="email" 
-              [ngClass]="{'is-invalid': (registerForm.get('email')?.invalid && registerForm.get('email')?.touched)}"
-              required >
-              <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required']"
+              <input type="email" class="form-control" formControlName="email"
+                [ngClass]="{'is-invalid': (registerForm.get('email')?.invalid && registerForm.get('email')?.touched)}"
+                required>
+              <div
+                *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required']"
                 class="invalid-feedback">
                 Email is required.
               </div>
@@ -44,25 +45,45 @@
               </div>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
               <label class="form-label">Password</label>
-              <input type="password" class="form-control" formControlName="password" [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}"
+              <input [type]="showPassword ? 'text' : 'password'" class="form-control" formControlName="password"
+                [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}"
                 required>
-              <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required']"
+
+              <button type="button" *ngIf="registerForm.get('password')?.value"
+                class="btn btn-sm position-absolute end-0 translate-middle-y me-4 btn-pswd-vsbl"
+                (click)="togglePasswordVisibility('password')" tabindex="-1">
+                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+
+              <div
+                *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required']"
                 class="invalid-feedback">
                 Password is required.
               </div>
-              <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['weakPassword']"
+              <div
+                *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['weakPassword']"
                 class="invalid-feedback">
                 Passwords is weak.
               </div>
             </div>
-            <div class="mb-3">
+
+            <div class="mb-3 position-relative">
               <label class="form-label">Confirm Password</label>
-              <input type="password" class="form-control" formControlName="confirmPassword"
-              [ngClass]="{'is-invalid': (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required']) || (registerForm.get('confirmPassword')?.touched && registerForm.errors?.['mismatch'])}"
+              <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control"
+                formControlName="confirmPassword"
+                [ngClass]="{'is-invalid': (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required']) || (registerForm.get('confirmPassword')?.touched && registerForm.errors?.['mismatch'])}"
                 required>
-              <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required']"
+
+              <button type="button" *ngIf="registerForm.get('confirmPassword')?.value"
+                class="btn btn-sm position-absolute end-0 translate-middle-y me-4 btn-pswd-vsbl"
+                (click)="togglePasswordVisibility('confirmPassword')" tabindex="-1">
+                <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+
+              <div
+                *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required']"
                 class="invalid-feedback">
                 Confirm Password is required.
               </div>
@@ -71,7 +92,10 @@
                 Passwords do not match.
               </div>
             </div>
-            <button type="submit" class="btn btn-success w-100" [disabled]="registerForm.invalid" >Register</button>
+
+            <button type="submit" class="btn btn-success w-100" [disabled]="registerForm.invalid">Register</button>
+            <span class="d-block mt-3 p-2 w-100 text-center text-danger" *ngIf="isError">Login failed. please check your
+              credentials.</span>
           </form>
 
           <p class="text-center mt-3">

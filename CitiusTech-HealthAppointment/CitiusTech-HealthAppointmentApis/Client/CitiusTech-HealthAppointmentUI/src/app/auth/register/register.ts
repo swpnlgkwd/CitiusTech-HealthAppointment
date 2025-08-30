@@ -9,6 +9,7 @@ import { registerDto } from '../../core/models/auth.model';
 @Component({
   selector: 'app-register',
   templateUrl: './register.html',
+  styleUrls: ['./register.css'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   standalone: true
 })
@@ -17,6 +18,9 @@ export class RegisterComponent {
   username = '';
   password = '';
   loading: boolean = false;
+  isError: boolean = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
@@ -28,9 +32,18 @@ export class RegisterComponent {
     }, { validators: this.passwordMatchValidator });
   }
 
+  togglePasswordVisibility(field: 'password' | 'confirmPassword'): void {
+    if (field === 'password') {
+      this.showPassword = !this.showPassword;
+    } else {
+      this.showConfirmPassword = !this.showConfirmPassword;
+    }
+  }
+
   register() {
-     if (this.registerForm.valid) {
+    if (this.registerForm.valid) {
       this.loading = true;
+      this.isError = false;
       const data: registerDto = {
         username: this.registerForm.value.username,
         email: this.registerForm.value.email,
@@ -44,6 +57,7 @@ export class RegisterComponent {
         },
         error: () => {
           this.loading = false;
+          this.isError = true;
           this.registerForm.reset();
         },
       });
