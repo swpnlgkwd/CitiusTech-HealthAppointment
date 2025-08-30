@@ -10,38 +10,37 @@
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="off" novalidate>
             <div class="mb-3">
               <label class="form-label fw-semibold" for="username">Username</label>
-              <input
-                type="text"
-                class="form-control form-control-lg"
-                id="username"
-                formControlName="username"
+              <input type="text" class="form-control form-control-lg" id="username" formControlName="username"
                 [ngClass]="{'is-invalid': loginForm.get('username')?.invalid && loginForm.get('username')?.touched}"
-                required
-                autofocus
-              >
-              <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="invalid-feedback">
+                required autofocus>
+              <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+                class="invalid-feedback">
                 Username is required.
               </div>
             </div>
             <div class="mb-3">
               <label class="form-label fw-semibold" for="password">Password</label>
-              <input
-                type="password"
-                class="form-control form-control-lg"
-                id="password"
-                formControlName="password"
+              <input type="password" class="form-control form-control-lg" id="password" formControlName="password"
                 [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
-                required
-              >
-              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="invalid-feedback">
+                required>
+              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                class="invalid-feedback">
                 Password is required.
               </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 btn-lg" [disabled]="loginForm.invalid">Login</button>
+            <div class="d-grid">
+              <button class="btn btn-primary rounded-pill shadow-sm login-btn" type="submit"
+                [disabled]="loading || loginForm.invalid" [class.animate]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                {{ loading ? 'Logging in...' : 'Login' }}
+              </button>
+              <span class="d-block mt-3 p-2 w-100 text-center text-danger">{{errorMessage}}</span>
+            </div>
           </form>
 
           <p class="text-center mt-4 mb-0">
-            Don’t have an account? <a (click)="goToRegister()" class="link-primary fw-semibold" role="button">Register</a>
+            Don’t have an account? <a (click)="goToRegister()" class="link-primary fw-semibold"
+              role="button">Register</a>
           </p>
         </div>
       </div>
