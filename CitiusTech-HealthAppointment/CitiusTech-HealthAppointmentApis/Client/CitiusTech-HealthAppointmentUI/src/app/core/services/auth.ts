@@ -1,30 +1,24 @@
 // src/app/core/services/auth.service.ts
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { tap } from 'rxjs';
+import { loginResponse, registerDto } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private currentUser: any = null;
+  private baseUrl = 'http://localhost:5053/api/auth'; // Replace with actual API URL
+  constructor(private http: HttpClient) { }
 
-  constructor() {}
-
-  login(username: string, password: string): boolean {
-    // Mock: if username contains "staff" → staff, else patient
-    if (username && password) {
-      this.currentUser = {
-        id: username.includes('staff') ? 'S001' : 'P001',
-        name: username,
-        role: username.includes('staff') ? 'staff' : 'patient'
-      };
-      return true;
-    }
-    return false;
+  login(username: string, password: string) {
+    const data = { username, password };
+    return this.http.post<loginResponse>(`${this.baseUrl}/login`, data);
   }
 
-  register(username: string, password: string): boolean {
-    // Mock register (always succeeds)
-    return true;
+  register(register: registerDto) {
+    return this.http.post<any>(`${this.baseUrl}/register`, register);
   }
 
   getUser() {
