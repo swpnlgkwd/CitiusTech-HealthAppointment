@@ -14,6 +14,10 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent {
   loginForm: FormGroup;
   error: string = '';
+  loading: boolean = false;
+  isError: boolean = false;
+  showPassword: boolean = false;
+;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
@@ -22,13 +26,29 @@ export class LoginComponent {
     });
   }
 
+    togglePasswordVisibility(): void {
+      this.showPassword = !this.showPassword;
+  }
+
   onSubmit() {
     if (this.loginForm.valid) {
+      this.isError = false;
+      this.loading = true;
       const { username, password } = this.loginForm.value;
-      this.authService.login(username, password)
-      this.router.navigate(['/home']); // Navigate to home on successful login
-    } else {
-      this.loginForm.markAllAsTouched();
+      this.authService.login(username, password).subscribe({
+        next: (res: any) => {
+          this.loading = false;
+          this.router.navigate(['/home']); // Or appropriate role-based route
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('refreshToken', res.refreshToken);
+          localStorage.setItem('expiresAt', res.expiresAt);
+        },
+        error: () => {
+          this.loading = false;
+          this.isError = true;
+          this.loginForm.reset();
+        },
+      });
     }
   }
 
