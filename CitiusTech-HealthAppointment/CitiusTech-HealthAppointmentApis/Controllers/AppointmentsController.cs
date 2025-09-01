@@ -54,5 +54,8 @@ namespace PatientAppointments.Api.Controllers
             if (!success) return NotFound();
             return NoContent();
         }
+
+
+        
     }
 }

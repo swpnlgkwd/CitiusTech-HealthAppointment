@@ -3,5 +3,5 @@ using PatientAppointments.Core.Entities;
 
 namespace PatientAppointments.Core.Contracts.Repositories
 {
-    public interface IProviderScheduleRepository : IGenericRepository<ProviderSchedule> { }
+    public interface ISpecialityRepository : IReadOnlyRepositoryBase<Specialty> { }
 }
