@@ -18,7 +18,7 @@ namespace PatientAppointments.Business.Services
         }
         public async Task<object> FetchDoctorInfoBySpeciality(int specialityId)
         {
-            return _uow.Provider.GetAllAsync();
+            return await _uow.Provider.GetAllAsync();
         }
     }
 }
