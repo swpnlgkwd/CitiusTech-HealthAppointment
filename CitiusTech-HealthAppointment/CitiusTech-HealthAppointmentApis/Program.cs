@@ -93,6 +93,8 @@ builder.Services.Scan(scan => scan
         .WithScopedLifetime()
 );
 
+builder.Services.AddScoped<IDoctorInfoManager, DoctorInfoManager>();
+
 
 // DI Auto
 builder.Services.Scan(scan => scan

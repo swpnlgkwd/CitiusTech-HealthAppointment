@@ -1,6 +1,7 @@
 ﻿using Azure.AI.Agents.Persistent;
 using CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools;
 using CitiusTech_HealthAppointmentApis.Common;
+using PatientAppointments.Business.Contracts;
 using PatientAppointments.Core.Entities;
 using System.Globalization;
 using System.Text.Json;
@@ -15,10 +16,12 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
     public class ResolveDoctorInfoByNameToolHandler : BaseToolHandler
     {
         // Inject
-       // private readonly IDoctorInfoManager _doctorInfoManager;
-        public ResolveDoctorInfoByNameToolHandler(ILogger<ResolveNaturalLanguageDateToolHandler> logger)
+        private readonly IDoctorInfoManager _doctorInfoManager;
+
+        public ResolveDoctorInfoByNameToolHandler(ILogger<ResolveNaturalLanguageDateToolHandler> logger, IDoctorInfoManager doctorInfoManager)
             : base(logger) // ✅ common logging/error helpers
         {
+            _doctorInfoManager = doctorInfoManager;
         }
 
         public override string ToolName => ResolveDoctorInfoByNameTool.GetTool().Name;
@@ -32,12 +35,8 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
                 _logger.LogWarning("name is missing");
                 return CreateError(call.Id, "Date input is required.");
             }
-            //var result = await _doctorInfoManager.FetchDoctorInfoByNamePart(name);
-            var result =  new Provider
-            {
-                ProviderId = 123,
-
-            };
+            var result = await _doctorInfoManager.FetchDoctorInfoByName(name);
+            
             _logger.LogInformation("Retrieved doctor information", result);
             return CreateSuccess(call.Id, "✅ Date(s) resolved successfully.", result);
         }

@@ -9,5 +9,8 @@ namespace PatientAppointments.Business.Contracts
     public interface IDoctorInfoManager
     {
         Task<object> FetchDoctorInfoBySpeciality(int specialityId);
+
+
+        Task<IEnumerable<object>> FetchDoctorInfoByName(string name);
     }
 }

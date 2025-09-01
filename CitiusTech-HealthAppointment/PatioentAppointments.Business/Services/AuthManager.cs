@@ -5,6 +5,7 @@ using PatientAppointments.Business.Contracts;
 using PatientAppointments.Business.Dtos;
 using PatientAppointments.Core.Contracts;
 using PatientAppointments.Infrastructure.Identity;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -53,11 +54,12 @@ namespace PatientAppointments.Business.Services
         private async Task<AuthResponseDto> GenerateToken(ApplicationUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-
+            var role = roles.FirstOrDefault() ?? "Patient";
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? "")
+                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new Claim(ClaimTypes.Role, role),
             };
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
@@ -75,7 +77,7 @@ namespace PatientAppointments.Business.Services
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return new AuthResponseDto(jwt, "dummy-refresh-token", expires);
+            return new AuthResponseDto(jwt, "dummy-refresh-token", expires, role ,  UserName: user.UserName );
         }
     }
 }

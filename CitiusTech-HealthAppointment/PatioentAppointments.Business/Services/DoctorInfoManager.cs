@@ -1,4 +1,5 @@
-﻿using PatientAppointments.Business.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using PatientAppointments.Business.Contracts;
 using PatientAppointments.Core.Contracts;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,19 @@ namespace PatientAppointments.Business.Services
         }
         public async Task<object> FetchDoctorInfoBySpeciality(int specialityId)
         {
+
             return await _uow.Provider.GetAllAsync();
+        }
+
+
+        public async Task<IEnumerable<object>> FetchDoctorInfoByName(string name)
+        {
+
+            var doctors = await _uow.Provider.FindAsync(
+                     s => EF.Functions.Like(s.FullName, $"%{name}%")
+                     );
+
+            return doctors;
         }
     }
 }
