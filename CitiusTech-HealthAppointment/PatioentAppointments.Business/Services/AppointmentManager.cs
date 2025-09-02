@@ -1,4 +1,5 @@
-﻿using PatientAppointments.Business.Contracts;
+﻿using CitiusTech_HealthAppointmentApis.Dto;
+using PatientAppointments.Business.Contracts;
 using PatientAppointments.Business.Dtos;
 using PatientAppointments.Core.Contracts;
 using PatientAppointments.Core.Entities;
@@ -86,6 +87,21 @@ namespace PatientAppointments.Business.Services
 
             await _uow.CompleteAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<AppointmentTypeDto>> GetAppointmentTypesAsync()
+        {
+            var appTypeList = await _uow.AppointmentsType.GetAllAsync();
+            return appTypeList.Select(x => new AppointmentTypeDto { type_id = x.type_id, type_name = x.type_name });
+        }
+
+        public async Task<IEnumerable<ProviderSlotDto>> GetProviderSlotsAsync(int ProviderId, DateTime sDate, DateTime? eDate)
+        {
+            var slots = await _uow.ProviderSlot.GetAllAsync();
+            var schedule = await _uow.ProviderSchedule.GetAllAsync();
+            return schedule.Where(p => p.ProviderId == ProviderId && p.ScheduleDate >= sDate && p.ScheduleDate <=eDate)
+                .Join(slots, sc => sc.ScheduleId, sl => sl.ScheduleId,
+                (sc, sl) => new ProviderSlotDto { Id = sc.ScheduleId, providerId = sc.ProviderId, scheduleDate = sc.ScheduleDate, startTime = sl.SlotStart, endTime = sl.SlotEnd, isBooked = sl.IsBooked });
         }
 
         private static AppointmentDto MapToDto(Appointment a)

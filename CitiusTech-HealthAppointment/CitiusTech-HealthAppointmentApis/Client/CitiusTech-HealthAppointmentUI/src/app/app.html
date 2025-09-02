@@ -15,4 +15,6 @@
 </div>
 
 <!-- Floating Chat Widget -->
-<app-chat-widget></app-chat-widget>
+@if (isLoggedIn) {
+  <app-chat-widget ></app-chat-widget>
+}

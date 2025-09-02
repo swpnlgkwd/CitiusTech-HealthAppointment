@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Azure.Identity;
+using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +12,5 @@ namespace PatientAppointments.Business.Dtos
 
     public record LoginDto(string Email, string Password);
 
-    public record AuthResponseDto(string Token, string RefreshToken, DateTime ExpiresAt);
+    public record AuthResponseDto(string Token, string RefreshToken, DateTime ExpiresAt, string role, string UserName);
 }
