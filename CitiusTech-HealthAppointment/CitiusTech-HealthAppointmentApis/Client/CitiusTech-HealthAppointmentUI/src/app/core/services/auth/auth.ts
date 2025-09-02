@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class AuthService {
   private tokenKey = 'access_token';
   private roleKey = 'role';
+  private usernameKey = 'username';
 
   constructor(private http: HttpClient,
     private router: Router
@@ -24,6 +25,7 @@ export class AuthService {
         tap(res => {
           localStorage.setItem(this.tokenKey, res.token);
           localStorage.setItem(this.roleKey, res.role);
+          localStorage.setItem(this.usernameKey, res.username);
         })
       );
   }
@@ -35,6 +37,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.roleKey);
+    localStorage.removeItem(this.usernameKey);
     this.router.navigate(['/login']);
   }
 
@@ -44,6 +47,10 @@ export class AuthService {
 
   get role() {
     return localStorage.getItem(this.roleKey) || undefined;
+  }
+
+  get userName() {
+    return localStorage.getItem(this.usernameKey);
   }
 
   isAuthenticated(): boolean {

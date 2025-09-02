@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PatientAppointments.Business.Contracts;
@@ -16,11 +17,13 @@ namespace PatientAppointments.Business.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly IUnitOfWork _uow;
 
-        public AuthManager(UserManager<ApplicationUser> userManager, IConfiguration config)
+        public AuthManager(UserManager<ApplicationUser> userManager, IConfiguration config, IUnitOfWork uow)
         {
             _userManager = userManager;
             _config = config;
+            _uow = uow;
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
@@ -63,6 +66,35 @@ namespace PatientAppointments.Business.Services
             };
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
+
+            foreach (var r in roles)
+            {
+                if (r == "Provider")
+                {
+                    var appUser = await _userManager.FindByIdAsync(user.Id);
+
+                    if (appUser?.DoctorId != null && appUser.DoctorId > 0)
+                    {
+                        claims.Add(new Claim("ProviderId", appUser.DoctorId.Value.ToString()));
+                    }
+                }
+
+                if (r == "Patient")
+                {
+                    var appUser = await _userManager.FindByIdAsync(user.Id);
+
+                    if (appUser?.PatientId != null && appUser.PatientId > 0)
+                    {
+                        claims.Add(new Claim("PatientId", appUser.PatientId.Value.ToString()));
+                    }
+                }
+
+                if (r == "Admin")
+                {
+                    claims.Add(new Claim("AdminLevel", "Super"));
+                    // optional, can add extra info for admins
+                }
+            }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.UtcNow.AddHours(1);
