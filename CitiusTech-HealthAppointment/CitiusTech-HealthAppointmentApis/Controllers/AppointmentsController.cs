@@ -9,7 +9,7 @@ namespace PatientAppointments.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentManager _appointmentManager;

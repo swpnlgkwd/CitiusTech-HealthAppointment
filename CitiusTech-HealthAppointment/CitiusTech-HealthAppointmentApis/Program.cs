@@ -3,6 +3,7 @@ using Azure.Identity;
 using CitiusTech_HealthAppointmentApis.Agent;
 using CitiusTech_HealthAppointmentApis.Agent.AgentStore;
 using CitiusTech_HealthAppointmentApis.Agent.Handler;
+using CitiusTech_HealthAppointmentApis.Agent.Handler.Appointment;
 using CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander;
 using CitiusTech_HealthAppointmentApis.Agent.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -117,6 +118,11 @@ builder.Services.AddScoped<IToolHandler, ResolveNaturalLanguageDateToolHandler>(
 builder.Services.AddScoped<IToolHandler, ResolveRelativeDateToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveDoctorSpecialityToolHandler>();
+builder.Services.AddScoped<IToolHandler, ResolveUserInfoByNameToolHandler>();
+builder.Services.AddScoped<IToolHandler, ResolveLoggedInUserRoleToolHandler>();
+builder.Services.AddScoped<IToolHandler, FetchProviderSlotToolHandler > ();
+builder.Services.AddScoped<IToolHandler, FetchAppointmentTypeToolHandler >();
+
 builder.Services.AddScoped<IAgentService, AgentService>(sp =>
 {
     var client = sp.GetRequiredService<PersistentAgentsClient>();

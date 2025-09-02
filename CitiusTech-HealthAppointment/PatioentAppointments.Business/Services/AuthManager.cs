@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -18,12 +19,14 @@ namespace PatientAppointments.Business.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
         private readonly IUnitOfWork _uow;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public AuthManager(UserManager<ApplicationUser> userManager, IConfiguration config, IUnitOfWork uow)
+        public AuthManager(UserManager<ApplicationUser> userManager, IConfiguration config, IUnitOfWork uow, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _config = config;
             _uow = uow;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
@@ -44,7 +47,6 @@ namespace PatientAppointments.Business.Services
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
                 throw new UnauthorizedAccessException("Invalid credentials");
-
             return await GenerateToken(user);
         }
 
@@ -53,6 +55,14 @@ namespace PatientAppointments.Business.Services
             // TODO: implement refresh token persistence
             throw new NotImplementedException();
         }
+
+        public async Task<ApplicationUser> GetUsersByName(string name) => await _userManager.FindByNameAsync(name);
+
+        public async Task<IList<string>> GetUserRole() {
+            var user = _httpContextAccessor.HttpContext?.User;
+            var usr = await _userManager.GetUserAsync(user);
+            return await _userManager.GetRolesAsync(usr);
+        } 
 
         private async Task<AuthResponseDto> GenerateToken(ApplicationUser user)
         {
