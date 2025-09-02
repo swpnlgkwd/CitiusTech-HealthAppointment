@@ -17,10 +17,10 @@ namespace CitiusTech_HealthAppointmentApis.Controllers
             _greetingService = greetingService;
         }
 
-        [HttpGet("message")]
-        public async Task<IActionResult> GetGreetingMessage()
+        [HttpGet("daily-summary")]
+        public async Task<IActionResult> GetDailySummaryAsync()
         {
-            var message = await _greetingService.GetGreetingAsync();
+            var message = await _greetingService.GetDailySummaryAsync();
             return Ok( message );
         }
     }

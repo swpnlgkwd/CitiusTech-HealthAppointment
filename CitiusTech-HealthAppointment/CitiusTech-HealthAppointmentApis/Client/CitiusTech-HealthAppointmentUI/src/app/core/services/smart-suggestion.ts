@@ -21,7 +21,7 @@ export class SmartSuggestionsService {
   }
   
   getDailySummary(): Observable<AgentSummaryResponse> {
-    return this.http.get<AgentSummaryResponse>(`${BASE_URL}/AgentChat/daily-summary`);
+    return this.http.get<AgentSummaryResponse>(`${BASE_URL}/Greeting/daily-summary`);
   }
 }
 
