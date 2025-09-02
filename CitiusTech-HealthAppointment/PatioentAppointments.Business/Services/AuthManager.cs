@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CitiusTech_HealthAppointmentApis.Dto;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,13 +21,15 @@ namespace PatientAppointments.Business.Services
         private readonly IConfiguration _config;
         private readonly IUnitOfWork _uow;
         private IHttpContextAccessor _httpContextAccessor;
+        private readonly IGreetingManager _greetingService;
 
-        public AuthManager(UserManager<ApplicationUser> userManager, IConfiguration config, IUnitOfWork uow, IHttpContextAccessor httpContextAccessor)
+        public AuthManager(UserManager<ApplicationUser> userManager, IConfiguration config, IUnitOfWork uow, IHttpContextAccessor httpContextAccessor, IGreetingManager greetingService)
         {
             _userManager = userManager;
             _config = config;
             _uow = uow;
             _httpContextAccessor = httpContextAccessor;
+            _greetingService = greetingService;
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
@@ -58,10 +61,23 @@ namespace PatientAppointments.Business.Services
 
         public async Task<ApplicationUser> GetUsersByName(string name) => await _userManager.FindByNameAsync(name);
 
-        public async Task<IList<string>> GetUserRole() {
+        public async Task<UserInfoDto> GetLoggedInUserInfo() {
             var user = _httpContextAccessor.HttpContext?.User;
-            var usr = await _userManager.GetUserAsync(user);
-            return await _userManager.GetRolesAsync(usr);
+            var role = user?.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+            var fullName = "";
+            if (role == "Provider")
+            {
+                fullName = await _greetingService.GetProviderName(user);
+            }
+            else
+            {
+                fullName = await _greetingService.GetPatientName(user);
+            }
+            return new UserInfoDto
+            {
+                userFullName = fullName,
+                userRole = role
+            };
         } 
 
         private async Task<AuthResponseDto> GenerateToken(ApplicationUser user)

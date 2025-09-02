@@ -1,4 +1,5 @@
-﻿using PatientAppointments.Business.Dtos;
+﻿using CitiusTech_HealthAppointmentApis.Dto;
+using PatientAppointments.Business.Dtos;
 using PatientAppointments.Infrastructure.Identity;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,6 @@ namespace PatientAppointments.Business.Contracts
         Task<AuthResponseDto> LoginAsync(LoginDto dto);
         Task<AuthResponseDto> RefreshTokenAsync(string token, string refreshToken);
         Task<ApplicationUser> GetUsersByName( string userName);
-        Task<IList<string>> GetUserRole();
+        Task<UserInfoDto> GetLoggedInUserInfo();
     }
 }

@@ -91,7 +91,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IAgentStore, FileAgentStore>(); 
 builder.Services.AddSingleton<IAgentManager, AgentManager>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<GreetingService>();
+builder.Services.AddScoped<GreetingManager>();
 // Register UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -103,7 +103,6 @@ builder.Services.Scan(scan => scan
         .WithScopedLifetime()
 );
 
-builder.Services.AddScoped<IDoctorInfoManager, DoctorInfoManager>();
 
 
 // DI Auto
@@ -119,7 +118,7 @@ builder.Services.AddScoped<IToolHandler, ResolveRelativeDateToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveDoctorSpecialityToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveUserInfoByNameToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveLoggedInUserRoleToolHandler>();
+builder.Services.AddScoped<IToolHandler, ResolveLoggedInUserInfoToolHandler>();
 builder.Services.AddScoped<IToolHandler, FetchProviderSlotToolHandler > ();
 builder.Services.AddScoped<IToolHandler, FetchAppointmentTypeToolHandler >();
 

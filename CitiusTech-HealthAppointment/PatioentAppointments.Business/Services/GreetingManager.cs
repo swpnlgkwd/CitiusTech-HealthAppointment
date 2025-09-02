@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using PatientAppointments.Business.Contracts;
+using PatientAppointments.Business.Dtos;
 using PatientAppointments.Core.Contracts;
 using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using PatientAppointments.Business.Dtos;
 
 namespace PatientAppointments.Business.Services
 {
-    public class GreetingService
+    public class GreetingManager : IGreetingManager
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWork _uow;
 
-        public GreetingService(IHttpContextAccessor httpContextAccessor, IUnitOfWork uow)
+        public GreetingManager(IHttpContextAccessor httpContextAccessor, IUnitOfWork uow)
         {
             _httpContextAccessor = httpContextAccessor;
             _uow = uow;
@@ -61,6 +62,38 @@ namespace PatientAppointments.Business.Services
                 default:
                     return null;
             }           
+
+        }
+
+        public async Task<string> GetProviderName(ClaimsPrincipal user)
+        {
+            var providerIdClaim = user.FindFirst("ProviderId")?.Value;
+            if (providerIdClaim == null) return "your schedule is ready.";
+
+            int providerId = int.Parse(providerIdClaim);
+
+            var provider = await _uow.Provider.GetByIdAsync(providerId);
+
+            if (provider == null)
+                return "User";
+
+            return $"{provider.FullName}";
+
+        }
+
+        public async Task<string> GetPatientName(ClaimsPrincipal user)
+        {
+            var providerIdClaim = user.FindFirst("Patientid")?.Value;
+            if (providerIdClaim == null) return "your schedule is ready.";
+
+            int patientId = int.Parse(providerIdClaim);
+
+            var patient = await _uow.Patients.GetByIdAsync(patientId);
+
+            if (patient == null)
+                return "User";
+
+            return $"{patient.FullName}";
 
         }
 
@@ -117,39 +150,7 @@ namespace PatientAppointments.Business.Services
                 return "you have no upcoming appointments. Book one today!";
 
             return $"your next appointment is with Dr. {upcoming.ProviderName} on {upcoming.AppointmentDate:g}.";
-        }
-
-        private async Task<string> GetProviderName(ClaimsPrincipal user)
-        {
-            var providerIdClaim = user.FindFirst("ProviderId")?.Value;
-            if (providerIdClaim == null) return "your schedule is ready.";
-
-            int providerId = int.Parse(providerIdClaim);
-
-            var provider = await _uow.Provider.GetByIdAsync(providerId);
-
-            if (provider == null)
-                return "User";
-
-            return $"{provider.FullName}";
-
-        }
-
-        private async Task<string> GetPatientName(ClaimsPrincipal user)
-        {
-            var providerIdClaim = user.FindFirst("Patientid")?.Value;
-            if (providerIdClaim == null) return "your schedule is ready.";
-
-            int patientId = int.Parse(providerIdClaim);
-
-            var patient = await _uow.Patients.GetByIdAsync(patientId);
-
-            if (patient == null)
-                return "User";
-
-            return $"{patient.FullName}";
-
-        }
+        }        
 
         private string GetTimeBasedGreeting()
         {

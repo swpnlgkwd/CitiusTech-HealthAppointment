@@ -13,7 +13,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
             ResolveDoctorInfoByNameTool.GetTool(),
             ResolveDoctorSpecialityTool.GetTool(),
             ResolveRelativeDateTool.GetTool(),
-            ResolveLoggedInUserRoleTool.GetTool(),
+            ResolveLoggedInUserInfoTool.GetTool(),
             ResolveUserInfoByNameTool.GetTool(),
             FetchProviderSlotTool.GetTool(),
             FetchAppointmentTool.GetTool(),

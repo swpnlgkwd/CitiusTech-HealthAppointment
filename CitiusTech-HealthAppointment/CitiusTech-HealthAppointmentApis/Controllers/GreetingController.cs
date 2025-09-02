@@ -10,9 +10,9 @@ namespace CitiusTech_HealthAppointmentApis.Controllers
     [Authorize]
     public class GreetingController : ControllerBase
     {
-        private readonly GreetingService _greetingService;
+        private readonly GreetingManager _greetingService;
 
-        public GreetingController(GreetingService greetingService)
+        public GreetingController(GreetingManager greetingService)
         {
             _greetingService = greetingService;
         }
