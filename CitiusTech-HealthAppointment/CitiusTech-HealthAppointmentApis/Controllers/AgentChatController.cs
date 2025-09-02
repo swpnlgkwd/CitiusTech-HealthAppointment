@@ -35,5 +35,6 @@ namespace CitiusTech_HealthAppointmentApis.Controllers
 
             return BadRequest("No valid response from agent.");
         }
+        
     }
 }

@@ -2,6 +2,7 @@
 using PatientAppointments.Core.Contracts;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using PatientAppointments.Business.Dtos;
 
 namespace PatientAppointments.Business.Services
 {
@@ -26,23 +27,44 @@ namespace PatientAppointments.Business.Services
             var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
             var name = role == "Provider" ? await GetProviderName(user) : await GetPatientName(user);
 
-            var baseGreeting = $"{GetTimeBasedGreeting()} {name}, ";
+            return $"{GetTimeBasedGreeting()} {name}";
+            
+        }
+
+
+        public async Task<AgentSummaryResponseDto?> GetDailySummaryAsync()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            var role = user.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+            var name = role == "Provider" ? await GetProviderName(user) : await GetPatientName(user);
+
+            string greeting = await GetGreetingAsync();
+
+            greeting = $"{greeting}, welcome to MediMate!";
 
             switch (role)
             {
                 case "Admin":
-                    return baseGreeting + "as an Admin, you can manage users, appointments, and system settings.";
+                    return new AgentSummaryResponseDto
+                    {
+                        SummaryMessage = greeting,
+                        QuickReplies = new List<QuickReplyDto>()
+                    };
 
                 case "Provider":
-                    return baseGreeting + await GetProviderMessageAsync(user);
+                    return await GetDoctorSummaryAsync(greeting);
 
                 case "Patient":
-                    return baseGreeting + await GetPatientMessageAsync(user);
+                    return await GetPatientSummaryAsync(greeting);
 
                 default:
-                    return baseGreeting + "welcome to the system!";
-            }
+                    return null;
+            }           
+
         }
+
+        #region Helpers
 
         private async Task<string> GetProviderMessageAsync(ClaimsPrincipal user)
         {
@@ -97,7 +119,6 @@ namespace PatientAppointments.Business.Services
             return $"your next appointment is with Dr. {upcoming.ProviderName} on {upcoming.AppointmentDate:g}.";
         }
 
-
         private async Task<string> GetProviderName(ClaimsPrincipal user)
         {
             var providerIdClaim = user.FindFirst("ProviderId")?.Value;
@@ -110,7 +131,7 @@ namespace PatientAppointments.Business.Services
             if (provider == null)
                 return "User";
 
-            return $"{provider.FullName}.";
+            return $"{provider.FullName}";
 
         }
 
@@ -126,7 +147,7 @@ namespace PatientAppointments.Business.Services
             if (patient == null)
                 return "User";
 
-            return $"{patient.FullName}.";
+            return $"{patient.FullName}";
 
         }
 
@@ -137,7 +158,60 @@ namespace PatientAppointments.Business.Services
             if (hour < 12) return "Good morning";
             if (hour < 18) return "Good afternoon";
             return "Good evening";
-        }
-    }
+        }        
 
+
+        private async Task<AgentSummaryResponseDto> GetDoctorSummaryAsync(string greeting)
+        {
+            var today = DateTime.Today;
+            var user = _httpContextAccessor.HttpContext?.User;
+            var ProviderIdClaim = user.FindFirst("ProviderId")?.Value;
+            int ProviderId = int.Parse(ProviderIdClaim);
+            var appointments = await _uow.Appointments.Query()
+                .Where(s => s.ProviderId == ProviderId)
+                .ToListAsync();
+
+            var message = appointments.Any()
+                ? $"{greeting}, you have {appointments.Count} appointment(s) scheduled for today."
+                : $"{greeting}, you don’t have any appointments today.";
+
+            var quickReplies = new List<QuickReplyDto>
+            {
+                new QuickReplyDto { Label = "👨‍⚕️ View Today’s Patients", Value = "Show my patients today" },
+                new QuickReplyDto { Label = "🗓 Manage Schedule", Value = "Open my schedule" }
+            };
+
+            return new AgentSummaryResponseDto { SummaryMessage = message, QuickReplies = quickReplies };
+        }
+
+        private async Task<AgentSummaryResponseDto> GetPatientSummaryAsync(string greeting)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            var PatientIdClaim = user.FindFirst("PatientId")?.Value;
+            int PatientId = int.Parse(PatientIdClaim);
+            var upcoming = await _uow.Appointments.Query()
+                .Where(s => s.PatientId == PatientId)
+                .OrderBy(a => a.StartUtc)
+                .ToListAsync();
+
+            var nextAppt = upcoming.OrderBy(a => a.StartUtc).FirstOrDefault();
+
+            var provider = await _uow.Provider.FindAsync(s => s.ProviderId == nextAppt.ProviderId);
+
+            var message = nextAppt != null
+                ? $"{greeting}, your next appointment is with Dr. {provider.FirstOrDefault().FullName} on {nextAppt.StartUtc:g}."
+                : $"{greeting}, you don’t have any upcoming appointments.";
+
+            var quickReplies = new List<QuickReplyDto>
+            {
+                new QuickReplyDto { Label = "📅 View My Appointments", Value = "Show my appointments" },
+                new QuickReplyDto { Label = "➕ Book Appointment", Value = "Book new appointment" }
+            };
+
+            return new AgentSummaryResponseDto { SummaryMessage = message, QuickReplies = quickReplies };
+        }
+
+        #endregion
+
+    }
 }
