@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PatientAppointments.Infrastructure.Repositories
 {
-    internal class SpecialityRepository : ReadOnlyRepositoryBase<Specialty>, ISpecialityRepository
+    public class SpecialityRepository : ReadOnlyRepositoryBase<Specialty>, ISpecialityRepository
     {
         public SpecialityRepository(AppDbContext ctx) : base(ctx) { }
     }

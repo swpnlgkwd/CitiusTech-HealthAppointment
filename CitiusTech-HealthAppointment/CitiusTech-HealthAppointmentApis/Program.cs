@@ -106,6 +106,7 @@ builder.Services.AddScoped<IToolHandler, ResolveNaturalLanguageDateToolHandler>(
 builder.Services.AddScoped<IToolHandler, ResolveRelativeDateToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveDoctorSpecialityToolHandler>();
+builder.Services.AddScoped<IDoctorSpecialityResolverService, DoctorSpecialityResolverService>();
 builder.Services.AddScoped<IAgentService, AgentService>(sp =>
 {
     var client = sp.GetRequiredService<PersistentAgentsClient>();

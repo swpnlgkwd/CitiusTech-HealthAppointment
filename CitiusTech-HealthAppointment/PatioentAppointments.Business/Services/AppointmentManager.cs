@@ -2,6 +2,7 @@
 using PatientAppointments.Business.Dtos;
 using PatientAppointments.Core.Contracts;
 using PatientAppointments.Core.Entities;
+using PatientAppointments.Business.Enums;
 
 namespace PatientAppointments.Business.Services
 {
@@ -102,14 +103,5 @@ namespace PatientAppointments.Business.Services
                 TypeId = a.TypeId
             };
         }
-    }
-
-
-    public enum AppointmentStatus
-    {
-        Scheduled = 0,
-        Completed = 1,
-        Cancelled = 2,
-        NoShow = 3
     }
 }
