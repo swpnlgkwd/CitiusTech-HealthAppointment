@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PatientAppointments.Core.Contracts.Repositories
 {
-    public interface IAppointmentTypeRepository : IReadOnlyRepositoryBase<AppointmentType>
+    public interface IAppointmentTypeRepository : IGenericRepository<AppointmentType>
     {
     }
 }
