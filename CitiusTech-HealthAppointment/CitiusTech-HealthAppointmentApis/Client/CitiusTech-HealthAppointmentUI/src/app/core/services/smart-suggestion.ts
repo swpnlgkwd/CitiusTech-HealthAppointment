@@ -3,23 +3,25 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SmartSuggestion } from '../models/smart-suggestion.model';
 import { AgentSummaryResponse } from '../models/agent-daily-summary.model';
+import { BASE_URL } from './common-exports';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SmartSuggestionsService {
-  private baseUrl = 'http://localhost:5029/api/SmartSuggestions/suggestions'; // Update with actual base URL
 
   constructor(private http: HttpClient) { }
 
   getSmartSuggestions(): Observable<SmartSuggestion[]> {
-    return this.http.get<SmartSuggestion[]>(this.baseUrl);
+    return this.http.get<SmartSuggestion[]>(`${BASE_URL}/SmartSuggestions/suggestions`);
   }
+
   getAgentInsights(): Observable<{ message: string }> {
-    return this.http.get<{ message: string }>('http://localhost:5029/api/SmartSuggestions/agentinsights');
+    return this.http.get<{ message: string }>(`${BASE_URL}/SmartSuggestions/agentinsights`);
   }
+  
   getDailySummary(): Observable<AgentSummaryResponse> {
-    return this.http.get<AgentSummaryResponse>('http://localhost:5029/api/AgentChat/daily-summary');
+    return this.http.get<AgentSummaryResponse>(`${BASE_URL}/AgentChat/daily-summary`);
   }
 }
 

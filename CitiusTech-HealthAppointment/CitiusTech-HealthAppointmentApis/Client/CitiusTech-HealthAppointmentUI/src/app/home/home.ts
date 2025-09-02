@@ -1,6 +1,6 @@
 // src/app/home/home.component.ts
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../core/services/auth';
+import { AuthService } from '../core/services/auth/auth';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    this.user = this.authService.getUser();
+    this.user = this.authService.isAuthenticated();
   }
 
   ViewCalendar(): void {

@@ -20,5 +20,8 @@ namespace PatientAppointments.Infrastructure.Repositories.Base
         public async Task AddAsync(T entity) { await _db.AddAsync(entity); }
         public void Update(T entity) => _db.Update(entity);
         public void Remove(T entity) => _db.Remove(entity);
+
+        // Expose IQueryable
+        public IQueryable<T> Query() => _db.AsQueryable();
     }
 }

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router'; // <-- Add this import
 import { ChatWidgetComponent } from "./chat/chat-widget/chat-widget";
 import { CommonModule } from '@angular/common';
-import { AuthService } from './core/services/auth';
+import { AuthService } from './core/services/auth/auth';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +14,7 @@ export class AppComponent {
   constructor(private router: Router, private authService: AuthService) {}
 
   get isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
+    return this.authService.isAuthenticated();
   }
 
   logout() {

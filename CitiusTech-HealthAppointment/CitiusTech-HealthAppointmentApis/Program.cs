@@ -34,20 +34,28 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt => {
   .AddDefaultTokenProviders();
 
 var keyBytes = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(o => {
-        o.RequireHttpsMetadata = false;
-        o.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(o =>
+{
+    o.RequireHttpsMetadata = false;
+    o.SaveToken = true;
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 builder.Services.AddAuthorization(options => {
     options.AddPolicy("RequireAdmin", p => p.RequireRole("Admin"));
@@ -81,7 +89,8 @@ builder.Services.AddSwaggerGen();
 // Register Agent infrastructure
 builder.Services.AddSingleton<IAgentStore, FileAgentStore>(); 
 builder.Services.AddSingleton<IAgentManager, AgentManager>();
-
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<GreetingService>();
 // Register UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -92,6 +101,8 @@ builder.Services.Scan(scan => scan
         .AsImplementedInterfaces()
         .WithScopedLifetime()
 );
+
+builder.Services.AddScoped<IDoctorInfoManager, DoctorInfoManager>();
 
 
 // DI Auto
@@ -146,8 +157,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 // Ensure the agent is created at startup
