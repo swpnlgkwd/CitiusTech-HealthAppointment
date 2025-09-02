@@ -24,7 +24,7 @@ namespace PatientAppointments.Api.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var result = await _authManager.LoginAsync(dto);
             return Ok(result);
