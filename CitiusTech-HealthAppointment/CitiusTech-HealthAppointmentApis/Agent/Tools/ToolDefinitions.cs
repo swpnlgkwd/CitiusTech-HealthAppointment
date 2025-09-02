@@ -1,4 +1,5 @@
 ﻿using Azure.AI.Agents.Persistent;
+using CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment;
 using CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools;
 using HospitalSchedulingApp.Agent.Tools.HelperTools;
 
@@ -12,6 +13,12 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
             ResolveDoctorInfoByNameTool.GetTool(),
             ResolveDoctorSpecialityTool.GetTool(),
             ResolveRelativeDateTool.GetTool(),
+            ResolveLoggedInUserRoleTool.GetTool(),
+            ResolveUserInfoByNameTool.GetTool(),
+            FetchProviderSlotTool.GetTool(),
+            FetchAppointmentTool.GetTool(),
+            FetchAppointmentTypeTool.GetTool(),
+            SubmitAppointmentTool.GetTool(),
         };
     }
 }

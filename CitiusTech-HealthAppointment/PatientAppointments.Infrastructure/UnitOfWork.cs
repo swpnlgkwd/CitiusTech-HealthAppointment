@@ -10,6 +10,7 @@ namespace PatientAppointments.Infrastructure {
         public IPatientRepository Patients { get; }
         public IProviderRepository Provider { get; }
         public IAppointmentRepository Appointments { get; }
+        public IAppointmentTypeRepository AppointmentsType { get; }
         public IProviderSlotRepository ProviderSlot { get; }
         public IProviderScheduleRepository ProviderSchedule { get; }
 

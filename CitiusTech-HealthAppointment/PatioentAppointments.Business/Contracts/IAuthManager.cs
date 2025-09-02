@@ -1,4 +1,5 @@
 ﻿using PatientAppointments.Business.Dtos;
+using PatientAppointments.Infrastructure.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,7 @@ namespace PatientAppointments.Business.Contracts
         Task<AuthResponseDto> RegisterAsync(RegisterDto dto);
         Task<AuthResponseDto> LoginAsync(LoginDto dto);
         Task<AuthResponseDto> RefreshTokenAsync(string token, string refreshToken);
+        Task<ApplicationUser> GetUsersByName( string userName);
+        Task<IList<string>> GetUserRole();
     }
 }
