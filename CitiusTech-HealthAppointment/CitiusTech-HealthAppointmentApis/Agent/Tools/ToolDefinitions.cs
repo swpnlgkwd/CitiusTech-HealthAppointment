@@ -16,9 +16,11 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
             ResolveLoggedInUserInfoTool.GetTool(),
             ResolveUserInfoByNameTool.GetTool(),
             FetchProviderSlotTool.GetTool(),
-            FetchAppointmentTool.GetTool(),
+            FetchAppointmentByPatientTool.GetTool(),
             FetchAppointmentTypeTool.GetTool(),
             SubmitAppointmentTool.GetTool(),
+            FetchAppointmentByDoctorTool.GetTool(),
+            FetchAppointmentByPatientTool.GetTool()
         };
     }
 }
