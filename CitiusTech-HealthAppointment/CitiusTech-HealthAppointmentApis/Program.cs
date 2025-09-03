@@ -122,6 +122,7 @@ builder.Services.AddScoped<IToolHandler, ResolveLoggedInUserInfoToolHandler>();
 builder.Services.AddScoped<IToolHandler, FetchProviderSlotToolHandler > ();
 builder.Services.AddScoped<IToolHandler, FetchAppointmentTypeToolHandler >();
 
+builder.Services.AddScoped<IDoctorSpecialityResolverService, DoctorSpecialityResolverService>();
 builder.Services.AddScoped<IAgentService, AgentService>(sp =>
 {
     var client = sp.GetRequiredService<PersistentAgentsClient>();

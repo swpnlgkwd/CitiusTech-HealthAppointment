@@ -9,6 +9,7 @@ namespace PatientAppointments.Core.Contracts {
         IAppointmentTypeRepository AppointmentsType { get; }
         IProviderScheduleRepository ProviderSchedule { get; }
         IProviderSlotRepository ProviderSlot { get; }
+        ISpecialityRepository Speciality { get; }
         Task<int> CompleteAsync();
     }
 }

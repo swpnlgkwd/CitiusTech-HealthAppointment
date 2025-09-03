@@ -17,6 +17,7 @@ namespace PatientAppointments.Infrastructure.Data {
         public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
         public DbSet<ProviderSchedule> ProviderSchedule { get; set; } = default!;
         public DbSet<ProviderSlot> ProviderSlot { get; set; } = default!;
+        public DbSet<Specialty> Specialty { get; set; } = default!; 
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
