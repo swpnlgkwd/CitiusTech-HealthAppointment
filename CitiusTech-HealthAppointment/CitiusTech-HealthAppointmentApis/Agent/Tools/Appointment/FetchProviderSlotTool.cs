@@ -9,7 +9,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
         {
             return new FunctionToolDefinition(
                 name: "fetchProviderSlot",
-                description: "Use this tool to retrieve available provider slots for specific provider Id with optional filters like start date, end date, booking status",
+                description: "Use this tool to retrieve available provider(doctor) slots for specific provider Id with optional filters like start date, end date, booking status",
                 parameters: BinaryData.FromObjectAsJson(
                     new
                     {

@@ -4,11 +4,10 @@ using PatientAppointments.Core.Entities;
 
 namespace PatientAppointments.Infrastructure.Data.Configurations
 {
-    public class SpecialtyConfiguration : BaseEntityConfiguration<Specialty>
+    public class SpecialtyConfiguration : IEntityTypeConfiguration<Specialty>
     {
-        public override void Configure(EntityTypeBuilder<Specialty> builder)
+        public void Configure(EntityTypeBuilder<Specialty> builder)
         {
-            base.Configure(builder);
             // Map to table
             builder.ToTable("Specialty");
 

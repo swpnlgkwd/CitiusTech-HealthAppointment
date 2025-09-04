@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PatientAppointments.Core.Entities
 {
-    public class Specialty : BaseEntity
+    public class Specialty
     {
         public int SpecialityId { get; set; }
 
