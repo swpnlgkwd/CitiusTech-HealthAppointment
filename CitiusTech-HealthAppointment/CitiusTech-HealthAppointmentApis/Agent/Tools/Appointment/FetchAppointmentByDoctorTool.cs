@@ -3,23 +3,23 @@ using System.Text.Json;
 
 namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
 {
-    public class FetchAppointmentTool
+    public class FetchAppointmentByDoctorTool
     {
         public static FunctionToolDefinition GetTool()
         {
             return new FunctionToolDefinition(
-                name: "fetchAppointment",
-                description: "Use this tool to retrieve appointments by user Id with optional filters like appointment type, specific date or date range",
+                name: "fetchAppointmentByDoctor",
+                description: "Use this tool to retrieve appointments by doctor with optional filters like appointment type, specific date or date range",
                 parameters: BinaryData.FromObjectAsJson(
                     new
                     {
                         type = "object",
                         properties = new
                         {
-                            userId = new
+                            providerId = new
                             {
                                 type = "integer",
-                                description = "Required. Filter by the patient id or doctor id based on role."
+                                description = "Required. Filter by the provider/doctor id."
                             },                           
                             appointmentStatus = new
                             {
@@ -38,7 +38,8 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
                                 format = "date",
                                 description = "Optional. End date of the appointment filter (yyyy-MM-dd)."
                             }
-                        }
+                        },
+                        required = new[] { "providerId" }
                     },
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
                 )
