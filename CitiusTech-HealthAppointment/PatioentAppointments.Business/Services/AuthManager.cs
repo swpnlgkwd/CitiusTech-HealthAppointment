@@ -1,12 +1,15 @@
-﻿using CitiusTech_HealthAppointmentApis.Dto;
+﻿using Azure.AI.Agents.Persistent;
+using CitiusTech_HealthAppointmentApis.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using PatientAppointments.Business.Contracts;
 using PatientAppointments.Business.Dtos;
 using PatientAppointments.Core.Contracts;
+using PatientAppointments.Core.Entities;
 using PatientAppointments.Infrastructure.Identity;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,19 +20,37 @@ namespace PatientAppointments.Business.Services
 {
     public class AuthManager : IAuthManager
     {
+
+        private readonly PersistentAgent _agent;
+        private readonly PersistentAgentsClient _client;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
         private readonly IUnitOfWork _uow;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IGreetingManager _greetingService;
+        private readonly IAgentConversationManager _agentConversationManager;
+        private readonly ILogger<AuthManager> _logger;
 
-        public AuthManager(UserManager<ApplicationUser> userManager, IConfiguration config, IUnitOfWork uow, IHttpContextAccessor httpContextAccessor, IGreetingManager greetingService)
+        public AuthManager(
+            UserManager<ApplicationUser> userManager, 
+            IConfiguration config, 
+            IUnitOfWork uow, 
+            IHttpContextAccessor httpContextAccessor, 
+            IGreetingManager greetingService, 
+            IAgentConversationManager agentConversationManager, 
+            ILogger<AuthManager> logger,
+            PersistentAgent agent,
+            PersistentAgentsClient client)
         {
             _userManager = userManager;
             _config = config;
             _uow = uow;
             _httpContextAccessor = httpContextAccessor;
             _greetingService = greetingService;
+            _agentConversationManager = agentConversationManager;
+            _logger = logger;
+            _agent = agent;
+            _client = client;
         }
 
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
@@ -63,21 +84,28 @@ namespace PatientAppointments.Business.Services
 
         public async Task<UserInfoDto> GetLoggedInUserInfo() {
             var user = _httpContextAccessor.HttpContext?.User;
-            var role = user?.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
-            var fullName = "";
-            if (role == "Provider")
-            {
-                fullName = await _greetingService.GetProviderName(user);
-            }
+            if (user == null)
+                throw new Exception("User cannot be null");
             else
             {
-                fullName = await _greetingService.GetPatientName(user);
-            }
-            return new UserInfoDto
-            {
-                userFullName = fullName,
-                userRole = role
-            };
+                var role = user?.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
+                var userId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var fullName = "";
+                if (role == "Provider")
+                {
+                    fullName = await _greetingService.GetProviderName(user);
+                }
+                else
+                {
+                    fullName = await _greetingService.GetPatientName(user);
+                }
+                return new UserInfoDto
+                {
+                    userFullName = fullName,
+                    userRole = role,
+                    userId = userId
+                };
+            }           
         } 
 
         private async Task<AuthResponseDto> GenerateToken(ApplicationUser user)
@@ -135,7 +163,130 @@ namespace PatientAppointments.Business.Services
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return new AuthResponseDto(jwt, "dummy-refresh-token", expires, role ,  UserName: user.UserName );
+            var thread = await FetchOrCreateThreadForUser(user.Id);
+
+            return new AuthResponseDto(jwt, "dummy-refresh-token", expires, role , user.UserName ?? "", thread );
         }
+
+        /// <summary>
+        /// Fetches an existing thread for the user or creates a new one if none exists.
+        /// </summary>
+        public async Task<string> FetchOrCreateThreadForUser(string? userId)
+        {
+            try
+            {
+                // Try to resolve staffId from context if not passed
+                if (string.IsNullOrEmpty(userId))
+                {
+                    var contextStaffId = (await GetLoggedInUserInfo()).userId;
+                    if (!string.IsNullOrEmpty(contextStaffId))
+                        userId = contextStaffId.ToString();
+                }
+
+                // If staffId is known, check for existing thread
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    var existingThreadId = await _agentConversationManager.FetchThreadIdForLoggedInUser(userId);
+                    if (!string.IsNullOrEmpty(existingThreadId))
+                    {
+                        _logger.LogInformation("Existing thread found for StaffId {StaffId}: {ThreadId}", userId, existingThreadId);
+                        return existingThreadId;
+                    }
+                }
+
+                // No thread found — create a new one
+                var newThread = await CreateThreadAsync();
+
+                //If we have staffId, store the conversation
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    var agentConversation = new AgentConversations
+                    {
+                        user_id = userId,
+                        thread_id = newThread.Id,
+                        created_at = DateTime.UtcNow
+                    };
+
+                    await _agentConversationManager.AddAgentConversation(agentConversation);
+                    _logger.LogInformation("New thread {ThreadId} created and saved for StaffId {StaffId}", newThread.Id, userId);
+                }
+                else
+                {
+                    _logger.LogInformation("New thread {ThreadId} created for unauthenticated user (no staffId yet)", newThread.Id);
+                }
+
+                return newThread.Id;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch or create thread for user.");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new persistent agent thread for communication.
+        /// </summary>
+        public async Task<PersistentAgentThread> CreateThreadAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Creating new persistent agent thread...");
+                var thread = await _client.Threads.CreateThreadAsync();
+                _logger.LogInformation("Successfully created thread with ID: {ThreadId}", thread.Value.Id);
+                return thread;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating new persistent agent thread.");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Deletes a thread from OpenAI and your system.
+        /// </summary>
+        public async Task DeleteThreadForUserAsync()
+        {
+            var userId = (await GetLoggedInUserInfo()).userId;
+            var threadId = await _agentConversationManager.FetchThreadIdForLoggedInUser(userId);
+
+            if (string.IsNullOrWhiteSpace(threadId))
+            {
+                _logger.LogWarning("ThreadId is null or empty. Skipping thread deletion.");
+                return;
+            }
+
+            try
+            {
+                _logger.LogInformation("Deleting thread with ID: {ThreadId}", threadId);
+                await _client.Threads.DeleteThreadAsync(threadId);
+                _logger.LogInformation("Successfully deleted thread from OpenAI: {ThreadId}", threadId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error while deleting thread from OpenAI: {ThreadId}", threadId);
+            }
+
+            try
+            {
+                var agentConversation = await _agentConversationManager.FetchLoggedInUserAgentConversationInfo();
+                if (agentConversation != null)
+                {
+                    await _agentConversationManager.DeleteAgentConversation(agentConversation);
+                    _logger.LogInformation("Deleted agent conversation entry for ThreadId: {ThreadId}", threadId);
+                }
+                else
+                {
+                    _logger.LogInformation("No agent conversation found to delete for ThreadId: {ThreadId}", threadId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while deleting agent conversation for thread {ThreadId}", threadId);
+                throw;
+            }
+        }
+
     }
 }

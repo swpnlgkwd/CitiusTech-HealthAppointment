@@ -13,10 +13,12 @@ namespace CitiusTech_HealthAppointmentApis.Controllers
     public class AgentChatController : ControllerBase
     {
         public readonly IAgentService _agentService;
+        private readonly PersistentAgentsClient _client;
 
-        public AgentChatController(IAgentService agentService)
+        public AgentChatController(IAgentService agentService, PersistentAgentsClient client)
         {
             _agentService = agentService;
+            _client = client;
         }
 
         /// <summary>
@@ -35,6 +37,12 @@ namespace CitiusTech_HealthAppointmentApis.Controllers
 
             return BadRequest("No valid response from agent.");
         }
-        
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] UserMessageRequestDto request)
+        {
+            var threadId = await _agentService.Refresh();
+            return Ok(new { threadId = threadId });
+        }
     }
 }

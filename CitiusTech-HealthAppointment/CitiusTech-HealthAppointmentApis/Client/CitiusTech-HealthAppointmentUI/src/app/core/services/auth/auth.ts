@@ -23,6 +23,7 @@ export class AuthService {
     return this.http.post<any>(`${BASE_URL}/auth/login`, data)
       .pipe(
         tap(res => {
+          localStorage.setItem('threadId', res.threadId);   
           localStorage.setItem(this.tokenKey, res.token);
           localStorage.setItem(this.roleKey, res.role);
           localStorage.setItem(this.usernameKey, res.username);
@@ -32,13 +33,6 @@ export class AuthService {
 
   register(register: registerDto) {
     return this.http.post<any>(`${BASE_URL}/auth/register`, register);
-  }
-
-  logout() {
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.roleKey);
-    localStorage.removeItem(this.usernameKey);
-    this.router.navigate(['/login']);
   }
 
   get token() {
