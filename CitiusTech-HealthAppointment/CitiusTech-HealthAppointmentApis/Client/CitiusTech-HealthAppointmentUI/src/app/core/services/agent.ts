@@ -11,7 +11,7 @@ export class AgentService {
     const threadId = localStorage.getItem('threadId');
     const body = {
       message: userMessage,
-      threadId:'thread_ulXj2b0COMmqvLkayb1D4TKX'
+      threadId: threadId
     }; // Matches the C# model
     return this.http.post<ChatResponse>('http://localhost:5053/api/AgentChat/ask', body);
   }

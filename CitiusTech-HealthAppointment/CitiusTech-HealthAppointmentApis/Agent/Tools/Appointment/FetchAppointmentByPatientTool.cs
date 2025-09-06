@@ -3,42 +3,43 @@ using System.Text.Json;
 
 namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
 {
-    public class FetchProviderSlotTool
+    public class FetchAppointmentByPatientTool
     {
         public static FunctionToolDefinition GetTool()
         {
             return new FunctionToolDefinition(
-                name: "fetchProviderSlot",
-                description: "Use this tool to retrieve available provider(doctor) slots for specific provider Id with optional filters like start date, end date, booking status",
+                name: "fetchAppointmentByPatient",
+                description: "Use this tool to retrieve appointments by user Id with optional filters like appointment type, specific date or date range",
                 parameters: BinaryData.FromObjectAsJson(
                     new
                     {
                         type = "object",
                         properties = new
                         {
-                            providerId = new
+                            patientId = new
                             {
                                 type = "integer",
-                                description = "Required. Filter by the provider id."
+                                description = "Required. Filter by the patient id."
+                            },                           
+                            appointmentStatus = new
+                            {
+                                type = "integer",
+                                description = "Optional. Filter by appointment status: Booked, Rescheduled, Cancelled, Completed or NoShow",
                             },
                             startDate = new
                             {
                                 type = "string",
                                 format = "date",
-                                description = "Optional. Start date of the slot filter (yyyy-MM-dd)."
+                                description = "Optional. Start date of the appointment filter (yyyy-MM-dd)."
                             },
                             endDate = new
                             {
                                 type = "string",
                                 format = "date",
-                                description = "Optional. End date of the slot filter (yyyy-MM-dd)."
-                            },
-                            bookingStatus = new
-                            {
-                                type = "boolean",
-                                description = "Optional. booking status filter in true or false"
+                                description = "Optional. End date of the appointment filter (yyyy-MM-dd)."
                             }
-                        }
+                        },
+                        required = new[] { "userId" }
                     },
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
                 )

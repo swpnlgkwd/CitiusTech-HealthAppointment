@@ -115,14 +115,41 @@ builder.Services.Scan(scan => scan
 
 builder.Services.AddScoped<IToolHandler, ResolveNaturalLanguageDateToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveRelativeDateToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveDoctorSpecialityToolHandler>();
+//builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
+//builder.Services.AddScoped<IToolHandler, ResolveDoctorSpecialityToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveUserInfoByNameToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveLoggedInUserInfoToolHandler>();
-builder.Services.AddScoped<IToolHandler, FetchProviderSlotToolHandler > ();
-builder.Services.AddScoped<IToolHandler, FetchAppointmentTypeToolHandler >();
+builder.Services.AddScoped<IToolHandler, FetchProviderSlotToolHandler>();
+builder.Services.AddScoped<IToolHandler, FetchAppointmentTypeToolHandler>();
+builder.Services.AddScoped<IToolHandler, FetchAppointmentByDoctorToolHander>();
+builder.Services.AddScoped<IToolHandler, FetchAppointmentByPatientToolHander>();
+builder.Services.AddScoped<IToolHandler, SubmitAppointmentToolHandler>();
+builder.Services.AddScoped<IToolHandler, ResolveSpecialityToolHandler>();
+builder.Services.AddScoped<IToolHandler, FetchDoctorInfoBySpecialtyToolHandler>();
 
 builder.Services.AddScoped<IDoctorSpecialityResolverService, DoctorSpecialityResolverService>();
+//builder.Services.AddScoped<IAuthManager, AuthManager>(sp =>
+//{
+//    var agentManager = sp.GetRequiredService<IAgentManager>();
+//    var agent = agentManager.GetAgent();
+//    var logger = sp.GetRequiredService<ILogger<AuthManager>>();
+//    var config = sp.GetRequiredService<IConfiguration>();
+//    var uow = sp.GetRequiredService<IUnitOfWork>();
+//    var um = sp.GetRequiredService<UserManager<ApplicationUser>>();
+//    var http = sp.GetRequiredService<IHttpContextAccessor>();
+//    var gm = sp.GetRequiredService<IGreetingManager>();
+//    var acm = sp.GetRequiredService<IAgentConversationManager>();
+//    var client = sp.GetRequiredService<PersistentAgentsClient>();
+
+//    return new AuthManager(um, config, uow, http, gm, acm, logger, agent, client);
+//});
+
+builder.Services.AddScoped<PersistentAgent>(sp =>
+{
+    var agentManager = sp.GetRequiredService<IAgentManager>();
+    return agentManager.GetAgent();
+});
+
 builder.Services.AddScoped<IAgentService, AgentService>(sp =>
 {
     var client = sp.GetRequiredService<PersistentAgentsClient>();
@@ -130,10 +157,10 @@ builder.Services.AddScoped<IAgentService, AgentService>(sp =>
     var agent = agentManager.GetAgent(); // returns a PersistentAgent (already built)      
     var logger = sp.GetRequiredService<ILogger<AgentService>>();
     var toolHandlers = sp.GetServices<IToolHandler>();
-    //var acv = sp.GetRequiredService<IAgentConversationService>();
-    //var ucx = sp.GetRequiredService<IUserContextService>();
+    var acm = sp.GetRequiredService<IAgentConversationManager>();
+    var am = sp.GetRequiredService<IAuthManager>();
 
-    return new AgentService(client, agent, toolHandlers, logger);
+    return new AgentService(client, agent, toolHandlers, acm, logger, am);
 });
 
 builder.Services.AddCors(options =>

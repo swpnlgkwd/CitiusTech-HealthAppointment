@@ -1,6 +1,9 @@
 ﻿using Azure.AI.Agents.Persistent;
 using CitiusTech_HealthAppointmentApis.Agent.Handler;
 using Microsoft.Extensions.Logging;
+using PatientAppointments.Business.Contracts;
+using PatientAppointments.Business.Services;
+using PatientAppointments.Core.Entities;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -12,26 +15,24 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
         private readonly PersistentAgent _agent;
         private readonly ILogger<AgentService> _logger;
         private readonly IEnumerable<IToolHandler> _toolHandlers;
-        //private readonly IAgentConversationService _agentConversationService;
-        //private readonly IUserContextService _userContextService;
-        private readonly IAgentManager _agentManager;
+        private readonly IAgentConversationManager _agentConversationService;
+        private readonly IAuthManager _authManager;
 
         public AgentService(
             PersistentAgentsClient persistentAgentsClient,
             PersistentAgent agent,
             IEnumerable<IToolHandler> toolHandlers,
-            //IAgentConversationService agentConversationService,
-            //IUserContextService userContextService,
-            ILogger<AgentService> logger
+            IAgentConversationManager agentConversationService,
+            ILogger<AgentService> logger,
+            IAuthManager authManager
             )
         {
             _client = persistentAgentsClient;
             _agent = agent;
             _toolHandlers = toolHandlers;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            //_agentConversationService = agentConversationService;
-            //_userContextService = userContextService;
-
+            _agentConversationService = agentConversationService;
+            _authManager = authManager;
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
             var pollingDelays = new[] { 1000, 2000, 3000, 4000, 5000 };
             int pollIndex = 0;
 
-            var threadId = await FetchOrCreateThreadForUser();
+            var threadId = await _authManager.FetchOrCreateThreadForUser();
 
             _logger.LogInformation("Sending user message of length {Length}", message.Length);
 
@@ -240,10 +241,6 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
                     _logger.LogError(ex, "Run failed with unrecoverable error.");
                     return null;
                 }
-                finally
-                {
-                    await _client.Threads.DeleteThreadAsync(threadId);
-                }
             }
 
             return null;
@@ -254,82 +251,24 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
         {
             public RateLimitExceededException(string message) : base(message) { }
         }
-
-        /// <summary>
-        /// Fetches an existing thread for the user or creates a new one if none exists.
-        /// </summary>
-        public async Task<string> FetchOrCreateThreadForUser(int? staffId = null)
-        {
-            try
-            {
-                //// Try to resolve staffId from context if not passed
-                //if (staffId == null || staffId <= 0)
-                //{
-                //    var contextStaffId = _userContextService.GetStaffId();
-                //    if (contextStaffId > 0)
-                //        staffId = contextStaffId;
-                //}
-
-                //// If staffId is known, check for existing thread
-                //if (staffId.HasValue && staffId > 0)
-                //{
-                //    var existingThreadId = await _agentConversationService.FetchThreadIdForLoggedInUser(staffId.Value);
-                //    if (!string.IsNullOrEmpty(existingThreadId))
-                //    {
-                //        _logger.LogInformation("Existing thread found for StaffId {StaffId}: {ThreadId}", staffId, existingThreadId);
-                //        return existingThreadId;
-                //    }
-                //}
-
-                // No thread found — create a new one
-                var newThread = await CreateThreadAsync();
-
-                // If we have staffId, store the conversation
-                //if (staffId.HasValue && staffId > 0)
-                //{
-                //    var agentConversation = new AgentConversations
-                //    {
-                //        UserId = staffId.Value.ToString(), // since UserId == StaffId
-                //        ThreadId = newThread.Id,
-                //        CreatedAt = DateTime.UtcNow
-                //    };
-
-                //    //await _agentConversationService.AddAgentConversation(agentConversation);
-                //    _logger.LogInformation("New thread {ThreadId} created and saved for StaffId {StaffId}", newThread.Id, staffId);
-                //}
-                //else
-                //{
-                //    _logger.LogInformation("New thread {ThreadId} created for unauthenticated user (no staffId yet)", newThread.Id);
-                //}
-
-                return newThread.Id;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to fetch or create thread for user.");
-                throw;
-            }
-        }
+        
 
         /// <summary>
         /// Creates a new persistent agent thread for communication.
         /// </summary>
-        public async Task<PersistentAgentThread> CreateThreadAsync()
+        public async Task<string> Refresh()
         {
-            try
-            {
-                _logger.LogInformation("Creating new persistent agent thread...");
-                var thread = await _client.Threads.CreateThreadAsync();
-                _logger.LogInformation("Successfully created thread with ID: {ThreadId}", thread.Value.Id);
-                return thread;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while creating new persistent agent thread.");
-                throw;
-            }
-        }
+            // Delete thread for currently logged in user
+            await _authManager.DeleteThreadForUserAsync();
+            // Create a new thread for the user
+            var userId = (await _authManager.GetLoggedInUserInfo()).userId;
 
+            // Create new thread for user
+            var threadId = await _authManager.FetchOrCreateThreadForUser(userId);
+
+            return threadId;
+
+        }
 
 
         /// <summary>
@@ -339,53 +278,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
         {
             _logger.LogInformation($"Adding user message to thread {threadId}: {message}");
             await _client.Messages.CreateMessageAsync(threadId, MessageRole.User, message);
-        }
-
-        /// <summary>
-        /// Deletes a thread from OpenAI and your system.
-        /// </summary>
-        //public async Task DeleteThreadForUserAsync()
-        //{
-        //    //var staffId = _userContextService.GetStaffId();
-        //    var threadId = await _agentConversationService.FetchThreadIdForLoggedInUser(staffId);
-
-        //    if (string.IsNullOrWhiteSpace(threadId))
-        //    {
-        //        _logger.LogWarning("ThreadId is null or empty. Skipping thread deletion.");
-        //        return;
-        //    }
-
-        //    try
-        //    {
-        //        _logger.LogInformation("Deleting thread with ID: {ThreadId}", threadId);
-        //        await _client.Threads.DeleteThreadAsync(threadId);
-        //        _logger.LogInformation("Successfully deleted thread from OpenAI: {ThreadId}", threadId);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogWarning(ex, "Error while deleting thread from OpenAI: {ThreadId}", threadId);
-        //    }
-
-        //    try
-        //    {
-        //        var agentConversation = await _agentConversationService.FetchLoggedInUserAgentConversationInfo();
-        //        if (agentConversation != null)
-        //        {
-        //            await _agentConversationService.DeleteAgentConversation(agentConversation);
-        //            _logger.LogInformation("Deleted agent conversation entry for ThreadId: {ThreadId}", threadId);
-        //        }
-        //        else
-        //        {
-        //            _logger.LogInformation("No agent conversation found to delete for ThreadId: {ThreadId}", threadId);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error while deleting agent conversation for thread {ThreadId}", threadId);
-        //        throw;
-        //    }
-        //}
-
+        }       
 
     }
 }

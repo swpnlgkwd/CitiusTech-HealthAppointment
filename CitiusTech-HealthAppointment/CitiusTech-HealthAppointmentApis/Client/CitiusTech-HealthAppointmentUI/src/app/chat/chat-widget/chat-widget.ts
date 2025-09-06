@@ -74,7 +74,7 @@ export class ChatWidgetComponent implements OnInit {
   sendMessage(action?: string): void {
     if (this.chatForm.invalid) return;
 
-    const userMessage = this.chatForm.value.message;
+    const userMessage = action ?? this.chatForm.value.message;
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Push user message
@@ -135,14 +135,7 @@ export class ChatWidgetComponent implements OnInit {
     // Simulate bot typing
     this.isBotTyping = true;
 
-    setTimeout(() => {
-      this.isBotTyping = false;
-      this.messages.push({
-        sender: 'bot',
-        text: `You selected "${reply}". Let me help you further.`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      });
-    }, 1500);
+    this.sendMessage(reply);
 
     this.scrollToBottom();
     this.removePreviousQuickReplies()

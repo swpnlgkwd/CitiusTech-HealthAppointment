@@ -1,0 +1,87 @@
+﻿**Name:** `resolveSpeciality`  
+
+**Description:**  
+Use this tool **only after you have analyzed the patient’s symptoms and resolved them into a medical specialty**.  
+⚠️ Do not send raw symptoms into this tool. Instead, provide the resolved specialty name as the input.  
+
+The available specialties are strictly limited to:  
+* **Cardiology**  
+* **Dermatology**  
+* **Pediatrics**  
+* **General Practitioner** (default if no match is found)  
+
+**Parameters:**  
+
+* `speciality` (string): The resolved medical specialty name.  
+  Must be exactly one of: `"Cardiology"`, `"Dermatology"`, `"Pediatrics"`, `"General Practitioner"`.  
+
+**Behavior:**  
+- If the patient mentions **skin, hair, rash, acne** → resolve to **Dermatology**  
+- If the patient mentions **heart, chest pain, palpitation** → resolve to **Cardiology**  
+- If the patient mentions **child, baby, infant, kid** → resolve to **Pediatrics**  
+- Otherwise → resolve to **General Practitioner**  
+
+**Output:**  
+The tool will return an object with:  
+* `name` (string): The resolved medical specialty.  
+  Example: `"Cardiology"`, `"Dermatology"`, `"Pediatrics"`, `"General Practitioner"`  
+
+**Examples:**  
+
+* Input: `"I have hair fall problem"`  
+  → Agent resolves to: `Dermatology`  
+  → Tool call: `{ "speciality": "Dermatology" }`  
+
+* Input: `"I feel chest pain when walking"`  
+  → Agent resolves to: `Cardiology`  
+  → Tool call: `{ "speciality": "Cardiology" }`  
+
+* Input: `"My baby has fever"`  
+  → Agent resolves to: `Pediatrics`  
+  → Tool call: `{ "speciality": "Pediatrics" }`  
+
+* Input: `"I have a headache"`  
+  → Agent resolves to: `General Practitioner`  
+  → Tool call: `{ "speciality": "General Practitioner" }`  
+
+--------------------------------------------------------------------------
+**Name:** `fetchDoctorInfoBySpecialty`  
+
+**Description:**  
+Use this tool to fetch a list of doctors for a given **medical specialty ID**.  
+⚠️ Do not pass raw symptoms or speciality names into this tool.  
+⚠️ Do not invent or guess specialityIds from examples.  
+Always use the **specialityId that was previously returned by the `resolveSpeciality` tool (or database mapping)**.  
+
+**Parameters:**  
+* `specialityId` (string): The unique ID of the resolved medical specialty.  
+  Example: If `resolveSpeciality` returned `{ "name": "Cardiology", "specialityId": "101" }`, then use `"101"` here.  
+
+**Behavior:**  
+- Given a `specialityId`, this tool will return a list of doctors including details such as name, specialization, and contact information.  
+- If no doctors are available for the requested specialty, an error will be returned.  
+
+**Output:**  
+The tool will return an object with:  
+* `doctors` (array): A list of doctors with their details.  
+  Example:  
+  ```json
+  {
+    "doctors": [
+      {
+        "provider_id": "D001",
+        "full_name": "Dr. John Smith",
+        "speciality_id": "101",
+        "contact_email": "johnsmith@gmail.com",
+        "contact_phone": "1222332134"
+      },
+      {
+        "provider_id": "D002",
+        "full_name": "Dr. Alice Johnson",
+        "speciality_id": "101",
+        "contact_email": "aliceJ@gmail.com",
+        "contact_phone": "1222332134"
+      }
+    ]
+  }
+

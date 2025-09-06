@@ -14,9 +14,11 @@ namespace PatientAppointments.Infrastructure {
         public IProviderSlotRepository ProviderSlot { get; }
         public IProviderScheduleRepository ProviderSchedule { get; }
         public ISpecialityRepository Speciality { get; }
+        public IAgentConversationsRepository AgentConversations { get; }
 
         public UnitOfWork(AppDbContext ctx, IPatientRepository p, IProviderRepository d, IAppointmentRepository a,
-            IProviderSlotRepository ProviderSlot, IProviderScheduleRepository ProviderSchedule, IAppointmentTypeRepository appointmentType, ISpecialityRepository Speciality)
+            IProviderSlotRepository ProviderSlot, IProviderScheduleRepository ProviderSchedule, IAppointmentTypeRepository appointmentType, ISpecialityRepository Speciality,
+            IAgentConversationsRepository agentConversationsRepository)
         {
             _ctx = ctx; 
             Patients = p; 
@@ -26,6 +28,7 @@ namespace PatientAppointments.Infrastructure {
             this.ProviderSlot = ProviderSlot;
             this.AppointmentsType = appointmentType;
             this.Speciality = Speciality;
+            this.AgentConversations = agentConversationsRepository;
         }
         public Task<int> CompleteAsync() => _ctx.SaveChangesAsync();
     }
