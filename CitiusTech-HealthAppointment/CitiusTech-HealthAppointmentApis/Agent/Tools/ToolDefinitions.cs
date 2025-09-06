@@ -11,7 +11,6 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
         {
             ResolveNaturalLanguageDateTool.GetTool(),
             ResolveDoctorInfoByNameTool.GetTool(),
-            //ResolveDoctorSpecialityTool.GetTool(),
             ResolveRelativeDateTool.GetTool(),
             ResolveLoggedInUserInfoTool.GetTool(),
             ResolveUserInfoByNameTool.GetTool(),

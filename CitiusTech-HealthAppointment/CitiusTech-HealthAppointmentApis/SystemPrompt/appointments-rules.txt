@@ -70,7 +70,7 @@ When a patient logs in:
 2. Ask if they know the doctor’s name:
 
    * If yes → `resolveDoctorInfoByName`
-   * If no → Ask for symptoms → `resolveDoctorSpeciality`
+   * If no → Ask for symptoms → `resolveSpeciality`
 
 3. Show available doctors → let patient pick.
 
