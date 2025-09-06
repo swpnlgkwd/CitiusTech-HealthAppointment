@@ -12,5 +12,5 @@ namespace PatientAppointments.Business.Dtos
 
     public record LoginDto(string Email, string Password);
 
-    public record AuthResponseDto(string Token, string RefreshToken, DateTime ExpiresAt, string role, string UserName);
+    public record AuthResponseDto(string Token, string RefreshToken, DateTime ExpiresAt, string role, string UserName, string threadId);
 }

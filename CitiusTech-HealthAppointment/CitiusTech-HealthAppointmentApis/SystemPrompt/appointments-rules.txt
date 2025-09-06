@@ -11,8 +11,8 @@
 | Fetch All Appointments        | `fetchAppointment`                                   |
 | Fetch Appointments by Patient | `fetchAppointmentByPatient`                          |
 | Fetch Appointments by Doctor  | `fetchAppointmentByDoctor`                           |
-| Resolve Doctor by Symptoms    | `resolveDoctorSpeciality`                            |
-| Resolve Doctor by Name        | `resolveDoctorInfoByName`                            |
+| Resolve Specialty by Symptoms | `resolveSpeciality`                                  |
+| Resolve Doctor by Specialty   | `resolveDoctorInfoBySpecialty`                       |
 | Book Appointment              | `SubmitAppointment`                                  |
 | Identify Logged-In User       | `ResolveLoggedInUserInfo`                            |
 | Handle Dates                  | `resolveRelativeDate` / `resolveNaturalLanguageDate` |

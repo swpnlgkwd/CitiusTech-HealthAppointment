@@ -50,14 +50,15 @@ The tool will return an object with:
 **Description:**  
 Use this tool to fetch a list of doctors for a given **medical specialty ID**.  
 ⚠️ Do not pass raw symptoms or speciality names into this tool.  
-Always use the resolved `specialityId` (from the database or mapping) as input.  
+⚠️ Do not invent or guess specialityIds from examples.  
+Always use the **specialityId that was previously returned by the `resolveSpeciality` tool (or database mapping)**.  
 
 **Parameters:**  
 * `specialityId` (string): The unique ID of the resolved medical specialty.  
-  Example: `"101"` for Cardiology, `"102"` for Dermatology, `"103"` for Pediatrics, `"104"` for General Practitioner.  
+  Example: If `resolveSpeciality` returned `{ "name": "Cardiology", "specialityId": "101" }`, then use `"101"` here.  
 
 **Behavior:**  
-- Given a `specialityId`, this tool will return a list of doctors including details such as name, specialization, and availability.  
+- Given a `specialityId`, this tool will return a list of doctors including details such as name, specialization, and contact information.  
 - If no doctors are available for the requested specialty, an error will be returned.  
 
 **Output:**  
@@ -72,14 +73,15 @@ The tool will return an object with:
         "full_name": "Dr. John Smith",
         "speciality_id": "101",
         "contact_email": "johnsmith@gmail.com",
-        "contact_phone": "1222332134", ...
+        "contact_phone": "1222332134"
       },
       {
         "provider_id": "D002",
         "full_name": "Dr. Alice Johnson",
         "speciality_id": "101",
         "contact_email": "aliceJ@gmail.com",
-        "contact_phone": "1222332134", ...
+        "contact_phone": "1222332134"
       }
     ]
   }
+

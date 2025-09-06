@@ -39,9 +39,6 @@ export class LoginComponent {
         next: (res: any) => {
           this.loading = false;
           this.router.navigate(['/home']); // Or appropriate role-based route
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('refreshToken', res.refreshToken);
-          localStorage.setItem('expiresAt', res.expiresAt);
         },
         error: () => {
           this.loading = false;

@@ -1,4 +1,5 @@
-﻿using CitiusTech_HealthAppointmentApis.Dto;
+﻿using Azure.AI.Agents.Persistent;
+using CitiusTech_HealthAppointmentApis.Dto;
 using PatientAppointments.Business.Dtos;
 using PatientAppointments.Infrastructure.Identity;
 using System;
@@ -16,5 +17,8 @@ namespace PatientAppointments.Business.Contracts
         Task<AuthResponseDto> RefreshTokenAsync(string token, string refreshToken);
         Task<ApplicationUser> GetUsersByName( string userName);
         Task<UserInfoDto> GetLoggedInUserInfo();
+        Task<string> FetchOrCreateThreadForUser(string? staffId = null);
+        Task<PersistentAgentThread> CreateThreadAsync();
+        Task DeleteThreadForUserAsync();
     }
 }

@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router'; // <-- Add this import
 import { ChatWidgetComponent } from "./chat/chat-widget/chat-widget";
 import { CommonModule } from '@angular/common';
 import { AuthService } from './core/services/auth/auth';
+import { AgentService } from './core/services/agent';
 
 @Component({
   selector: 'app-root',
@@ -11,14 +12,16 @@ import { AuthService } from './core/services/auth/auth';
   imports: [RouterModule, ChatWidgetComponent, CommonModule] // <-- Add RouterModule here
 })
 export class AppComponent {
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService, private agentService: AgentService) { }
 
   get isLoggedIn(): boolean {
     return this.authService.isAuthenticated();
   }
 
   logout() {
-    localStorage.clear();
-    this.router.navigate(['/login']);
+    this.agentService.refresh().subscribe(() => {
+      this.router.navigate(['/login']);
+      localStorage.clear();
+    })
   }
 }
