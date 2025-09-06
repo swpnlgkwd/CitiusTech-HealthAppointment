@@ -127,7 +127,6 @@ builder.Services.AddScoped<IToolHandler, SubmitAppointmentToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveSpecialityToolHandler>();
 builder.Services.AddScoped<IToolHandler, FetchDoctorInfoBySpecialtyToolHandler>();
 
-builder.Services.AddScoped<IDoctorSpecialityResolverService, DoctorSpecialityResolverService>();
 //builder.Services.AddScoped<IAuthManager, AuthManager>(sp =>
 //{
 //    var agentManager = sp.GetRequiredService<IAgentManager>();
