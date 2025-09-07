@@ -31,14 +31,18 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
             }
 
             // ✅ Optional DB lookup (if needed to map speciality to a department)
-            var specialty = (await _specialtyManager.GetAllAsync()).ToList().Where(x => x.SpecialtyName.Contains(speciality)).ToList();
+            var specialty = (await _specialtyManager.GetAllAsync()).ToList().Where(x => x.SpecialtyName.Contains(speciality)).FirstOrDefault();
 
             _logger.LogInformation($"Resolved specialty: {specialty}");
 
             return CreateSuccess(
                 call.Id,
                 $"✅ Specialty resolved successfully.",
-                speciality
+                new
+                {
+                    speciality = specialty?.SpecialtyName ?? "General Practitioner",
+                    specialityId = specialty?.SpecialityId.ToString() ?? "0"
+                }
             );
         }
     }

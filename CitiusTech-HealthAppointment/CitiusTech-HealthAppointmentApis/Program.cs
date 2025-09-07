@@ -115,8 +115,6 @@ builder.Services.Scan(scan => scan
 
 builder.Services.AddScoped<IToolHandler, ResolveNaturalLanguageDateToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveRelativeDateToolHandler>();
-//builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
-//builder.Services.AddScoped<IToolHandler, ResolveDoctorSpecialityToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveUserInfoByNameToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveLoggedInUserInfoToolHandler>();
 builder.Services.AddScoped<IToolHandler, FetchProviderSlotToolHandler>();
@@ -127,7 +125,6 @@ builder.Services.AddScoped<IToolHandler, SubmitAppointmentToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveSpecialityToolHandler>();
 builder.Services.AddScoped<IToolHandler, FetchDoctorInfoBySpecialtyToolHandler>();
 
-builder.Services.AddScoped<IDoctorSpecialityResolverService, DoctorSpecialityResolverService>();
 //builder.Services.AddScoped<IAuthManager, AuthManager>(sp =>
 //{
 //    var agentManager = sp.GetRequiredService<IAgentManager>();

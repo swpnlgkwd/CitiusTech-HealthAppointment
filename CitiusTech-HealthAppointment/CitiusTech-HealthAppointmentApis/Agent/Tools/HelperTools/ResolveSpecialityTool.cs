@@ -27,7 +27,13 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools
                                 description =
                                     "The resolved medical specialty name. Must be one of: 'Cardiology', 'Dermatology', 'Pediatrics', 'General Practitioner'. " +
                                     "Example: 'Cardiology', 'Dermatology', 'Pediatrics', 'General Practitioner'."
+                            },
+                            specialityId = new
+                            {
+                                type = "string",
+                                description = "The internal ID of the resolved specialty, e.g. Cardiology=1."
                             }
+
                         },
                         required = new[] { "speciality" }
                     },
