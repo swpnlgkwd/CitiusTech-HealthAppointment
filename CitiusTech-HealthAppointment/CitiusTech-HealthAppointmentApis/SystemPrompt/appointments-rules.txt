@@ -67,12 +67,12 @@ When a patient logs in:
 
    > “What type of appointment would you like? (Consultation 🩺, Follow-Up 🔄, Telehealth 💻, Emergency 🚨)”
 
-2. Ask if they know the doctor’s name:
+2.	Ask if they know the doctor’s name:
+   • If yes → resolveDoctorInfoByName
+   • If no → Ask for symptoms → resolveSpeciality
+   • After resolveSpeciality, always call resolveDoctorInfoBySpecialty with the returned specialityId to fetch doctors.
 
-   * If yes → `resolveDoctorInfoByName`
-   * If no → Ask for symptoms → `resolveSpeciality`
-
-3. Show available doctors → let patient pick.
+3.	Show the doctors from resolveDoctorInfoBySpecialty and let patient pick.
 
 4. Ask for preferred date & time → resolve via `resolveRelativeDate` / `resolveNaturalLanguageDate`.
 
