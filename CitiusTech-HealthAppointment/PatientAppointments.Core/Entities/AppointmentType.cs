@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PatientAppointments.Core.Entities
 {
-    public class AppointmentType : BaseEntity
+    public class AppointmentType 
     {
         [Key]
         public int type_id { get; set; }

@@ -20,6 +20,10 @@ export class LoginComponent {
 ;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+
+    if(this.authService.isAuthenticated())
+      this.router.navigate(['/home']);
+
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
