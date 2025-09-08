@@ -94,7 +94,7 @@ export class ChatWidgetComponent implements OnInit {
           sender: 'bot',
           text: response.reply || '🤖 (No reply)',
           time: this.getCurrentTime(),
-          quickReplies: [{ label: 'Book Appointment', value: 'Book an appointment' }, { label: 'View History', value: 'Show my appointment history' }]
+          quickReplies: []
         });
         this.isBotTyping = false;
         this.cdRef.detectChanges();

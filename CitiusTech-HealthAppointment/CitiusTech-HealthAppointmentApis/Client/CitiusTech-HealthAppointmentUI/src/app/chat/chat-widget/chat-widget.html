@@ -37,7 +37,7 @@
         <div class="msg-time">{{ msg.time }}</div>
 
         <!-- Quick Replies -->
-        <div *ngIf="msg.quickReplies" class="quick-replies mt-2">
+        <div *ngIf="msg.quickReplies && msg.quickReplies.length > 0" class="quick-replies mt-2">
           <span class="text-muted text-sm" style="
               font-size: 0.7em;
           ">Smart suggestions:</span>

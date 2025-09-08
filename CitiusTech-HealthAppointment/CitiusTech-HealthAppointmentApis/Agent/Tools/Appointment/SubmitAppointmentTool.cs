@@ -21,9 +21,10 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
                             startDate = new { type = "string", format = "date", description = "Appointment start date in yyyy-mm-dd format" },
                             endDate = new { type = "string", format = "date", description = "Appointment end date in yyyy-MM-dd format." },
                             providerSlot = new { type = "integer", description = " The ID of the provider slot" },
-                            appointmentType = new { type = "string", description = "Type of Appointment (e.g., Consultation, Follow-up, Telehealth, Emergency)." }
+                            appointmentType = new { type = "string", description = "Type of Appointment (e.g., Consultation, Follow-up, Telehealth, Emergency)." },
+                            statusId = new { type = "integer", description = "Status of the appointment (e.g., 1=Booked,2=Rescheduled,3=Cancelled,4=Completed,5=NoShow), by default it will be 'Booked'." }
                         },
-                        required = new[] { "patientId", "providerId", "startDate", "endDate", "providerSlot", "appointmentType" }
+                        required = new[] { "patientId", "providerId", "startDate", "endDate", "providerSlot", "appointmentType", "statusId" }
                     },
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
                 )
