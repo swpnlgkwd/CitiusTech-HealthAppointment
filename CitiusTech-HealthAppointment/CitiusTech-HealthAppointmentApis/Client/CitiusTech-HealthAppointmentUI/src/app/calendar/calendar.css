@@ -6,3 +6,46 @@
 .card:hover {
   transform: translateY(-5px);
 }
+
+    body {
+      background: linear-gradient(135deg, #0d6efd, #6610f2);
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    .coming-soon-box {
+      text-align: center;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .coming-icon {
+      font-size: 5rem;
+      animation: bounce 2s infinite;
+    }
+
+    .coming-title {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .coming-text {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-top: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }

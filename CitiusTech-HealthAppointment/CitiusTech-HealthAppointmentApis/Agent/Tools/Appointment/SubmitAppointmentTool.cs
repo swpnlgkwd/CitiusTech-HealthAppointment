@@ -16,12 +16,14 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
                         type = "object",
                         properties = new
                         {
-                            patientId = new { type = "integer", description = "The ID of the patient applying for appointment." },
+                            patientId = new { type = "integer", description = "The ID or userId of the patient (logged In user) applying for appointment." },
                             providerId = new { type = "integer", description = "The ID of the provider." },
-                            startDate = new { type = "string", format = "date", description = "Appointment start date in yyyy-mm-dd format" },
+                            startDate = new { type = "string", format = "date", description = "Appointment start date in yyyy-mm-dd format." },
                             endDate = new { type = "string", format = "date", description = "Appointment end date in yyyy-MM-dd format." },
-                            providerSlot = new { type = "integer", description = " The ID of the provider slot" },
-                            appointmentType = new { type = "string", description = "Type of Appointment (e.g., Consultation, Follow-up, Telehealth, Emergency)." },
+                            providerSlot = new { type = "integer", description = " The ID of the provider slot." },
+                            providerSlotStartTime = new { type = "string", format = "time", description = "The provider slot start time in 24-hour HH:mm format." },
+                            providerSlotEndTime = new { type = "string", format = "time", description = "The provider slot end time in 24-hour HH:mm format." },
+                            appointmentType = new { type = "integer", description = "The ID of the appoinment type." },
                             statusId = new { type = "integer", description = "Status of the appointment (e.g., 1=Booked,2=Rescheduled,3=Cancelled,4=Completed,5=NoShow), by default it will be 'Booked'." }
                         },
                         required = new[] { "patientId", "providerId", "startDate", "endDate", "providerSlot", "appointmentType", "statusId" }

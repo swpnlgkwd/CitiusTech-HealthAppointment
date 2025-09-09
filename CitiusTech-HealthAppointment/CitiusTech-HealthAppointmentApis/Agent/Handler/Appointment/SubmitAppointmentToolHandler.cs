@@ -25,6 +25,8 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.Appointment
             var startDate = root.GetProperty("startDate").GetString();
             var endDate = root.GetProperty("endDate").GetString();
             var providerSlot = root.GetProperty("providerSlot").GetInt32();
+            var providerSlotStartTime = root.GetProperty("providerSlotStartTime").GetString();
+            var providerSlotEndTime = root.GetProperty("providerSlotEndTime").GetString();
             var appointmentType = root.GetProperty("appointmentType").GetInt32();
             var statusId = root.GetProperty("statusId").GetInt32();
 
@@ -34,8 +36,8 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.Appointment
                 {
                     PatientId = patientId,
                     ProviderId = providerId,
-                    StartUtc = DateTime.Parse(startDate ?? string.Empty),
-                    EndUtc = DateTime.Parse(endDate ?? string.Empty),
+                    StartUtc = DateTime.Parse($"{startDate} {providerSlotStartTime}"),
+                    EndUtc = DateTime.Parse($"{endDate} {providerSlotEndTime}"),
                     SlotId = providerSlot,
                     TypeId = appointmentType,
                     StatusId = statusId

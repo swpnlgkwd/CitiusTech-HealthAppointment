@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppointmentService } from '../core/services/appointment';
 import { CommonModule } from '@angular/common';
 import { Appointment } from '../core/models/appointment.model'; // Add this import, adjust path if needed
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-calendar',
@@ -19,7 +20,7 @@ export class CalendarComponent implements OnInit {
   userRole: 'patient' | 'staff' = 'patient';
   loggedInUserId: string = 'P001'; // simulate John Doe logged in
 
-  constructor(private appointmentService: AppointmentService) {}
+  constructor(private appointmentService: AppointmentService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadAppointments();
@@ -30,5 +31,9 @@ export class CalendarComponent implements OnInit {
       .subscribe(events => {
         this.events = events;
       });
+  }
+
+  backToHome() {
+    this.router.navigate(['/home']);
   }
 }
