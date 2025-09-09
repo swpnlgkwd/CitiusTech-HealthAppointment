@@ -16,6 +16,10 @@ namespace PatientAppointments.Business.Contracts
 
         public Task<string> GetProviderName(ClaimsPrincipal user);
 
+        public Task<string> GetProviderId(ClaimsPrincipal user);
+
         public Task<string> GetPatientName(ClaimsPrincipal user);
+
+        public Task<string> GetPatientId(ClaimsPrincipal user);
     }
 }

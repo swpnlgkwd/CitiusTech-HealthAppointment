@@ -99,6 +99,7 @@ export class ChatWidgetComponent implements OnInit {
         this.isBotTyping = false;
         this.cdRef.detectChanges();
         this.scrollToBottom();
+        document.getElementById('messageInput')?.focus();
       },
       error: (error) => {
         console.error('Agent error:', error);

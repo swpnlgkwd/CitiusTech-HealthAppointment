@@ -24,7 +24,7 @@ namespace PatientAppointments.Business.Services
                 ProviderId = dto.ProviderId,
                 PatientId = dto.PatientId,
                 SlotId = dto.SlotId,
-                StatusId = 0,
+                StatusId = dto.StatusId,
                 StartUtc = dto.StartUtc,
                 EndUtc = dto.EndUtc,
                 Notes = dto.Notes,

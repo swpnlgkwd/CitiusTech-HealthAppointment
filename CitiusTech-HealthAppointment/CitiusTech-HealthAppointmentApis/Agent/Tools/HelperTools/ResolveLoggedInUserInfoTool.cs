@@ -10,7 +10,7 @@ namespace HospitalSchedulingApp.Agent.Tools.HelperTools
         {
             return new FunctionToolDefinition(
                name: "resolveLoggedInUserInfo",
-               description: "Resolves the login user and its role (e.g., Employee or Scheduler). Useful for determining access permissions.",
+               description: "Resolves the login user and its role (e.g., Petient or Provider/Doctor). Useful for determining access permissions.",
                parameters: BinaryData.FromObjectAsJson(
                    new
                    {

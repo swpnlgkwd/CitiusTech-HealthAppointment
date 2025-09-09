@@ -1,12 +1,12 @@
 {
   "agent": {
-    "name": "PatientAppointmentAgent",
+    "name": "PatientAppointmentAgent1",
     "description": "An agent to assist with hospital scheduling tasks, including managing appointments, resources, and patient information.",
     "modelDeploymentName": "gpt-4.1-mini",
-    "assistanceId": "asst_H55bKiu2oxREK71DnIH7IQeG",
+    "assistanceId": "asst_jvy30fegub9KijfYCLGYSkTo",
     "systemPromptPaths": [
       "intro.txt",
-      "Specialty.txt",
+      "specialty.txt",
       "appointments-rules.txt"
     ]
   }

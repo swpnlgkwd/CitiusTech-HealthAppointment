@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<!-- <div class="container mt-4">
   <h2 class="mb-4">
     📅 Calendar ({{ userRole | titlecase }})
   </h2>
@@ -19,13 +19,11 @@
             {{ ev.start | date: 'shortTime' }}
           </p>
 
-          <!-- Only show patient name for staff -->
           <p *ngIf="userRole === 'staff'" class="mb-1">
             <i class="bi bi-person-circle"></i>
             Patient: <strong>{{ ev.patientName }}</strong>
           </p>
 
-          <!-- Risk flag with badge -->
           <span class="badge"
                 [ngClass]="{
                   'bg-success': ev.riskFlag === 'low',
@@ -38,4 +36,10 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
+
+  <div class="coming-soon-box">
+    <i class="bi bi-hourglass-split coming-icon"></i>
+    <div class="coming-title">Coming Soon</div>
+    <div class="coming-text">We're working hard to launch something amazing. Stay tuned!</div>
+  </div>
