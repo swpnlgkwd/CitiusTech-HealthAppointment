@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 
 namespace PatientAppointments.Infrastructure.Data.Configurations
 {
-    internal class AppointmentTypeConfiguration : BaseEntityConfiguration<AppointmentType>
+    internal class AppointmentTypeConfiguration : IEntityTypeConfiguration<AppointmentType>
     {
-        public override void Configure(EntityTypeBuilder<AppointmentType> builder)
+        public void Configure(EntityTypeBuilder<AppointmentType> builder)
         {
-            base.Configure(builder);
             // Map to table
             builder.ToTable("AppointmentType");
 
