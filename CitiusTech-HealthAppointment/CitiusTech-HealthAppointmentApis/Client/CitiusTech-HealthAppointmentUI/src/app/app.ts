@@ -9,19 +9,22 @@ import { AgentService } from './core/services/agent';
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
+  styleUrls: ['./app.css'],
   imports: [RouterModule, ChatWidgetComponent, CommonModule] // <-- Add RouterModule here
 })
 export class AppComponent {
   constructor(private router: Router, private authService: AuthService, private agentService: AgentService) { }
-
+  isLoading = false;
   get isLoggedIn(): boolean {
     return this.authService.isAuthenticated();
   }
 
   logout() {
+    this.isLoading = true;
     this.agentService.refresh().subscribe(() => {
-      this.router.navigate(['/login']);
+      this.isLoading = false;
       localStorage.clear();
+      this.router.navigate(['/login']);
     })
   }
 }

@@ -54,6 +54,14 @@ namespace PatientAppointments.Business.Services
             return appointments.Select(MapToDto);
         }
 
+        public async Task<AppointmentDto> GetByIdAsync(int appintmentId)
+        {
+            var appointment = await _uow.Appointments.GetByIdAsync(appintmentId);
+            if (appointment == null)
+                return null;
+            return MapToDto(appointment);
+        }
+
         public async Task<AppointmentDto> UpdateAsync(AppointmentDto dto)
         {
             var appointment = await _uow.Appointments.GetByIdAsync(dto.AppointmentId);
