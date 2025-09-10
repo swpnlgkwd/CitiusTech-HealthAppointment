@@ -191,7 +191,7 @@ namespace PatientAppointments.Business.Services
                     var existingThreadId = await _agentConversationManager.FetchThreadIdForLoggedInUser(userId);
                     if (!string.IsNullOrEmpty(existingThreadId))
                     {
-                        _logger.LogInformation("Existing thread found for StaffId {StaffId}: {ThreadId}", userId, existingThreadId);
+                        _logger.LogInformation("Existing thread found for user {userId}: {ThreadId}", userId, existingThreadId);
                         return existingThreadId;
                     }
                 }

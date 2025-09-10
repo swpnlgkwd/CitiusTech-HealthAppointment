@@ -72,7 +72,7 @@ export class ChatWidgetComponent implements OnInit {
   }
 
   sendMessage(action?: string): void {
-    if (this.chatForm.invalid) return;
+    if (this.chatForm.invalid && !action) return;
 
     const userMessage = action ?? this.chatForm.value.message;
     const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -124,14 +124,6 @@ export class ChatWidgetComponent implements OnInit {
   }
 
   handleQuickReply(reply: string) {
-    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    // Push user reply
-    this.messages.push({
-      sender: 'user',
-      text: reply,
-      time: currentTime
-    });
 
     // Simulate bot typing
     this.isBotTyping = true;

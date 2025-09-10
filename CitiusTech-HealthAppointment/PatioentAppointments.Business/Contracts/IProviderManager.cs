@@ -10,5 +10,7 @@ namespace PatientAppointments.Business.Contracts
     public interface IProviderManager
     {
         Task<IEnumerable<Provider>> GetAllAsync();
+
+        Task<Provider?> GetByIdAsync(int id);
     }
 }

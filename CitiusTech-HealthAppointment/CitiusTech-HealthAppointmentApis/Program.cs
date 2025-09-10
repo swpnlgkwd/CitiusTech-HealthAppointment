@@ -124,22 +124,8 @@ builder.Services.AddScoped<IToolHandler, FetchAppointmentByPatientToolHander>();
 builder.Services.AddScoped<IToolHandler, SubmitAppointmentToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveSpecialityToolHandler>();
 builder.Services.AddScoped<IToolHandler, FetchDoctorInfoBySpecialtyToolHandler>();
-
-//builder.Services.AddScoped<IAuthManager, AuthManager>(sp =>
-//{
-//    var agentManager = sp.GetRequiredService<IAgentManager>();
-//    var agent = agentManager.GetAgent();
-//    var logger = sp.GetRequiredService<ILogger<AuthManager>>();
-//    var config = sp.GetRequiredService<IConfiguration>();
-//    var uow = sp.GetRequiredService<IUnitOfWork>();
-//    var um = sp.GetRequiredService<UserManager<ApplicationUser>>();
-//    var http = sp.GetRequiredService<IHttpContextAccessor>();
-//    var gm = sp.GetRequiredService<IGreetingManager>();
-//    var acm = sp.GetRequiredService<IAgentConversationManager>();
-//    var client = sp.GetRequiredService<PersistentAgentsClient>();
-
-//    return new AuthManager(um, config, uow, http, gm, acm, logger, agent, client);
-//});
+builder.Services.AddScoped<IToolHandler, RescheduleAppointmentToolHandler>();
+builder.Services.AddScoped<IToolHandler, ResolveDoctorByIdToolHandler>();
 
 builder.Services.AddScoped<PersistentAgent>(sp =>
 {

@@ -9,7 +9,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
         {
             return new FunctionToolDefinition(
                 name: "fetchAppointmentByPatient",
-                description: "Use this tool to retrieve appointments by user Id with optional filters like appointment type, specific date or date range",
+                description: "Use this tool to when user says Show my appointments or show my appointment for tomorrow",
                 parameters: BinaryData.FromObjectAsJson(
                     new
                     {
@@ -21,25 +21,25 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
                                 type = "integer",
                                 description = "Required. Filter by the patient id."
                             },                           
-                            appointmentStatus = new
+                            appointmentStatusId = new
                             {
                                 type = "integer",
-                                description = "Optional. Filter by appointment status: Booked, Rescheduled, Cancelled, Completed or NoShow",
+                                description = "The ID of the appoinment status.",
                             },
                             startDate = new
                             {
                                 type = "string",
                                 format = "date",
-                                description = "Optional. Start date of the appointment filter (yyyy-MM-dd)."
+                                description = "Start date if provided otherwise current date (yyyy-MM-dd)."
                             },
                             endDate = new
                             {
                                 type = "string",
                                 format = "date",
-                                description = "Optional. End date of the appointment filter (yyyy-MM-dd)."
+                                description = "End date If provided otherwise null (yyyy-MM-dd)."
                             }
                         },
-                        required = new[] { "userId" }
+                        required = new[] { "patientId" }
                     },
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
                 )

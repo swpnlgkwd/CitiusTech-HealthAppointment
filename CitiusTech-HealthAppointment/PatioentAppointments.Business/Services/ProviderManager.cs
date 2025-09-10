@@ -23,5 +23,10 @@ namespace PatientAppointments.Business.Services
         {
             return _providerRepository.GetAllAsync();
         }
+
+        public Task<Provider?> GetByIdAsync(int id)
+        {
+            return _providerRepository.GetByIdAsync(id);
+        }
     }
 }
