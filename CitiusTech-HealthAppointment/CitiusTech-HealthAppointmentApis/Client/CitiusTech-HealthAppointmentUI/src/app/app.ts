@@ -21,10 +21,8 @@ export class AppComponent {
 
   logout() {
     this.isLoading = true;
-    this.agentService.refresh().subscribe(() => {
-      this.isLoading = false;
+    this.isLoading = false;
       localStorage.clear();
       this.router.navigate(['/login']);
-    })
   }
 }

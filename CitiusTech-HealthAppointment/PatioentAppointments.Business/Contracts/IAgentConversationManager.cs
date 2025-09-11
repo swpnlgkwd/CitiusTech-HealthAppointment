@@ -16,7 +16,7 @@ namespace PatientAppointments.Business.Contracts
         /// Fetches the persisted agent thread ID for the currently logged-in user.
         /// </summary>
         /// <returns>The thread ID if found; otherwise, null.</returns>
-        Task<string?> FetchThreadIdForLoggedInUser(string? staffId);
+        Task<string?> FetchThreadIdForLoggedInUser(int staffId);
 
         /// <summary>
         /// Adds a new agent conversation record to the database.

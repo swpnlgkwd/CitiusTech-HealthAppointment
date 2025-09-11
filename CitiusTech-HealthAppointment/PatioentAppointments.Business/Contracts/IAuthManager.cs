@@ -17,7 +17,7 @@ namespace PatientAppointments.Business.Contracts
         Task<AuthResponseDto> RefreshTokenAsync(string token, string refreshToken);
         Task<ApplicationUser> GetUsersByName( string userName);
         Task<UserInfoDto> GetLoggedInUserInfo();
-        Task<string> FetchOrCreateThreadForUser(string? staffId = null);
+        Task<string> FetchOrCreateThreadForUser(int staffId = 0);
         Task<PersistentAgentThread> CreateThreadAsync();
         Task DeleteThreadForUserAsync();
     }

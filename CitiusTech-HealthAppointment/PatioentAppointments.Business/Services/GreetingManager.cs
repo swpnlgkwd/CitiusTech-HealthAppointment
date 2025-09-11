@@ -83,7 +83,7 @@ namespace PatientAppointments.Business.Services
 
         public async Task<string> GetPatientName(ClaimsPrincipal user)
         {
-            var providerIdClaim = user.FindFirst("Patientid")?.Value;
+            var providerIdClaim = user.FindFirst("ProviderId")?.Value;
             if (providerIdClaim == null) return "your schedule is ready.";
 
             int patientId = int.Parse(providerIdClaim);
@@ -94,6 +94,38 @@ namespace PatientAppointments.Business.Services
                 return "User";
 
             return $"{patient.FullName}";
+
+        }
+
+        public async Task<string> GetPatientId(ClaimsPrincipal user)
+        {
+            var providerIdClaim = user.FindFirst("PatientId")?.Value;
+            if (providerIdClaim == null) return "your schedule is ready.";
+
+            int patientId = int.Parse(providerIdClaim);
+
+            var patient = await _uow.Patients.GetByIdAsync(patientId);
+
+            if (patient == null)
+                return "User";
+
+            return $"{patient.PatientId}";
+
+        }
+
+        public async Task<string> GetProviderId(ClaimsPrincipal user)
+        {
+            var providerIdClaim = user.FindFirst("Providerid")?.Value;
+            if (providerIdClaim == null) return "your schedule is ready.";
+
+            int providerId = int.Parse(providerIdClaim);
+
+            var provider = await _uow.Patients.GetByIdAsync(providerId);
+
+            if (provider == null)
+                return "User";
+
+            return $"{provider.PatientId}";
 
         }
 
