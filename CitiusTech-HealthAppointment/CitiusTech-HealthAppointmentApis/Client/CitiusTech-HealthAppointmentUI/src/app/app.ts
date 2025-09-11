@@ -21,8 +21,9 @@ export class AppComponent {
 
   logout() {
     this.isLoading = true;
+    localStorage.clear();
+    this.router.navigate(['/login']);
+    this.isLoggedIn;
     this.isLoading = false;
-      localStorage.clear();
-      this.router.navigate(['/login']);
   }
 }

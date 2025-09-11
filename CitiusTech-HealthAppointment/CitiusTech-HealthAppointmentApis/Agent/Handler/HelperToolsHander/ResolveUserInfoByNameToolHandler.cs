@@ -16,7 +16,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
             _authManager = authManager;
         }
 
-        public override string ToolName => ResolveDoctorInfoByNameTool.GetTool().Name;
+        public override string ToolName => ResolveUserInfoByNameTool.GetTool().Name;
 
         public override async Task<ToolOutput?> HandleAsync(RequiredFunctionToolCall call, JsonElement root)
         {

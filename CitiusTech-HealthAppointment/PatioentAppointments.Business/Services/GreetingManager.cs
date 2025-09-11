@@ -83,7 +83,7 @@ namespace PatientAppointments.Business.Services
 
         public async Task<string> GetPatientName(ClaimsPrincipal user)
         {
-            var providerIdClaim = user.FindFirst("ProviderId")?.Value;
+            var providerIdClaim = user.FindFirst("PatientId")?.Value;
             if (providerIdClaim == null) return "your schedule is ready.";
 
             int patientId = int.Parse(providerIdClaim);

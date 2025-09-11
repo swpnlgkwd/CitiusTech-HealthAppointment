@@ -22,7 +22,8 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools
             ResolveSpecialityTool.GetTool(),
             FetchDoctorInfoBySpecialtyTool.GetTool(),
             RescheduleAppointmentTool.GetTool(),
-            ResolveDoctorByIdTool.GetTool()
+            ResolveDoctorByIdTool.GetTool(),
+            CancelAppointmentTool.GetTool()
         };
     }
 }

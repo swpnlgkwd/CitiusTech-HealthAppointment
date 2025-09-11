@@ -10,7 +10,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools
             return new FunctionToolDefinition(
                 name: "resolveDoctorInfoByName",
                 description: "Finds one or more active doctor name based on a full or partial name (e.g., 'Chris', 'Anderson', 'Lee'). "
-                           + "Returns matching user details such as doctor name , speciality and every other infor required",
+                           + "Returns matching user details such as doctor name , speciality and every other info required",
                 parameters: BinaryData.FromObjectAsJson(
                     new
                     {
@@ -20,7 +20,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.HelperTools
                             name = new
                             {
                                 type = "string",
-                                description = "Full or partial staff name (e.g., 'Asha', 'Patil', 'Sunita')"
+                                description = "Full or partial staff name (e.g., 'Asha', 'Patil', 'Sunita') without 'Dr'"
                             }
                         },
                         required = new[] { "name" }
