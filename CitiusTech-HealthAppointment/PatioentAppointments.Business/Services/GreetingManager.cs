@@ -83,7 +83,7 @@ namespace PatientAppointments.Business.Services
 
         public async Task<string> GetPatientName(ClaimsPrincipal user)
         {
-            var providerIdClaim = user.FindFirst("Patientid")?.Value;
+            var providerIdClaim = user.FindFirst("ProviderId")?.Value;
             if (providerIdClaim == null) return "your schedule is ready.";
 
             int patientId = int.Parse(providerIdClaim);
@@ -99,7 +99,7 @@ namespace PatientAppointments.Business.Services
 
         public async Task<string> GetPatientId(ClaimsPrincipal user)
         {
-            var providerIdClaim = user.FindFirst("Patientid")?.Value;
+            var providerIdClaim = user.FindFirst("PatientId")?.Value;
             if (providerIdClaim == null) return "your schedule is ready.";
 
             int patientId = int.Parse(providerIdClaim);
@@ -129,60 +129,7 @@ namespace PatientAppointments.Business.Services
 
         }
 
-        #region Helpers
-
-        private async Task<string> GetProviderMessageAsync(ClaimsPrincipal user)
-        {
-            var providerIdClaim = user.FindFirst("ProviderId")?.Value;
-            if (providerIdClaim == null) return "your schedule is ready.";
-
-            int providerId = int.Parse(providerIdClaim);
-
-            var upcoming = await (
-                 from a in _uow.Appointments.Query()
-                 join p in _uow.Patients.Query() on a.PatientId equals p.PatientId
-                 where a.ProviderId == providerId && a.CreatedAt >= DateTime.Today
-                 orderby a.CreatedAt
-                 select new
-                 {
-                     AppointmentDate = a.CreatedAt,
-                     PatientName = p.FullName
-                 }
-             ).FirstOrDefaultAsync();
-
-            if (upcoming == null)
-                return "you don’t have any upcoming appointments.";
-
-            return $"your next appointment is with patient {upcoming.PatientName} on {upcoming.AppointmentDate:g}.";
-
-        }
-
-        private async Task<string> GetPatientMessageAsync(ClaimsPrincipal user)
-        {
-            var patientIdClaim = user.FindFirst("PatientId")?.Value;
-            if (patientIdClaim == null) return "you can view or book appointments easily.";
-
-            int patientId = int.Parse(patientIdClaim);
-
-            var upcoming = await (
-                from a in _uow.Appointments.Query()   // <-- expose IQueryable from repo
-                join p in _uow.Provider.Query() on a.ProviderId equals p.ProviderId
-                where a.PatientId == patientId && a.CreatedAt >= DateTime.Today
-                orderby a.CreatedAt
-                select new
-                {
-                    AppointmentId = a.AppointmentId,
-                    AppointmentDate = a.CreatedAt,
-                    ProviderName = p.FullName
-                }
-            ).FirstOrDefaultAsync();
-
-
-            if (upcoming == null)
-                return "you have no upcoming appointments. Book one today!";
-
-            return $"your next appointment is with Dr. {upcoming.ProviderName} on {upcoming.AppointmentDate:g}.";
-        }        
+        #region Helpers     
 
         private string GetTimeBasedGreeting()
         {

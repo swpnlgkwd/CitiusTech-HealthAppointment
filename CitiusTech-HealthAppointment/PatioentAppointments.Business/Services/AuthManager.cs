@@ -105,7 +105,7 @@ namespace PatientAppointments.Business.Services
                 {
                     userFullName = fullName,
                     userRole = role,
-                    userId = userId.ToString()
+                    userId = Int32.Parse(userId)
                 };
             }           
         } 
@@ -122,7 +122,7 @@ namespace PatientAppointments.Business.Services
             };
             claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-
+            var userId = 0;
             foreach (var r in roles)
             {
                 if (r == "Provider")
@@ -132,6 +132,7 @@ namespace PatientAppointments.Business.Services
                     if (appUser?.DoctorId != null && appUser.DoctorId > 0)
                     {
                         claims.Add(new Claim("ProviderId", appUser.DoctorId.Value.ToString()));
+                        userId = appUser.DoctorId ?? 0;
                     }
                 }
 
@@ -142,6 +143,7 @@ namespace PatientAppointments.Business.Services
                     if (appUser?.PatientId != null && appUser.PatientId > 0)
                     {
                         claims.Add(new Claim("PatientId", appUser.PatientId.Value.ToString()));
+                        userId = appUser.PatientId ?? 0;
                     }
                 }
 
@@ -165,7 +167,8 @@ namespace PatientAppointments.Business.Services
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-            var thread = await FetchOrCreateThreadForUser(user.Id);
+             
+            var thread = await FetchOrCreateThreadForUser(userId);
 
             return new AuthResponseDto(jwt, "dummy-refresh-token", expires, role , user.UserName ?? "", thread );
         }
@@ -173,20 +176,20 @@ namespace PatientAppointments.Business.Services
         /// <summary>
         /// Fetches an existing thread for the user or creates a new one if none exists.
         /// </summary>
-        public async Task<string> FetchOrCreateThreadForUser(string? userId)
+        public async Task<string> FetchOrCreateThreadForUser(int userId)
         {
             try
             {
                 // Try to resolve staffId from context if not passed
-                if (string.IsNullOrEmpty(userId))
+                if (userId == 0)
                 {
                     var contextStaffId = (await GetLoggedInUserInfo()).userId;
-                    if (!string.IsNullOrEmpty(contextStaffId))
-                        userId = contextStaffId.ToString();
+                    if (contextStaffId > 0)
+                        userId = contextStaffId;
                 }
 
                 // If staffId is known, check for existing thread
-                if (!string.IsNullOrEmpty(userId))
+                if (userId > 0)
                 {
                     var existingThreadId = await _agentConversationManager.FetchThreadIdForLoggedInUser(userId);
                     if (!string.IsNullOrEmpty(existingThreadId))
@@ -200,11 +203,11 @@ namespace PatientAppointments.Business.Services
                 var newThread = await CreateThreadAsync();
 
                 //If we have staffId, store the conversation
-                if (!string.IsNullOrEmpty(userId))
+                if (userId > 0)
                 {
                     var agentConversation = new AgentConversations
                     {
-                        user_id = userId,
+                        user_id = userId.ToString(),
                         thread_id = newThread.Id,
                         created_at = DateTime.UtcNow
                     };
@@ -263,6 +266,7 @@ namespace PatientAppointments.Business.Services
             {
                 _logger.LogInformation("Deleting thread with ID: {ThreadId}", threadId);
                 await _client.Threads.DeleteThreadAsync(threadId);
+
                 _logger.LogInformation("Successfully deleted thread from OpenAI: {ThreadId}", threadId);
             }
             catch (Exception ex)
