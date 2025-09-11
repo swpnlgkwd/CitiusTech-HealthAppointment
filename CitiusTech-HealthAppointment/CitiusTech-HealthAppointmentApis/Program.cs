@@ -124,8 +124,10 @@ builder.Services.AddScoped<IToolHandler, FetchAppointmentByPatientToolHander>();
 builder.Services.AddScoped<IToolHandler, SubmitAppointmentToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveSpecialityToolHandler>();
 builder.Services.AddScoped<IToolHandler, FetchDoctorInfoBySpecialtyToolHandler>();
+builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
 builder.Services.AddScoped<IToolHandler, RescheduleAppointmentToolHandler>();
 builder.Services.AddScoped<IToolHandler, ResolveDoctorByIdToolHandler>();
+builder.Services.AddScoped<IToolHandler, CancelAppointmentToolHandler>();
 
 builder.Services.AddScoped<PersistentAgent>(sp =>
 {

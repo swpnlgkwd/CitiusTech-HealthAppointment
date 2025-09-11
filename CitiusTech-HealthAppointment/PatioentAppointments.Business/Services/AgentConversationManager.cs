@@ -109,7 +109,7 @@ namespace PatientAppointments.Business.Services
         public async Task<string> GetPatientId(ClaimsPrincipal user)
         {
             var providerIdClaim = user.FindFirst("PatientId")?.Value;
-            if (providerIdClaim == null) return "your schedule is ready.";
+            if (providerIdClaim == null) return "Provider Id is null.";
 
             int patientId = int.Parse(providerIdClaim);
 
@@ -125,7 +125,7 @@ namespace PatientAppointments.Business.Services
         public async Task<string> GetProviderId(ClaimsPrincipal user)
         {
             var providerIdClaim = user.FindFirst("Providerid")?.Value;
-            if (providerIdClaim == null) return "your schedule is ready.";
+            if (providerIdClaim == null) return "Provider Id is null.";
 
             int providerId = int.Parse(providerIdClaim);
 

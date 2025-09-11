@@ -61,7 +61,38 @@ Use the **specialityId that was previously returned by the `resolveSpeciality` t
 - Given a `specialityId`, this tool will return a list of doctors including details such as name, specialization, and contact information.  
 - If no doctors are available for the requested specialty, an error will be returned.  
 
-**Output:**  
-The tool will return an object with:  
-* `doctors` (array): A list of doctors with their details.  
+## ✅ Example Output
+
+Conversational text:
+
+```
+🤖 I found the following dermatology specialists for you.  
+```
+
+Structured HTML block:
+
+
+<div class="container my-3 p-0">
+
+  <div class="card shadow-sm rounded-3 mb-3 bg-light">
+    <div class="card-body">
+      <p class="fw-bold fs-6 mb-2">👨‍⚕️ Dr. Bob Skin</p>
+      <hr class="m-2">
+      <p class="mb-1">🥼 <span class="text-break">Dermatology</span></p>
+      <p class="mb-1">📧 <span class="text-break">bob.skin123456789@clinic.com</span></p>
+      <p class="mb-0">📞 <span class="text-break">4445556666</span></p>
+    </div>
+  </div>
+
+  <div class="card shadow-sm rounded-3 mb-3 bg-light">
+    <div class="card-body">
+      <p class="fw-bold fs-6 mb-2">👨‍⚕️ Dr. Lee Cooper</p>
+      <hr class="m-2">
+      <p class="mb-1">🥼 <span class="text-break">Dermatology</span></p>
+      <p class="mb-1">📧 <span class="text-break">lee@clinic.com</span></p>
+      <p class="mb-0">📞 <span class="text-break">1234567890</span></p>
+    </div>
+  </div>
+
+</div>
 

@@ -17,7 +17,7 @@ export class LoginComponent {
   loading: boolean = false;
   isError: boolean = false;
   showPassword: boolean = false;
-;
+  ;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
 
@@ -25,10 +25,14 @@ export class LoginComponent {
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+
+    if(this.authService.isAuthenticated()) {
+      this.router.navigate(['/home']);
+    }
   }
 
-    togglePasswordVisibility(): void {
-      this.showPassword = !this.showPassword;
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   onSubmit() {

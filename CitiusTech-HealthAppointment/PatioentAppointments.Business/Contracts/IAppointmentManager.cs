@@ -16,7 +16,7 @@ namespace PatientAppointments.Business.Contracts
         Task<IEnumerable<AppointmentDto>> GetByPatientAsync(int patientId);
         Task<AppointmentDto> GetByIdAsync(int appointmentId);
         Task<AppointmentDto> UpdateAsync(AppointmentDto dto);
-        Task<bool> CancelAsync(int id);
+        Task<bool> CancelAsync(int id, string note);
         Task<IEnumerable<AppointmentTypeDto>> GetAppointmentTypesAsync();
         Task<IEnumerable<ProviderSlotDto>> GetProviderSlotsAsync(int ProviderId, DateTime sDate, DateTime? edate);
     }

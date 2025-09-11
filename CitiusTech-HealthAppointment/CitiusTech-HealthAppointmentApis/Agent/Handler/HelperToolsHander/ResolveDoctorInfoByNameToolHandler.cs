@@ -16,29 +16,48 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.HelperToolsHander
     public class ResolveDoctorInfoByNameToolHandler : BaseToolHandler
     {
         // Inject
-        private readonly IDoctorInfoManager _doctorInfoManager;
+        private readonly IProviderManager _providerManager;
 
-        public ResolveDoctorInfoByNameToolHandler(ILogger<ResolveNaturalLanguageDateToolHandler> logger, IDoctorInfoManager doctorInfoManager)
-            : base(logger) // ✅ common logging/error helpers
+        public ResolveDoctorInfoByNameToolHandler(ILogger<ResolveNaturalLanguageDateToolHandler> _logger, IProviderManager providerManager)
+            : base(_logger) // ✅ common logging/error helpers
         {
-            _doctorInfoManager = doctorInfoManager;
+            _providerManager = providerManager;
         }
 
         public override string ToolName => ResolveDoctorInfoByNameTool.GetTool().Name;
 
         public override async Task<ToolOutput?> HandleAsync(RequiredFunctionToolCall call, JsonElement root)
         {
-            string name = root.FetchString("name") ?? string.Empty;
+            try { 
+                // Extract parameters
+                var name = root.GetProperty("name").GetString() ?? throw new ArgumentException("Missing 'name' parameter");
+                // Validate parameters
+                if (string.IsNullOrWhiteSpace(name) || name.Length < 2 || !Regex.IsMatch(name, @"^[a-zA-Z\s'-]+$"))
+                {
+                    throw new ArgumentException("Invalid 'name' parameter. Must be at least 2 characters and contain only letters, spaces, hyphens, or apostrophes.");
+                }
 
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                _logger.LogWarning("name is missing");
-                return CreateError(call.Id, "Date input is required.");
+                //remove Dr. or Dr from name if exists
+                name = Regex.Replace(name, @"\bDr\.?\s*", "", RegexOptions.IgnoreCase).Trim();
+
+                // Call business logic to get doctor info by name
+                var doctors = await _providerManager.GetAllAsync();
+                
+                var result = doctors.FirstOrDefault(d => d.FullName.Contains(name, StringComparison.OrdinalIgnoreCase) && d.IsActive);
+                if (result == null)
+                {
+                    return CreateError(call.Id, $"No active doctor found matching the name '{name}'.");
+                }
+                // Return success response with doctor info
+                _logger.LogInformation("Doctor found: {DoctorName}", result.FullName);
+                return CreateSuccess(call.Id, "Doctor found.", result);
+
             }
-            var result = await _doctorInfoManager.FetchDoctorInfoByName(name);
-            
-            _logger.LogInformation("Retrieved doctor information", result);
-            return CreateSuccess(call.Id, "✅ Date(s) resolved successfully.", result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in {ToolName} with input: {Input}", ToolName, root.ToString());
+                throw; // Let the base class handle the error response
+            }
         }
     }
 }

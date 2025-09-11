@@ -83,7 +83,7 @@ namespace PatientAppointments.Business.Services
             return MapToDto(appointment);
         }
 
-        public async Task<bool> CancelAsync(int id)
+        public async Task<bool> CancelAsync(int id, string note)
         {
             var appointment = await _uow.Appointments.GetByIdAsync(id);
             if (appointment == null)
@@ -91,6 +91,8 @@ namespace PatientAppointments.Business.Services
 
             //soft cancel by updating status
             appointment.StatusId = (int)AppointmentStatus.Cancelled;
+            appointment.UpdatedAt = DateTime.UtcNow;
+            appointment.Notes = note;
             _uow.Appointments.Update(appointment);
 
             await _uow.CompleteAsync();
