@@ -89,21 +89,23 @@ namespace PatientAppointments.Business.Services
             else
             {
                 var role = user?.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
-                var userId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                string userId = "";
                 var fullName = "";
                 if (role == "Provider")
                 {
                     fullName = await _greetingService.GetProviderName(user);
+                    userId = await _greetingService.GetProviderId(user);
                 }
                 else
                 {
                     fullName = await _greetingService.GetPatientName(user);
+                    userId = await _greetingService.GetPatientId(user);
                 }
                 return new UserInfoDto
                 {
                     userFullName = fullName,
                     userRole = role,
-                    userId = userId
+                    userId = userId.ToString()
                 };
             }           
         } 
@@ -189,7 +191,7 @@ namespace PatientAppointments.Business.Services
                     var existingThreadId = await _agentConversationManager.FetchThreadIdForLoggedInUser(userId);
                     if (!string.IsNullOrEmpty(existingThreadId))
                     {
-                        _logger.LogInformation("Existing thread found for StaffId {StaffId}: {ThreadId}", userId, existingThreadId);
+                        _logger.LogInformation("Existing thread found for user {userId}: {ThreadId}", userId, existingThreadId);
                         return existingThreadId;
                     }
                 }

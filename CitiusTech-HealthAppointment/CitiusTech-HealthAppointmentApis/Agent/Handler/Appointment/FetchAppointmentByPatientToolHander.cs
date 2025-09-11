@@ -25,11 +25,11 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.Appointment
             {
                 // 🔍 Parse the filters
                 int? patientId = root.FetchInt("patientId");
-                int? appointmentStatus = root.FetchInt("appointmentStatus");
+                int? appointmentStatus = root.FetchInt("appointmentStatusId");
                 DateTime? sDate = root.FetchDateTime("startDate");
                 DateTime? eDate = root.FetchDateTime("endDate");
 
-                if (patientId != null)
+                if (patientId == null)
                 {
                     throw new Exception("PatientId cannot be null");
                 }

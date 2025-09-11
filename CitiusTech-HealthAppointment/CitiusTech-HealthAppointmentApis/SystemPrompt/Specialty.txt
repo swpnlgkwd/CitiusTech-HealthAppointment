@@ -51,7 +51,7 @@ The tool will return an object with:
 Use this tool to fetch a list of doctors for a given **medical specialty ID**.  
 ⚠️ Do not pass raw symptoms or speciality names into this tool.  
 ⚠️ Do not invent or guess specialityIds from examples.  
-Always use the **specialityId that was previously returned by the `resolveSpeciality` tool (or database mapping)**.  
+Use the **specialityId that was previously returned by the `resolveSpeciality` tool (or database mapping)**.  
 
 **Parameters:**  
 * `specialityId` (string): The unique ID of the resolved medical specialty.  
@@ -64,24 +64,4 @@ Always use the **specialityId that was previously returned by the `resolveSpecia
 **Output:**  
 The tool will return an object with:  
 * `doctors` (array): A list of doctors with their details.  
-  Example:  
-  ```json
-  {
-    "doctors": [
-      {
-        "provider_id": "D001",
-        "full_name": "Dr. John Smith",
-        "speciality_id": "101",
-        "contact_email": "johnsmith@gmail.com",
-        "contact_phone": "1222332134"
-      },
-      {
-        "provider_id": "D002",
-        "full_name": "Dr. Alice Johnson",
-        "speciality_id": "101",
-        "contact_email": "aliceJ@gmail.com",
-        "contact_phone": "1222332134"
-      }
-    ]
-  }
 

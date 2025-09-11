@@ -24,7 +24,7 @@ namespace PatientAppointments.Business.Services
                 ProviderId = dto.ProviderId,
                 PatientId = dto.PatientId,
                 SlotId = dto.SlotId,
-                StatusId = 0,
+                StatusId = dto.StatusId,
                 StartUtc = dto.StartUtc,
                 EndUtc = dto.EndUtc,
                 Notes = dto.Notes,
@@ -52,6 +52,14 @@ namespace PatientAppointments.Business.Services
                 .FindAsync(a => a.PatientId == patientId);
 
             return appointments.Select(MapToDto);
+        }
+
+        public async Task<AppointmentDto> GetByIdAsync(int appintmentId)
+        {
+            var appointment = await _uow.Appointments.GetByIdAsync(appintmentId);
+            if (appointment == null)
+                return null;
+            return MapToDto(appointment);
         }
 
         public async Task<AppointmentDto> UpdateAsync(AppointmentDto dto)
