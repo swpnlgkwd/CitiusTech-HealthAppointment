@@ -28,9 +28,9 @@
 * Trigger: *“Show me my appointments today”*, *“Do I have an appointment next week?”*
 1. Default: today’s appointments. If requested “tomorrow” or another day → resolve date.
 2. Use: `fetchAppointmentByPatient` to get appointments.
-3. Call resolver tools to get doctor names, appointment types, and statuses etc.
+3. Do not formget to call resolver tools to get doctor names, appointment types, and statuses etc.
 4. Display in **HTML card format**.
-
+5. Add dynamic class **expired** if appointment date and time is less than current date and time,  or **not-expired** if appointment date and time is greater than current date and time in the html card element.
 
 **Status Mapping:**
 
@@ -50,16 +50,28 @@ Conversational text:
 📅 Your Appointments for 21 Aug 2025
 
 
-Structured HTML:
+**Strictly use following Structured HTML for displaying the appointments:**
 
-///Use following format if logged in user is Doctor
+
+///Use following format if logged in user is Patient
 
 <div class="container my-3 p-0">
-  <div class="card shadow-sm rounded-3 mb-3 bg-light">
+  <div class="card shadow-sm rounded-3 mb-3 bg-light border-5 border-start-0 border-end-0 expired">
     <div class="card-body">
-      <p class="fw-bold fs-6 mb-2">👤 Patient: P102 – John Doe</p>
+      <p class="fw-bold fs-6 mb-2">🗓️ Appointment: 1 </p>
       <hr class="m-2">
-      <p class="mb-1">🏷️ <span class="text-break">Consultation 🩺</span></p>
+      <p class="mb-1">👨‍⚕️ <span class="text-break">Dr. Sarah Smith</span></p>
+      <p class="mb-1">🏷️ <span class="text-break">Consultation</span></p>
+      <p class="mb-1">✅ <span class="text-break">Booked</span></p>
+      <p class="mb-0">🕒 <span class="text-break">20 Aug 2025, 11:30 AM</span></p>
+    </div>
+  </div>
+  <div class="card shadow-sm rounded-3 mb-3 bg-light border-5 border-start-0 border-end-0 not-expired">
+    <div class="card-body">
+      <p class="fw-bold fs-6 mb-2">🗓️ Appointment: 2 </p>
+      <hr class="m-2">
+      <p class="mb-1">👨‍⚕️ <span class="text-break">Dr. Sarah Smith</span></p>
+      <p class="mb-1">🏷️ <span class="text-break">Follow-up</span></p>
       <p class="mb-1">✅ <span class="text-break">Booked</span></p>
       <p class="mb-0">🕒 <span class="text-break">21 Aug 2025, 11:30 AM</span></p>
     </div>
@@ -67,25 +79,15 @@ Structured HTML:
 </div>
 
 
-///Use following format if logged in user is Patient
+
+///Use following format if logged in user is Doctor
 
 <div class="container my-3 p-0">
-  <div class="card shadow-sm rounded-3 mb-3 bg-light">
+  <div class="card shadow-sm rounded-3 mb-3 bg-light border-5 border-start-0 border-end-0 not-expired">
     <div class="card-body">
-      <p class="fw-bold fs-6 mb-2">🗓️ Appointment: 1 </p>
+      <p class="fw-bold fs-6 mb-2">👤 Patient: P102 – John Doe</p>
       <hr class="m-2">
-      <p class="mb-1">👨‍⚕️ <span class="text-break">Dr. Sarah Smith</span></p>
-      <p class="mb-1">🏷️ <span class="text-break">Consultation</span></p>
-      <p class="mb-1">✅ <span class="text-break">Booked</span></p>
-      <p class="mb-0">🕒 <span class="text-break">21 Aug 2025, 11:30 AM</span></p>
-    </div>
-  </div>
-  <div class="card shadow-sm rounded-3 mb-3 bg-light">
-    <div class="card-body">
-      <p class="fw-bold fs-6 mb-2">🗓️ Appointment: 2 </p>
-      <hr class="m-2">
-      <p class="mb-1">👨‍⚕️ <span class="text-break">Dr. Sarah Smith</span></p>
-      <p class="mb-1">🏷️ <span class="text-break">Follow-up</span></p>
+      <p class="mb-1">🏷️ <span class="text-break">Consultation 🩺</span></p>
       <p class="mb-1">✅ <span class="text-break">Booked</span></p>
       <p class="mb-0">🕒 <span class="text-break">21 Aug 2025, 11:30 AM</span></p>
     </div>

@@ -113,21 +113,9 @@ builder.Services.Scan(scan => scan
     .WithScopedLifetime()
 );
 
-builder.Services.AddScoped<IToolHandler, ResolveNaturalLanguageDateToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveRelativeDateToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveUserInfoByNameToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveLoggedInUserInfoToolHandler>();
-builder.Services.AddScoped<IToolHandler, FetchProviderSlotToolHandler>();
-builder.Services.AddScoped<IToolHandler, FetchAppointmentTypeToolHandler>();
-builder.Services.AddScoped<IToolHandler, FetchAppointmentByDoctorToolHander>();
-builder.Services.AddScoped<IToolHandler, FetchAppointmentByPatientToolHander>();
-builder.Services.AddScoped<IToolHandler, SubmitAppointmentToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveSpecialityToolHandler>();
-builder.Services.AddScoped<IToolHandler, FetchDoctorInfoBySpecialtyToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveDoctorInfoByNameToolHandler>();
-builder.Services.AddScoped<IToolHandler, RescheduleAppointmentToolHandler>();
-builder.Services.AddScoped<IToolHandler, ResolveDoctorByIdToolHandler>();
-builder.Services.AddScoped<IToolHandler, CancelAppointmentToolHandler>();
+// Register services
+builder.Services.AddToolHandlers();  // This automatically registers all IToolHandler implementations
+
 
 builder.Services.AddScoped<PersistentAgent>(sp =>
 {
