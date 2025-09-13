@@ -24,4 +24,5 @@ export class HomeComponent implements OnInit {
     // Navigate to the calendar view
     this.router.navigate(['/calendar']);
   }
+  
 }

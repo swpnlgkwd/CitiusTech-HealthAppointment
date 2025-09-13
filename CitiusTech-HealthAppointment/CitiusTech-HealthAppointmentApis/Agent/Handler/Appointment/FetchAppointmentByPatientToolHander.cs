@@ -37,7 +37,7 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.Appointment
                 _logger.LogInformation("Fetching the appointments for given patient");
 
                 var appointments = await _appointmentsManager.GetByPatientAsync((int)patientId);
-                var filteredResult = appointments;
+                var filteredResult = appointments.OrderByDescending(x=>x.StartUtc);
                 if (appointmentStatus != null) appointments.Where(x => x.StatusId == appointmentStatus).ToList();
                 if (sDate != null) appointments.Where(x=>x.StartUtc >= sDate).ToList();
                 if (eDate != null) appointments.Where(x=>x.EndUtc <= eDate).ToList();

@@ -171,3 +171,11 @@
 .chat-body::-webkit-scrollbar {
     width: 10px;
 }
+
+::ng-deep .expired {
+  border-color: indianred;
+}
+
+::ng-deep .not-expired {
+  border-color: mediumseagreen;
+}

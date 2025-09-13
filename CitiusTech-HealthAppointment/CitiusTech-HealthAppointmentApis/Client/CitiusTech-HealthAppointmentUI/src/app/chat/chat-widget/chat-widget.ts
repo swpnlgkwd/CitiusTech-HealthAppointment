@@ -71,7 +71,7 @@ export class ChatWidgetComponent implements OnInit {
     }, 100);
   }
 
-  sendMessage(action?: string): void {
+  async sendMessage(action?: string): Promise<void> {
     if (this.chatForm.invalid && !action) return;
 
     const userMessage = action ?? this.chatForm.value.message;
@@ -89,13 +89,14 @@ export class ChatWidgetComponent implements OnInit {
     this.isBotTyping = true;
 
     this.agentService.askAgent(userMessage).subscribe({
-      next: (response) => {
+      next: async (response) => {
         this.messages.push({
           sender: 'bot',
           text: response.reply || '🤖 (No reply)',
           time: this.getCurrentTime(),
           quickReplies: []
         });
+        await this.playAudio();
         this.isBotTyping = false;
         this.cdRef.detectChanges();
         this.scrollToBottom();
@@ -135,7 +136,7 @@ export class ChatWidgetComponent implements OnInit {
   }
 
 
-  loadSmartSuggestions(): void {
+  async loadSmartSuggestions(): Promise<void> {
 
     // Show typing animation first
     this.isBotTyping = true;
@@ -147,7 +148,7 @@ export class ChatWidgetComponent implements OnInit {
         const message = response?.summaryMessage?.trim();
 
         // Simulate typing delay (2 seconds)
-        setTimeout(() => {
+        setTimeout(async() => {
           if (message) {
             this.messages.push({
               sender: 'bot',
@@ -162,7 +163,9 @@ export class ChatWidgetComponent implements OnInit {
               text: `Welcome to MediMate! How can I assist you today?`
             });
           }
-          this.isBotTyping = false;
+          this.isOpen = !this.isOpen ? true : this.isOpen; // Open chat if not already open
+          await this.playAudio();
+          this.isBotTyping = false;          
           this.cdRef.detectChanges();
         }, 4000); // 2-second delay
       },
@@ -190,6 +193,19 @@ export class ChatWidgetComponent implements OnInit {
         delete this.messages[i].quickReplies;
         break;
       }
+    }
+  }
+
+  async playAudio() {
+    console.log('Play Audio button clicked'); // Debugging line
+    var audio = document.getElementById("myAudio") as HTMLAudioElement;
+    if (audio) {
+      await audio.play().then(() => {
+      }).catch((error) => {
+        console.error('Audio play failed', error);
+      });
+    } else {
+      console.log('Audio element not found');
     }
   }
 }
