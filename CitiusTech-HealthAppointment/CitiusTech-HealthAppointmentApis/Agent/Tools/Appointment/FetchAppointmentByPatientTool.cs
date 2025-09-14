@@ -9,7 +9,9 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
         {
             return new FunctionToolDefinition(
                 name: "fetchAppointmentByPatient",
-                description: "Use this tool to when user says Show my appointments or show my appointment for tomorrow",
+                description:
+                    "Use this tool to fetch appointments for a given patient. " +
+                    "You must provide a patientId. Optionally, you can filter by appointmentStatusId, startDate, or endDate.",
                 parameters: BinaryData.FromObjectAsJson(
                     new
                     {
@@ -18,25 +20,23 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Tools.Appointment
                         {
                             patientId = new
                             {
-                                type = "integer",
-                                description = "Required. Filter by the patient id."
-                            },                           
+                                type = "string",
+                                description = "The unique patient ID. Example: '213'."
+                            },
                             appointmentStatusId = new
                             {
-                                type = "integer",
-                                description = "The ID of the appoinment status.",
+                                type = "string",
+                                description = "Optional filter: Appointment status ID. Example: '1' (Booked), '2' (Rescheduled), '3' (Cancelled)."
                             },
                             startDate = new
                             {
                                 type = "string",
-                                format = "date",
-                                description = "Start date if provided otherwise current date (yyyy-MM-dd)."
+                                description = "Optional filter: Start date for appointments (ISO 8601 format). Example: '2025-09-01'."
                             },
                             endDate = new
                             {
                                 type = "string",
-                                format = "date",
-                                description = "End date If provided otherwise null (yyyy-MM-dd)."
+                                description = "Optional filter: End date for appointments (ISO 8601 format). Example: '2025-09-30'."
                             }
                         },
                         required = new[] { "patientId" }
