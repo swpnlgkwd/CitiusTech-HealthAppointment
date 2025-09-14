@@ -80,7 +80,7 @@ export class ChatWidgetComponent implements OnInit {
     // Push user message
     this.messages.push({ sender: 'user', text: userMessage, time: currentTime });
     this.scrollToBottom();
-    
+
     this.removePreviousQuickReplies();
 
     this.chatForm.reset();
@@ -142,46 +142,38 @@ export class ChatWidgetComponent implements OnInit {
     this.isBotTyping = true;
 
     // On init or scheduler landing
-    // Get daily summary with a delay to simulate typing
     this.smartSuggestionService.getDailySummary().subscribe({
-      next: (response) => {
+      next: async (response) => {
         const message = response?.summaryMessage?.trim();
 
-        // Simulate typing delay (2 seconds)
-        setTimeout(async() => {
-          if (message) {
-            this.messages.push({
-              sender: 'bot',
-              text: message,
-              time: this.getCurrentTime(),
-              quickReplies: response.quickReplies
-            });
-          } else {
-            this.messages.push({
-              sender: 'bot',
-              time: this.getCurrentTime(),
-              text: `Welcome to MediMate! How can I assist you today?`
-            });
-          }
-          this.isOpen = !this.isOpen ? true : this.isOpen; // Open chat if not already open
-          await this.playAudio();
-          this.isBotTyping = false;          
-          this.cdRef.detectChanges();
-        }, 4000); // 2-second delay
-      },
-      error: (err: any) => {
-        console.error('Failed to load daily agent summary', err);
-
-        // Show fallback message after delay
-        setTimeout(() => {
+        if (message) {
+          this.messages.push({
+            sender: 'bot',
+            text: message,
+            time: this.getCurrentTime(),
+            quickReplies: response.quickReplies
+          });
+        } else {
           this.messages.push({
             sender: 'bot',
             time: this.getCurrentTime(),
             text: `Welcome to MediMate! How can I assist you today?`
           });
-          this.isBotTyping = false;
-          this.cdRef.detectChanges();
-        }, 2000); // Delay fallback too
+        }
+        this.isOpen = !this.isOpen ? true : this.isOpen; // Open chat if not already open
+        await this.playAudio();
+        this.isBotTyping = false;
+        this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Failed to load daily agent summary', err);
+        this.messages.push({
+          sender: 'bot',
+          time: this.getCurrentTime(),
+          text: `Welcome to MediMate! How can I assist you today?`
+        });
+        this.isBotTyping = false;
+        this.cdRef.detectChanges();
       }
     });
   }

@@ -123,9 +123,6 @@ MediMate — your dependable healthcare scheduling companion.
 * Each entry inside its own Bootstrap card.
 * Container must start with:
 
-
   <div class="container my-3 p-0">
-
-* One relevant black-and-white emoji per section title.
 
 ---

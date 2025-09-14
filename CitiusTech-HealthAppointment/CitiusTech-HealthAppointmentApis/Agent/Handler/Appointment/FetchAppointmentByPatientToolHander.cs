@@ -23,33 +23,36 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Handler.Appointment
         {
             try
             {
-                // 🔍 Parse the filters
                 int? patientId = root.FetchInt("patientId");
-                int? appointmentStatus = root.FetchInt("appointmentStatusId");
-                DateTime? sDate = root.FetchDateTime("startDate");
-                DateTime? eDate = root.FetchDateTime("endDate");
+                string? appointmentStatusId = root.TryGetProperty("appointmentStatusId", out var statusProp) ? statusProp.GetString() : null;
+                string? startDate = root.TryGetProperty("startDate", out var startProp) ? startProp.GetString() : null;
+                string? endDate = root.TryGetProperty("endDate", out var endProp) ? endProp.GetString() : null;
 
                 if (patientId == null)
                 {
-                    throw new Exception("PatientId cannot be null");
+                    _logger.LogWarning("patientId input is missing");
+                    return CreateError(call.Id, "patientId is required.");
                 }
 
-                _logger.LogInformation("Fetching the appointments for given patient");
-
                 var appointments = await _appointmentsManager.GetByPatientAsync((int)patientId);
-                var filteredResult = appointments.OrderByDescending(x=>x.StartUtc);
-                if (appointmentStatus != null) appointments.Where(x => x.StatusId == appointmentStatus).ToList();
-                if (sDate != null) appointments.Where(x=>x.StartUtc >= sDate).ToList();
-                if (eDate != null) appointments.Where(x=>x.EndUtc <= eDate).ToList();
+
+                if (appointments == null || !appointments.Any())
+                {
+                    _logger.LogWarning($"No appointments found for patientId: {patientId}");
+                    return CreateError(call.Id, $"No appointments found for patient {patientId}.");
+                }
+
+                _logger.LogInformation($"Fetched {appointments.Count()} appointments for patientId: {patientId}");
 
                 var response = new
                 {
                     success = true,
                     message = "😊 Appointments fetched successfully!",
-                    data = filteredResult
+                    data = appointments
                 };
 
-                return CreateSuccess(call.Id, "Appointment types fetched successfully", response);
+                return CreateSuccess(call.Id, $"✅ Appointments fetched successfully for patient {patientId}.",
+                new { appointments });
             }
             catch
             {
