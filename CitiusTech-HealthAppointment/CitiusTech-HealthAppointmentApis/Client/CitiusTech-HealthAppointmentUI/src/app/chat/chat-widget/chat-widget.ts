@@ -103,13 +103,15 @@ export class ChatWidgetComponent implements OnInit {
         document.getElementById('messageInput')?.focus();
       },
       error: (error) => {
-        console.error('Agent error:', error);
         this.isBotTyping = false;
         this.messages.push({
           sender: 'bot',
           text: '⚠️ Something went wrong. Please try again later.',
           time: this.getCurrentTime()
         });
+        this.cdRef.detectChanges();
+        this.scrollToBottom();
+        document.getElementById('messageInput')?.focus();
       }
     });
   }
@@ -160,10 +162,10 @@ export class ChatWidgetComponent implements OnInit {
             text: `Welcome to MediMate! How can I assist you today?`
           });
         }
-        this.isOpen = !this.isOpen ? true : this.isOpen; // Open chat if not already open
-        await this.playAudio();
+        this.isOpen = !this.isOpen ? true : this.isOpen; // Open chat if not already open        
         this.isBotTyping = false;
         this.cdRef.detectChanges();
+        await this.playAudio();
       },
       error: (err: any) => {
         console.error('Failed to load daily agent summary', err);
