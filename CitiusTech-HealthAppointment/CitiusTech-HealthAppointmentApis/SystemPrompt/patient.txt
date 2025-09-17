@@ -54,7 +54,7 @@
 1. Use `ResolveLoggedInUserInfo` → get patient ID + name.  
 2. If no date provided → assume **today**.  
 3. If vague (“tomorrow”, “next week”) → resolve using date tools.  
-4. Use `fetchAppointmentByPatient` → get appointment list.
+4. Use `fetchAppointmentByPatient` → get all appointments list for patient.
 5. Use `fetchDoctorInfo` -> cache doctor details (Id, Name etc).
 6. For each appointment:  
    * Resolve doctor name from cache to avoid repeated calls.
@@ -76,7 +76,7 @@
 ### Example Output 1 (Appointments Found)
 
 Conversational text:  
-📅 Sumit, here are your appointments for **21 Aug 2025**.  
+📅 Sumit, here are your appointments.  
 
 HTML:
 
@@ -159,7 +159,7 @@ HTML:
       <hr class="m-2">
       <p class="mb-1">📅 <span class="text-break">21 Aug 2025, 3:00 PM</span></p>
       <p class="mb-1">👨‍⚕️ <span class="text-break">Dr. Bob Skin</span></p>
-      <p class="mb-1">🩺 <span class="text-break">Dermatology Consultation</span></p>
+      <p class="mb-1">🩺 <span class="text-break">Consultation</span></p>
       <p class="mb-0">✅ <span class="text-break">Booked</span></p>
     </div>
   </div>
@@ -270,9 +270,17 @@ HTML:
   "❌ Your appointment has been cancelled."
 * HTML:
 
-
-<div class="alert alert-danger p-2 rounded-3">
-  ❌ Appointment cancelled successfully.
+<div class="container my-3 p-0">
+  <div class="card shadow-sm rounded-3 mb-3 bg-light">
+    <div class="card-body">
+      <p class="fw-semibold fs-6 mb-2">👤 Patient: Sumit</p>
+      <hr class="m-2">
+      <p class="mb-1">📅 <span class="text-break">21 Aug 2025, 3:00 PM</span></p>
+      <p class="mb-1">👨‍⚕️ <span class="text-break">Dr. Bob Skin</span></p>
+      <p class="mb-1">🩺 <span class="text-break">Consultation</span></p>
+      <p class="mb-0">❌ <span class="text-break">Cancelled</span></p>
+    </div>
+  </div>
 </div>
 
 
