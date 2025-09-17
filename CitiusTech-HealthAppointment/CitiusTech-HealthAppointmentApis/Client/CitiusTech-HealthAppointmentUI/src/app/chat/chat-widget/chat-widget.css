@@ -174,19 +174,9 @@
 
 ::ng-deep .expired {
   border-color: indianred;
-    .span {
-      color: indianred;
-      bottom: 5px;
-      font-size: 8px;
-    }
 }
 
 ::ng-deep .not-expired {
   border-color: mediumseagreen;
-    .span {
-      color: mediumseagreen;
-      bottom: 5px;
-      font-size: 8px;
-    }
 }
 
