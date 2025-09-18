@@ -98,151 +98,159 @@ namespace CitiusTech_HealthAppointmentApis.Agent.Services
 
             _logger.LogInformation("Sending user message of length {Length}", message.Length);
 
-            // Add user message to thread
-            await CallAzureApiAsync(
-                () => _client.Messages.CreateMessageAsync(threadId, MessageRole.User, message),
-                "CreateMessageAsync",
-                $"message length={message.Length}");
-
-            int attempt = 0;
-            ThreadRun run = await CallAzureApiAsync(
-                () => _client.Runs.CreateRunAsync(threadId, _agent.Id),
-                "CreateRunAsync",
-                $"agentId={_agent.Id}");
-
-
-            while (attempt < maxRetries)
+            try
             {
-                attempt++;
-                try
+                // Add user message to thread
+                await CallAzureApiAsync(
+                    () => _client.Messages.CreateMessageAsync(threadId, MessageRole.User, message),
+                    "CreateMessageAsync",
+                    $"message length={message.Length}");
+
+                int attempt = 0;
+                ThreadRun run = await CallAzureApiAsync(
+                    () => _client.Runs.CreateRunAsync(threadId, _agent.Id),
+                    "CreateRunAsync",
+                    $"agentId={_agent.Id}");
+
+
+                while (attempt < maxRetries)
                 {
-                    //int delayMs = baseDelayMs;
-                    bool continuePolling;
-
-                    do
+                    attempt++;
+                    try
                     {
-                        var delayMs = pollIndex < pollingDelays.Length
-                            ? pollingDelays[pollIndex]
-                            : pollingDelays.Last(); // cap at 2s
+                        //int delayMs = baseDelayMs;
+                        bool continuePolling;
 
-                        pollIndex++;
-                        await Task.Delay(delayMs);
+                        do
+                        {
+                            var delayMs = pollIndex < pollingDelays.Length
+                                ? pollingDelays[pollIndex]
+                                : pollingDelays.Last(); // cap at 2s
 
-                        run = await CallAzureApiAsync(
-                            () => _client.Runs.GetRunAsync(threadId, run.Id),
-                            "GetRunAsync",
+                            pollIndex++;
+                            await Task.Delay(delayMs);
+
+                            run = await CallAzureApiAsync(
+                                () => _client.Runs.GetRunAsync(threadId, run.Id),
+                                "GetRunAsync",
+                                $"runId={run.Id}");
+
+                            // Increase polling delay exponentially
+                            delayMs = Math.Min(delayMs * 2, maxDelayMs);
+
+                            if (run.Status == RunStatus.RequiresAction && run.RequiredAction is SubmitToolOutputsAction action)
+                            {
+                                // Resolve all tool outputs in parallel if possible
+                                var toolOutputsTasks = action.ToolCalls
+                                    .Select(toolCall => GetResolvedToolOutputAsync(toolCall))
+                                    .ToArray();
+
+                                var toolOutputs = (await Task.WhenAll(toolOutputsTasks))
+                                                  .Where(x => x != null)
+                                                  .ToList();
+
+                                if (toolOutputs.Any())
+                                {
+                                    run = await CallAzureApiAsync(
+                                        () => _client.Runs.SubmitToolOutputsToRunAsync(threadId, run.Id, toolOutputs),
+                                        "SubmitToolOutputsToRunAsync",
+                                        $"runId={run.Id}, toolCalls={toolOutputs.Count}");
+
+                                    // await Task.Delay(submitDelayMs); // short pause to avoid burst
+                                }
+                            }
+
+                            if (run.Status == RunStatus.Failed && run.LastError != null)
+                            {
+                                if (!string.IsNullOrEmpty(run.LastError.Code) &&
+                                    run.LastError.Code.Contains("rate_limit_exceeded", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    throw new RateLimitExceededException("Rate limit exceeded.");
+                                }
+                                else
+                                {
+                                    _logger.LogError("Run failed: {Code} - {Message}", run.LastError.Code, run.LastError.Message);
+                                    return null; // unrecoverable
+                                }
+                            }
+
+                            continuePolling = run.Status == RunStatus.Queued
+                                             || run.Status == RunStatus.InProgress
+                                             || run.Status == RunStatus.RequiresAction;
+
+                        } while (continuePolling);
+
+                        // Fetch final messages
+                        var messages = await CallAzureApiAsync(
+                            () => Task.FromResult(_client.Messages.GetMessages(threadId, runId: run.Id, order: ListSortOrder.Descending)),
+                            "GetMessages",
                             $"runId={run.Id}");
 
-                        // Increase polling delay exponentially
-                        delayMs = Math.Min(delayMs * 2, maxDelayMs);
+                        var agentMsg = messages
+                            .FirstOrDefault(m => m.Role == MessageRole.Agent)?
+                            .ContentItems.OfType<MessageTextContent>()
+                            .FirstOrDefault();
 
-                        if (run.Status == RunStatus.RequiresAction && run.RequiredAction is SubmitToolOutputsAction action)
+                        if (agentMsg != null)
                         {
-                            // Resolve all tool outputs in parallel if possible
-                            var toolOutputsTasks = action.ToolCalls
-                                .Select(toolCall => GetResolvedToolOutputAsync(toolCall))
-                                .ToArray();
+                            _logger.LogInformation("Returning message content: {Text}", agentMsg.Text);
+                            return agentMsg;
+                        }
 
-                            var toolOutputs = (await Task.WhenAll(toolOutputsTasks))
-                                              .Where(x => x != null)
-                                              .ToList();
+                        _logger.LogWarning("No assistant response found after run completion.");
+                        return null;
+                    }
+                    catch (RateLimitExceededException ex)
+                    {
+                        if (attempt == maxRetries)
+                        {
+                            _logger.LogError(ex, "Max retries reached due to rate limit.");
+                            throw;
+                        }
 
-                            if (toolOutputs.Any())
+                        // Exponential retry with jitter
+                        var retryDelay = Math.Min(baseDelayMs * (int)Math.Pow(2, attempt), maxDelayMs) + Random.Shared.Next(200, 800);
+                        _logger.LogWarning(ex, "Rate limit hit on attempt {Attempt}, retrying after {RetryDelay}ms...", attempt, retryDelay);
+
+                        retryDelay = 5000;
+                        await Task.Delay(retryDelay);
+
+                        // Cancel old run before retry
+                        if (run.Status == RunStatus.Queued || run.Status == RunStatus.InProgress || run.Status == RunStatus.RequiresAction)
+                        {
+                            try
                             {
-                                run = await CallAzureApiAsync(
-                                    () => _client.Runs.SubmitToolOutputsToRunAsync(threadId, run.Id, toolOutputs),
-                                    "SubmitToolOutputsToRunAsync",
-                                    $"runId={run.Id}, toolCalls={toolOutputs.Count}");
-
-                                // await Task.Delay(submitDelayMs); // short pause to avoid burst
+                                _logger.LogInformation("Cancelling old run before retry. RunId: {RunId}", run.Id);
+                                await CallAzureApiAsync(
+                                    () => _client.Runs.CancelRunAsync(threadId, run.Id),
+                                    "CancelRunAsync",
+                                    $"runId={run.Id}");
+                            }
+                            catch (Exception cancelEx)
+                            {
+                                _logger.LogWarning(cancelEx, "Failed to cancel run {RunId}", run.Id);
                             }
                         }
 
-                        if (run.Status == RunStatus.Failed && run.LastError != null)
-                        {
-                            if (!string.IsNullOrEmpty(run.LastError.Code) &&
-                                run.LastError.Code.Contains("rate_limit_exceeded", StringComparison.OrdinalIgnoreCase))
-                            {
-                                throw new RateLimitExceededException("Rate limit exceeded.");
-                            }
-                            else
-                            {
-                                _logger.LogError("Run failed: {Code} - {Message}", run.LastError.Code, run.LastError.Message);
-                                return null; // unrecoverable
-                            }
-                        }
-
-                        continuePolling = run.Status == RunStatus.Queued
-                                         || run.Status == RunStatus.InProgress
-                                         || run.Status == RunStatus.RequiresAction;
-
-                    } while (continuePolling);
-
-                    // Fetch final messages
-                    var messages = await CallAzureApiAsync(
-                        () => Task.FromResult(_client.Messages.GetMessages(threadId, runId: run.Id, order: ListSortOrder.Descending)),
-                        "GetMessages",
-                        $"runId={run.Id}");
-
-                    var agentMsg = messages
-                        .FirstOrDefault(m => m.Role == MessageRole.Agent)?
-                        .ContentItems.OfType<MessageTextContent>()
-                        .FirstOrDefault();
-
-                    if (agentMsg != null)
-                    {
-                        _logger.LogInformation("Returning message content: {Text}", agentMsg.Text);
-                        return agentMsg;
+                        // Create a fresh run
+                        run = await CallAzureApiAsync(
+                            () => _client.Runs.CreateRunAsync(threadId, _agent.Id),
+                            "CreateRunAsync",
+                            $"agentId={_agent.Id}");
                     }
-
-                    _logger.LogWarning("No assistant response found after run completion.");
-                    return null;
-                }
-                catch (RateLimitExceededException ex)
-                {
-                    if (attempt == maxRetries)
+                    catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Max retries reached due to rate limit.");
-                        throw;
+                        _logger.LogError(ex, "Run failed with unrecoverable error.");
+                        return null;
                     }
-
-                    // Exponential retry with jitter
-                    var retryDelay = Math.Min(baseDelayMs * (int)Math.Pow(2, attempt), maxDelayMs) + Random.Shared.Next(200, 800);
-                    _logger.LogWarning(ex, "Rate limit hit on attempt {Attempt}, retrying after {RetryDelay}ms...", attempt, retryDelay);
-
-                    retryDelay = 5000;
-                    await Task.Delay(retryDelay);
-
-                    // Cancel old run before retry
-                    if (run.Status == RunStatus.Queued || run.Status == RunStatus.InProgress || run.Status == RunStatus.RequiresAction)
-                    {
-                        try
-                        {
-                            _logger.LogInformation("Cancelling old run before retry. RunId: {RunId}", run.Id);
-                            await CallAzureApiAsync(
-                                () => _client.Runs.CancelRunAsync(threadId, run.Id),
-                                "CancelRunAsync",
-                                $"runId={run.Id}");
-                        }
-                        catch (Exception cancelEx)
-                        {
-                            _logger.LogWarning(cancelEx, "Failed to cancel run {RunId}", run.Id);
-                        }
-                    }
-
-                    // Create a fresh run
-                    run = await CallAzureApiAsync(
-                        () => _client.Runs.CreateRunAsync(threadId, _agent.Id),
-                        "CreateRunAsync",
-                        $"agentId={_agent.Id}");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Run failed with unrecoverable error.");
-                    return null;
                 }
             }
-
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get agent response.");
+                await this.Refresh();
+                await this.GetAgentResponseAsync(role, message);
+            }
             return null;
         }
 
