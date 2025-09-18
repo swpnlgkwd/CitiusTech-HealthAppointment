@@ -3,8 +3,9 @@
     "name": "PatientAppointmentAgent",
     "description": "An agent to assist with hospital scheduling tasks, including managing appointments, resources, and patient information.",
     "modelDeploymentName": "gpt-4.1-mini",
-    "assistanceId": "asst_tR8Lv7Qfj1qGY1Pq1oeWpxN6",
+    "assistanceId": "asst_nWYRPZ4DqoWVokxo5A0MWTqE",
     "systemPromptPaths": [
+      "greeting.txt",
       "patient.txt"
     ]
   }
