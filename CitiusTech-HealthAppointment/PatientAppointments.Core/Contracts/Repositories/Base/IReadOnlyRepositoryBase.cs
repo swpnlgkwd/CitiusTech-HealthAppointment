@@ -10,5 +10,8 @@ namespace PatientAppointments.Core.Contracts.Repositories.Base
     public interface IReadOnlyRepositoryBase<T> where T : class
     {
         Task<IEnumerable<T>> GetAllAsync();
+
+        // Add this
+        IQueryable<T> Query();
     }
 }

@@ -1,5 +1,6 @@
 using PatientAppointments.Core.Contracts;
 using PatientAppointments.Core.Contracts.Repositories;
+using PatientAppointments.Core.Contracts.Repositories.Risk;
 using PatientAppointments.Infrastructure.Data;
 using System.Threading.Tasks;
 
@@ -16,9 +17,21 @@ namespace PatientAppointments.Infrastructure {
         public ISpecialityRepository Speciality { get; }
         public IAgentConversationsRepository AgentConversations { get; }
 
+        public IPatientRiskFactorRepository PatientRiskFactorRepository { get; }
+
+        public IPatientRiskScoreRepository PatientRiskScoreRepository { get; }
+
+        public IRiskLevelReadOnlyRepository RiskLevelReadOnlyRepository { get; }
+
+        public IRiskTypeReadOnlyRepository RiskTypeReadOnlyRepository { get; }
+
         public UnitOfWork(AppDbContext ctx, IPatientRepository p, IProviderRepository d, IAppointmentRepository a,
             IProviderSlotRepository ProviderSlot, IProviderScheduleRepository ProviderSchedule, IAppointmentTypeRepository appointmentType, ISpecialityRepository Speciality,
-            IAgentConversationsRepository agentConversationsRepository)
+            IAgentConversationsRepository agentConversationsRepository,
+            IPatientRiskFactorRepository patientRiskFactorRepository,
+            IPatientRiskScoreRepository patientRiskScoreRepository,
+            IRiskLevelReadOnlyRepository riskLevelReadOnlyRepository,
+            IRiskTypeReadOnlyRepository riskTypeReadOnlyRepository)
         {
             _ctx = ctx; 
             Patients = p; 
@@ -29,6 +42,10 @@ namespace PatientAppointments.Infrastructure {
             this.AppointmentsType = appointmentType;
             this.Speciality = Speciality;
             this.AgentConversations = agentConversationsRepository;
+            this.PatientRiskScoreRepository = patientRiskScoreRepository;
+            this.PatientRiskFactorRepository = patientRiskFactorRepository;
+            this.RiskLevelReadOnlyRepository = riskLevelReadOnlyRepository;
+            this.RiskTypeReadOnlyRepository = riskTypeReadOnlyRepository;
         }
         public Task<int> CompleteAsync() => _ctx.SaveChangesAsync();
     }
