@@ -1,4 +1,5 @@
 using PatientAppointments.Core.Contracts.Repositories;
+using PatientAppointments.Core.Contracts.Repositories.Risk;
 using System.Threading.Tasks;
 
 namespace PatientAppointments.Core.Contracts {
@@ -10,6 +11,15 @@ namespace PatientAppointments.Core.Contracts {
         IProviderScheduleRepository ProviderSchedule { get; }
         IProviderSlotRepository ProviderSlot { get; }
         ISpecialityRepository Speciality { get; }
+
+        IPatientRiskFactorRepository PatientRiskFactorRepository { get; }
+
+        IPatientRiskScoreRepository PatientRiskScoreRepository { get; }
+
+        IRiskLevelReadOnlyRepository RiskLevelReadOnlyRepository { get; }
+
+        IRiskTypeReadOnlyRepository RiskTypeReadOnlyRepository { get; }
+
         Task<int> CompleteAsync();
     }
 }

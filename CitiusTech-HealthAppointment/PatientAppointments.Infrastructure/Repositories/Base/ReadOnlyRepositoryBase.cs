@@ -19,5 +19,8 @@ namespace PatientAppointments.Infrastructure.Repositories.Base
         public ReadOnlyRepositoryBase(AppDbContext ctx) { _ctx = ctx; _db = ctx.Set<T>(); }
 
         public async Task<IEnumerable<T>> GetAllAsync() => await _db.ToListAsync();
+
+        // Expose IQueryable
+        public IQueryable<T> Query() => _db.AsQueryable();
     }
 }

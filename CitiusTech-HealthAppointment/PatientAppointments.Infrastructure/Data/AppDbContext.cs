@@ -1,24 +1,39 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PatientAppointments.Core.Entities;
+using PatientAppointments.Core.Entities.Risk;
 using PatientAppointments.Infrastructure.Identity;
 using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PatientAppointments.Infrastructure.Data {
+namespace PatientAppointments.Infrastructure.Data
+{
     public class AppDbContext : IdentityDbContext<ApplicationUser> {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Patient> Patients { get; set; } = default!;
-        public DbSet<Provider> Provider { get; set; } = default!;
-        public DbSet<Appointment> Appointments { get; set; } = default!;
-        public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
-        public DbSet<ProviderSchedule> ProviderSchedule { get; set; } = default!;
-        public DbSet<ProviderSlot> ProviderSlot { get; set; } = default!;
-        public DbSet<Specialty> Specialty { get; set; } = default!; 
 
+        public DbSet<Provider> Provider { get; set; } = default!;
+
+        public DbSet<Appointment> Appointments { get; set; } = default!;
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+
+        public DbSet<ProviderSchedule> ProviderSchedule { get; set; } = default!;
+
+        public DbSet<ProviderSlot> ProviderSlot { get; set; } = default!;
+
+        public DbSet<Specialty> Specialty { get; set; } = default!;
+
+        public DbSet<RiskLevel> RiskLevels { get; set; } = default!;
+
+        public DbSet<RiskType> RiskTypes { get; set; } = default!;
+
+        public DbSet<PatientRiskScore> RiskScores { get; set; } = default!;
+
+        public DbSet<PatientRiskFactor> PatientRiskFactors { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);

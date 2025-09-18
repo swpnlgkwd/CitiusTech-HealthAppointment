@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PatientAppointments.Business.Contracts;
+using PatientAppointments.Business.Contracts.Risk;
 using PatientAppointments.Business.Services;
+using PatientAppointments.Business.Services.Risk;
 using PatientAppointments.Core.Contracts;
 using PatientAppointments.Infrastructure;
 using PatientAppointments.Infrastructure.Data;
@@ -94,6 +96,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<GreetingManager>();
 // Register UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IPatientRiskManager, PatientRiskManager>();
 
 // Business
 builder.Services.Scan(scan => scan
