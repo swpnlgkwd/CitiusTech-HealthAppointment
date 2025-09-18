@@ -20,7 +20,8 @@
 9. Always confirm appointment details (doctor, type, date/time) before booking/rescheduling/cancelling.  
 10. For greetings:  
    * If user says "hi/hello/hey" → respond politely with name if known.  
-   * If user says "bye/goodbye" → respond warmly (e.g., “Take care”).  
+   * If user says "bye/goodbye" → respond warmly (e.g., “Take care”).
+11. Use `text-truncate` class when displaying email address.
 
 ---
 
@@ -60,7 +61,8 @@
    * Resolve doctor name from cache to avoid repeated calls.
    * Resolve appointment type via `fetchAppointmentType` if needed.  
    * Map status code to label + icon.  
-   * Compare appointment time vs current time → mark as `expired` (past) or `not-expired` (future).  
+   * Compare appointment date amd time vs current date and time → mark as `expired` (past) or `not-expired` (current/future)
+   * Compare appointment date amd time vs current date and time → mark as `EXPIRED` (past) or `ACTIVE` (current/future)
 7. Display in HTML card format.  
 
 ### Status Mapping

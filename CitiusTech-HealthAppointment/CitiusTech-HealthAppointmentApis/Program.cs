@@ -85,7 +85,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
 
 // Register Agent infrastructure
 builder.Services.AddSingleton<IAgentStore, FileAgentStore>(); 
@@ -157,17 +157,35 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/swagger/index.html") // root path
+    {
+        context.Response.Redirect("http://localhost:4200/login");
+    }
+    else
+    {
+        await next();
+    }
+});
+
+// Enable HTTPS redirection (applies after the root path redirect check)
 app.UseHttpsRedirection();
+
+// Enable CORS with the "AllowAll" policy
 app.UseCors("AllowAll");
+
+// Authentication and Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Map controllers
 app.MapControllers();
 
 // Ensure the agent is created at startup
@@ -176,11 +194,12 @@ using (var scope = app.Services.CreateScope())
     var agentManager = scope.ServiceProvider.GetRequiredService<IAgentManager>();
     await agentManager.EnsureAgentExistsAsync();
 
-    //Seeder for logins
+    // Seeder for logins
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
     await DbSeeder.SeedAsync(context, userManager, roleManager);
 }
+
 app.Run();
