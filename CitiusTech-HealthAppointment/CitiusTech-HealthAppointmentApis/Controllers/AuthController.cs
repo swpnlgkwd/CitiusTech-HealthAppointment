@@ -36,6 +36,13 @@ namespace PatientAppointments.Api.Controllers
             var result = await _authManager.RefreshTokenAsync(request.Token, request.RefreshToken);
             return Ok(result);
         }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _authManager.DeleteThreadForUserAsync();
+            return Ok(new { Message = "Logged out successfully" });
+        }
     }
 
     // simple DTO for refresh request

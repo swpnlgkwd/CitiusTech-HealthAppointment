@@ -20,15 +20,12 @@ export class LoginComponent {
   ;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+    localStorage.clear();
 
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
-
-    if(this.authService.isAuthenticated()) {
-      this.router.navigate(['/home']);
-    }
   }
 
   togglePasswordVisibility(): void {

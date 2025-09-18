@@ -31,6 +31,10 @@ export class AuthService {
       );
   }
 
+  logout() {
+    return this.http.post<any>(`${BASE_URL}/auth/logout`, {})
+  }
+  
   register(register: registerDto) {
     return this.http.post<any>(`${BASE_URL}/auth/register`, register);
   }

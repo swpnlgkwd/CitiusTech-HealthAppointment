@@ -1,45 +1,152 @@
-<!-- <div class="container mt-4">
-  <h2 class="mb-4">
-    📅 Calendar ({{ userRole | titlecase }})
-  </h2>
-
-  <div *ngIf="events.length === 0" class="alert alert-info">
-    No appointments found.
-  </div>
-
-  <div class="row">
-    <div *ngFor="let ev of events" class="col-md-6 col-lg-4 mb-3">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">{{ ev.title }}</h5>
-          <p class="card-text mb-1">
-            <i class="bi bi-calendar-event"></i>
-            {{ ev.start | date: 'fullDate' }} <br>
-            <i class="bi bi-clock"></i>
-            {{ ev.start | date: 'shortTime' }}
-          </p>
-
-          <p *ngIf="userRole === 'staff'" class="mb-1">
-            <i class="bi bi-person-circle"></i>
-            Patient: <strong>{{ ev.patientName }}</strong>
-          </p>
-
-          <span class="badge"
-                [ngClass]="{
-                  'bg-success': ev.riskFlag === 'low',
-                  'bg-warning text-dark': ev.riskFlag === 'medium',
-                  'bg-danger': ev.riskFlag === 'high'
-                }">
-            Risk: {{ ev.riskFlag | titlecase }}
-          </span>
+<div class="appointments-dashboard container-fluid py-4">
+  <!-- Top: Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3" *ngFor="let s of [
+      { label: 'Upcoming', value: stats.upcoming, class: 'text-primary' },
+      { label: 'Completed', value: stats.completed, class: 'text-success' },
+      { label: 'Cancelled', value: stats.cancelled, class: 'text-danger' },
+      { label: 'No Show', value: stats.noshow, class: 'text-warning' }
+    ]">
+      <div class="card stat-card shadow-sm rounded-3 h-100">
+        <div class="card-body text-center">
+          <h6 class="text-muted">{{ s.label }}</h6>
+          <h3 class="{{s.class}}">{{ s.value }}</h3>
         </div>
       </div>
     </div>
   </div>
-</div> -->
 
-  <div class="coming-soon-box">
-    <i class="bi bi-hourglass-split coming-icon"></i>
-    <div class="coming-title">Coming Soon</div>
-    <div class="coming-text">We're working hard to launch something amazing. Stay tuned!</div>
+  <!-- Main split: Left = part1, Right = part2 -->
+  <div class="row">
+    <!-- Part 1: left (big) -->
+    <div class="col-lg-8 mb-4">
+      <div class="row gx-3">
+        <!-- Subpanel left (small) - could hold summary/controls -->
+        <div class="col-md-4 mb-3">
+          <div class="card control-card shadow-sm rounded-3 h-100 p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="fw-semibold">Week</div>
+              <div class="text-muted small">{{ weekDates[0] ? (weekDates[0] | date:'dd MMM') : '' }} - {{ weekDates[6] ? (weekDates[6] | date:'dd MMM') : '' }}</div>
+            </div>
+            <div class="my-2 d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary w-100" (click)="prevWeek()">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-secondary w-100" (click)="nextWeek()">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+
+            <div class="mt-3">
+              <div class="small text-muted mb-1">Today</div>
+              <div class="fw-bold">{{ (currentDate | date:'EEE, dd MMM yyyy') }}</div>
+            </div>
+
+            <div class="mt-4 small text-muted">Legend</div>
+            <div class="d-flex flex-column gap-2 mt-2">
+              <div class="legend-item"><span class="legend-dot booked"></span> Booked</div>
+              <div class="legend-item"><span class="legend-dot rescheduled"></span> Rescheduled</div>
+              <div class="legend-item"><span class="legend-dot cancelled"></span> Cancelled</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subpanel right: weekly schedule -->
+        <div class="col-md-8 mb-3">
+          <div class="card schedule-card shadow-sm rounded-3 h-100 p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="fw-semibold">Weekly Schedule</div>
+              <div class="small text-muted">Click a day to view details</div>
+            </div>
+
+            <div class="row text-center fw-bold text-muted mb-2 gx-2">
+              <div class="col" *ngFor="let d of ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']">{{ d }}</div>
+            </div>
+
+            <div class="row gx-2">
+              <div class="col" *ngFor="let d of weekDates">
+                <div class="day-card p-2 h-100"
+                     [class.active]="selectedDateKey === dateKey(d)"
+                     (click)="selectDate(dateKey(d))">
+                  <div class="date-row d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-semibold">{{ d | date:'dd' }}</div>
+                    <div class="small text-muted">{{ d | date:'EEE' }}</div>
+                  </div>
+
+                  <div *ngIf="appointmentsByDate[dateKey(d)]?.length; else noApptSmall">
+                    <div *ngFor="let a of appointmentsByDate[dateKey(d)]" class="appt small mb-1 d-block text-center">
+                      <span class="dot" [ngClass]="a.status.toLowerCase()"></span>
+                      {{ formatTime(a.date) }}
+                    </div>
+                  </div>
+                  <ng-template #noApptSmall>
+                    <div class="appt small text-muted text-center d-block"> - </div>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment detail card below weekly schedule (spans full left area) -->
+        <div class="col-12">
+          <div class="card detail-card shadow-sm rounded-3 p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <div class="small text-muted">Appointments for</div>
+                <div class="fw-semibold">{{ selectedDateKey || 'Select a day' }}</div>
+              </div>
+              <div>
+                <button class="btn btn-sm btn-outline-secondary" (click)="resetFilter()">Reset</button>
+              </div>
+            </div>
+
+            <div *ngIf="selectedDateKey && filteredAppointments.length; else noDetail">
+              <div *ngFor="let a of filteredAppointments" class="appt-detail d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <div class="fw-bold">{{ a.type }} • {{ formatTime(a.date) }}</div>
+                  <div class="text-muted small">Clinician: {{ a.doctor }}</div>
+                </div>
+                <div class="text-end">
+                  <div class="badge-pill" [ngClass]="getStatusClass(a.status)">{{ a.status }}</div>
+                  <div class="text-muted small mt-1">ID: {{ a.id }}</div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noDetail>
+              <div class="text-muted">No appointments for the selected day.</div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part 2: right (upcoming list) -->
+    <div class="col-lg-4 mb-4">
+      <div class="card upcoming-card shadow-sm rounded-3 h-100">
+        <div class="card-header d-flex justify-content-between align-items-center bg-white border-0">
+          <div class="fw-semibold">Upcoming Appointments</div>
+          <button class="btn btn-sm btn-outline-secondary" >Refresh</button>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="getUpcomingList().length; else noUpcoming" class="list-group list-group-flush">
+            <div *ngFor="let u of getUpcomingList()" class="list-group-item d-flex justify-content-between align-items-start">
+              <div>
+                <div class="fw-bold">{{ u.doctor }}</div>
+                <div class="small text-muted">{{ u.type }} • {{ formatDateLong(u.date) }}</div>
+              </div>
+              <div class="text-end">
+                <div class="badge-pill" [ngClass]="getStatusClass(u.status)">{{ u.status }}</div>
+                <div class="small text-muted mt-1">ID: {{ u.id }}</div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noUpcoming>
+            <div class="p-3 text-center text-muted">No upcoming appointments</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
   </div>
+</div>

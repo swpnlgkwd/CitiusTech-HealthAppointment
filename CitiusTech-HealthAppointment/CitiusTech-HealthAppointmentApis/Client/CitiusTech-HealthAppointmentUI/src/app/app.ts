@@ -21,9 +21,25 @@ export class AppComponent {
 
   logout() {
     this.isLoading = true;
-    localStorage.clear();
-    this.router.navigate(['/login']);
-    this.isLoggedIn;
-    this.isLoading = false;
+
+    this.authService.logout().subscribe({
+      next: (res: any) => {
+        localStorage.clear();
+        this.router.navigate(['/login']);
+        this.isLoggedIn;
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Logout error:', err);
+      }
+    });
+  }
+
+  home() {
+    if (this.isLoggedIn) {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }
