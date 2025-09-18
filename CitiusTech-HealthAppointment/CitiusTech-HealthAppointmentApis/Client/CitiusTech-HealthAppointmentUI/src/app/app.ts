@@ -32,7 +32,14 @@ export class AppComponent {
       error: (err: any) => {
         console.error('Logout error:', err);
       }
-  });
+    });
+  }
 
+  home() {
+    if (this.isLoggedIn) {
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }

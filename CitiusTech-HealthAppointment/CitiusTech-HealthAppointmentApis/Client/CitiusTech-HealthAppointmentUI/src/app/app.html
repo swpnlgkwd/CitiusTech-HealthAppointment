@@ -9,7 +9,7 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold text-primary">MediMate</a>
+    <a class="navbar-brand fw-bold text-primary" (click)="home()" role="button">MediMate</a>
 
     <div class="ms-auto">
       <button class="btn btn-outline-danger" (click)="logout()" *ngIf="isLoggedIn">
