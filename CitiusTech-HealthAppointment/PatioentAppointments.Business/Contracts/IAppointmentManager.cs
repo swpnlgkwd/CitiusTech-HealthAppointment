@@ -19,5 +19,6 @@ namespace PatientAppointments.Business.Contracts
         Task<bool> CancelAsync(int id, string note);
         Task<IEnumerable<AppointmentTypeDto>> GetAppointmentTypesAsync();
         Task<IEnumerable<ProviderSlotDto>> GetProviderSlotsAsync(int ProviderId, DateTime sDate, DateTime? edate);
+        Task<IEnumerable<AppointmentInfoDto>> FetchAppointmentAsync(int userId, string role);
     }
 }

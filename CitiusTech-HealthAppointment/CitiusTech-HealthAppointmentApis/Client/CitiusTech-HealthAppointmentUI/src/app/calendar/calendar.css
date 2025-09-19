@@ -123,3 +123,10 @@
 /* small helpers */
 .small { font-size: 0.85rem; }
 .text-muted { color: #6c757d; }
+
+/* Divider line between child divs */
+.divider {
+  border-top: 1px solid #ccc;
+  margin: 8px 0;
+}
+
