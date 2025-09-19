@@ -26,7 +26,8 @@
           <div class="card control-card shadow-sm rounded-3 h-100 p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <div class="fw-semibold">Week</div>
-              <div class="text-muted small">{{ weekDates[0] ? (weekDates[0] | date:'dd MMM') : '' }} - {{ weekDates[6] ? (weekDates[6] | date:'dd MMM') : '' }}</div>
+              <div class="text-muted small">{{ weekDates[0] ? (weekDates[0] | date:'dd MMM') : '' }} - {{ weekDates[6] ?
+                (weekDates[6] | date:'dd MMM') : '' }}</div>
             </div>
             <div class="my-2 d-flex gap-2">
               <button class="btn btn-sm btn-outline-secondary w-100" (click)="prevWeek()">
@@ -65,23 +66,28 @@
 
             <div class="row gx-2">
               <div class="col" *ngFor="let d of weekDates">
-                <div class="day-card p-2 h-100"
-                     [class.active]="selectedDateKey === dateKey(d)"
-                     (click)="selectDate(dateKey(d))">
+                <div class="day-card p-2 h-100" [class.active]="selectedDateKey === dateKey(d)"
+                  (click)="selectDate(dateKey(d))">
                   <div class="date-row d-flex justify-content-between align-items-center mb-2">
                     <div class="fw-semibold">{{ d | date:'dd' }}</div>
                     <div class="small text-muted">{{ d | date:'EEE' }}</div>
                   </div>
 
                   <div *ngIf="appointmentsByDate[dateKey(d)]?.length; else noApptSmall">
-                    <div *ngFor="let a of appointmentsByDate[dateKey(d)]" class="appt small mb-1 d-block text-center">
+                    <div *ngFor="let a of appointmentsByDate[dateKey(d)]; let i = index"
+                      class="appt small mb-1 d-block text-center">
                       <span class="dot" [ngClass]="a.status.toLowerCase()"></span>
                       {{ formatTime(a.date) }}
+
+                      <!-- Add divider between appointments, but not after the last one -->
+                      <div *ngIf="i < appointmentsByDate[dateKey(d)].length - 1" class="divider"></div>
                     </div>
                   </div>
+
                   <ng-template #noApptSmall>
                     <div class="appt small text-muted text-center d-block"> - </div>
                   </ng-template>
+
                 </div>
               </div>
             </div>
@@ -102,7 +108,8 @@
             </div>
 
             <div *ngIf="selectedDateKey && filteredAppointments.length; else noDetail">
-              <div *ngFor="let a of filteredAppointments" class="appt-detail d-flex justify-content-between align-items-start mb-3">
+              <div *ngFor="let a of filteredAppointments"
+                class="appt-detail d-flex justify-content-between align-items-start mb-3">
                 <div>
                   <div class="fw-bold">{{ a.type }} • {{ formatTime(a.date) }}</div>
                   <div class="text-muted small">Clinician: {{ a.doctor }}</div>
@@ -127,11 +134,12 @@
       <div class="card upcoming-card shadow-sm rounded-3 h-100">
         <div class="card-header d-flex justify-content-between align-items-center bg-white border-0">
           <div class="fw-semibold">Upcoming Appointments</div>
-          <button class="btn btn-sm btn-outline-secondary" >Refresh</button>
+          <button class="btn btn-sm btn-outline-secondary">Refresh</button>
         </div>
         <div class="card-body p-0">
           <div *ngIf="getUpcomingList().length; else noUpcoming" class="list-group list-group-flush">
-            <div *ngFor="let u of getUpcomingList()" class="list-group-item d-flex justify-content-between align-items-start">
+            <div *ngFor="let u of getUpcomingList()"
+              class="list-group-item d-flex justify-content-between align-items-start">
               <div>
                 <div class="fw-bold">{{ u.doctor }}</div>
                 <div class="small text-muted">{{ u.type }} • {{ formatDateLong(u.date) }}</div>

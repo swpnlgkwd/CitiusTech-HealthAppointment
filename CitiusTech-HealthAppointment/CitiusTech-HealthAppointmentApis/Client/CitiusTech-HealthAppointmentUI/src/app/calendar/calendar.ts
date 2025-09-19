@@ -1,18 +1,16 @@
 // src/app/calendar/calendar.component.ts
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AppointmentService } from '../core/services/appointment';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-// ---------------- Types ----------------
-type AppointmentStatus = "Booked" | "Rescheduled" | "Cancelled" | "NoShow";
 
 
-interface Appointment {
+export interface AppointmentInfo {
   id: number;
   doctor: string;
   type: string;
   date: string;   // ISO date-time
-  status: 'Booked' | 'Cancelled' | 'Rescheduled' | 'NoShow';
+  status: string;
 }
 
 @Component({
@@ -24,22 +22,22 @@ interface Appointment {
 })
 
 export class CalendarComponent implements OnInit {
-  constructor(private appointmentService: AppointmentService, private router: Router) { }
-
-    // Provided appointment data
-  appointments: Appointment[] = [
-    { id: 1, doctor: "Dr. Sarah Smith", type: "Consultation", date: "2025-09-21T11:30", status: "Booked" },
-    { id: 2, doctor: "Dr. Alex Johnson", type: "Follow-Up", date: "2025-09-23T14:00", status: "Rescheduled" },
-    { id: 3, doctor: "Dr. Emily Clark", type: "Telehealth", date: "2025-09-25T17:00", status: "Cancelled" },
-    { id: 4, doctor: "Dr. Bob Lee", type: "Consultation", date: "2025-09-17T10:00", status: "Booked" }
-  ];
+  constructor(private appointmentService: AppointmentService, private router: Router, private cdRef: ChangeDetectorRef) { }
+  appointments: AppointmentInfo[] = [];
+  // Provided appointment data
+  // appointments: AppointmentInfo[] = [
+  //   { id: 1, doctor: "Dr. Sarah Smith", type: "Consultation", date: "2025-09-21T11:30", status: "Booked" },
+  //   { id: 2, doctor: "Dr. Alex Johnson", type: "Follow-Up", date: "2025-09-23T14:00", status: "Rescheduled" },
+  //   { id: 3, doctor: "Dr. Emily Clark", type: "Telehealth", date: "2025-09-25T17:00", status: "Cancelled" },
+  //   { id: 4, doctor: "Dr. Bob Lee", type: "Consultation", date: "2025-09-17T10:00", status: "Booked" }
+  // ];
 
   // UI state
   currentDate: Date = new Date();
   weekDates: Date[] = [];
   selectedDateKey: string = ''; // YYYY-MM-DD
-  appointmentsByDate: Record<string, Appointment[]> = {};
-  filteredAppointments: Appointment[] = [];
+  appointmentsByDate: Record<string, AppointmentInfo[]> = {};
+  filteredAppointments: AppointmentInfo[] = [];
 
   // aggregated stats
   stats = {
@@ -49,24 +47,38 @@ export class CalendarComponent implements OnInit {
     noshow: 0
   };
 
-  ngOnInit(): void {
-    // normalize appointments -> ensure ISO seconds (so parsing is consistent)
-    this.appointments = this.appointments.map(a => {
-      // if time has no seconds, add ':00'
-      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(a.date)) {
-        a.date = `${a.date}:00`;
-      }
-      return a;
+  refresh() {
+    this.appointmentService.fetchAppintments().subscribe(data => {
+      this.appointments = data;
+      // console.log('mock:', this.appointments)
+      // console.log('Fetched appointments:', data);
+      // normalize appointments -> ensure ISO seconds (so parsing is consistent)
+      this.appointments = this.appointments.map(a => {
+        // if time has no seconds, add ':00'
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(a.date)) {
+          a.date = `${a.date}:00`;
+        }
+        return a;
+      });
+      this.buildAppointmentsMap();
+      this.computeStats();
+      // select today's date by default (YYYY-MM-DD)
+      const todayKey = this.dateKey(this.currentDate);
+      // if today not in the map but exists in week, still select it
+      this.selectDate(todayKey);
+      this.cdRef.detectChanges();
     });
+  }
+
+  ngOnInit(): void {
+
+
 
     this.generateWeek(this.currentDate);
-    this.buildAppointmentsMap();
-    this.computeStats();
+    this.refresh();
 
-    // select today's date by default (YYYY-MM-DD)
-    const todayKey = this.dateKey(this.currentDate);
-    // if today not in the map but exists in week, still select it
-    this.selectDate(todayKey);
+
+
   }
 
   // Build weekDates array (Monday start)
@@ -120,7 +132,9 @@ export class CalendarComponent implements OnInit {
   // Helpers
   dateKey(d: Date | string): string {
     if (typeof d === 'string') return d;
-    return d.toISOString().split('T')[0];
+    //convert d to ISO format
+    var c = new Date(d.getTime() - (d.getTimezoneOffset() * 60000));
+    return c.toISOString().split('T')[0];
   }
 
   formatTime(iso: string): string {
@@ -163,7 +177,7 @@ export class CalendarComponent implements OnInit {
   }
 
   // For right pane upcoming list (we show upcoming appointments sorted ascending)
-  getUpcomingList(): Appointment[] {
+  getUpcomingList(): AppointmentInfo[] {
     const now = new Date();
     return this.appointments
       .filter(a => new Date(a.date) >= now && (a.status.toLowerCase() !== 'cancelled'))

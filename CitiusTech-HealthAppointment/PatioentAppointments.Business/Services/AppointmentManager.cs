@@ -114,6 +114,45 @@ namespace PatientAppointments.Business.Services
                 (sc, sl) => new ProviderSlotDto { Id = sc.ScheduleId, providerId = sc.ProviderId, scheduleDate = sc.ScheduleDate, startTime = sl.SlotStart, endTime = sl.SlotEnd, isBooked = sl.IsBooked });
         }
 
+        public async Task<IEnumerable<AppointmentInfoDto>> FetchAppointmentAsync(int userId, string role)
+        {
+            IEnumerable<AppointmentDto> appointments = [];
+            if(role.Equals("Patient", StringComparison.OrdinalIgnoreCase))
+            {
+                appointments = await GetByPatientAsync(userId);
+            }
+            else
+            {
+                appointments = await GetByDoctorAsync(userId);
+            };
+
+            if (appointments == null || !appointments.Any())
+            {
+                return Enumerable.Empty<AppointmentInfoDto>();
+            }
+
+            //get all doctors, patients and appointment types
+            var providers = await _uow.Provider.GetAllAsync();
+            var patients = await _uow.Patients.GetAllAsync();
+            var appTypes = await _uow.AppointmentsType.GetAllAsync();
+
+            //join doctor, patient, appointmentType with appointments to get the required info
+            var result = from a in appointments
+                         join d in providers on a.ProviderId equals d.ProviderId
+                         join p in patients on a.PatientId equals p.PatientId
+                         join t in appTypes on a.TypeId equals t.type_id
+                         select new AppointmentInfoDto
+                         {
+                             id = a.AppointmentId,
+                             doctor = d.FullName,
+                             type = t.type_name,
+                             date = a.StartUtc,
+                             status = ((AppointmentStatus)a.StatusId).ToString()
+                         };
+
+            return result.ToList();
+        }
+
         private static AppointmentDto MapToDto(Appointment a)
         {
             return new AppointmentDto
