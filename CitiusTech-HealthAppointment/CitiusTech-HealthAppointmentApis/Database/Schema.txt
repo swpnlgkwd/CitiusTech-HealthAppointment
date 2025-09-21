@@ -1,0 +1,713 @@
+/****** Object:  Table [dbo].[__EFMigrationsHistory]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[__EFMigrationsHistory](
+	[MigrationId] [nvarchar](150) NOT NULL,
+	[ProductVersion] [nvarchar](32) NOT NULL,
+ CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY CLUSTERED 
+(
+	[MigrationId] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AgentConversations]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AgentConversations](
+	[user_id] [nvarchar](50) NULL,
+	[thread_id] [nvarchar](50) NULL,
+	[created_at] [datetime] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Appointment]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Appointment](
+	[appointment_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[provider_id] [int] NOT NULL,
+	[slot_id] [int] NOT NULL,
+	[start_utc] [datetime2](7) NOT NULL,
+	[end_utc] [datetime2](7) NOT NULL,
+	[status_id] [int] NOT NULL,
+	[type_id] [int] NOT NULL,
+	[notes] [nvarchar](max) NULL,
+	[reminder_sent] [bit] NULL,
+	[reminder_sent_at] [datetime2](7) NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[appointment_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AppointmentHistory]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AppointmentHistory](
+	[history_id] [int] IDENTITY(1,1) NOT NULL,
+	[appointment_id] [int] NOT NULL,
+	[old_start_utc] [datetime2](7) NULL,
+	[old_end_utc] [datetime2](7) NULL,
+	[old_status_id] [int] NULL,
+	[new_start_utc] [datetime2](7) NULL,
+	[new_end_utc] [datetime2](7) NULL,
+	[new_status_id] [int] NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+	[changed_by_role_id] [nvarchar](450) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[history_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AppointmentStatus]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AppointmentStatus](
+	[status_id] [int] NOT NULL,
+	[status_name] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[status_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AppointmentType]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AppointmentType](
+	[type_id] [int] NOT NULL,
+	[type_name] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[type_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AspNetRoleClaims]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AspNetRoleClaims](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[RoleId] [nvarchar](450) NOT NULL,
+	[ClaimType] [nvarchar](max) NULL,
+	[ClaimValue] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AspNetRoles]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AspNetRoles](
+	[Id] [nvarchar](450) NOT NULL,
+	[Name] [nvarchar](256) NULL,
+	[NormalizedName] [nvarchar](256) NULL,
+	[ConcurrencyStamp] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AspNetUserClaims]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AspNetUserClaims](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [nvarchar](450) NOT NULL,
+	[ClaimType] [nvarchar](max) NULL,
+	[ClaimValue] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AspNetUserLogins]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AspNetUserLogins](
+	[LoginProvider] [nvarchar](450) NOT NULL,
+	[ProviderKey] [nvarchar](450) NOT NULL,
+	[ProviderDisplayName] [nvarchar](max) NULL,
+	[UserId] [nvarchar](450) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[LoginProvider] ASC,
+	[ProviderKey] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AspNetUserRoles]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AspNetUserRoles](
+	[UserId] [nvarchar](450) NOT NULL,
+	[RoleId] [nvarchar](450) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC,
+	[RoleId] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AspNetUsers]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AspNetUsers](
+	[Id] [nvarchar](450) NOT NULL,
+	[UserName] [nvarchar](256) NULL,
+	[NormalizedUserName] [nvarchar](256) NULL,
+	[Email] [nvarchar](256) NULL,
+	[NormalizedEmail] [nvarchar](256) NULL,
+	[EmailConfirmed] [bit] NOT NULL,
+	[PasswordHash] [nvarchar](max) NULL,
+	[SecurityStamp] [nvarchar](max) NULL,
+	[ConcurrencyStamp] [nvarchar](max) NULL,
+	[PhoneNumber] [nvarchar](max) NULL,
+	[PhoneNumberConfirmed] [bit] NOT NULL,
+	[TwoFactorEnabled] [bit] NOT NULL,
+	[LockoutEnd] [datetimeoffset](7) NULL,
+	[LockoutEnabled] [bit] NOT NULL,
+	[AccessFailedCount] [int] NOT NULL,
+	[DoctorId] [int] NULL,
+	[PatientId] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AspNetUserTokens]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AspNetUserTokens](
+	[UserId] [nvarchar](450) NOT NULL,
+	[LoginProvider] [nvarchar](450) NOT NULL,
+	[Name] [nvarchar](450) NOT NULL,
+	[Value] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC,
+	[LoginProvider] ASC,
+	[Name] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[DeliveryStatus]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DeliveryStatus](
+	[delivery_status_id] [int] NOT NULL,
+	[delivery_status_name] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[delivery_status_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Gender]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Gender](
+	[gender_id] [int] NOT NULL,
+	[gender_name] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[gender_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[NotificationLog]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[NotificationLog](
+	[notification_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[appointment_id] [int] NULL,
+	[channel] [nvarchar](50) NOT NULL,
+	[message] [nvarchar](max) NOT NULL,
+	[sent_at] [datetime2](7) NULL,
+	[delivery_status_id] [int] NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[notification_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Patient]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Patient](
+	[patient_id] [int] IDENTITY(1,1) NOT NULL,
+	[full_name] [nvarchar](150) NOT NULL,
+	[dob] [date] NULL,
+	[gender_id] [int] NULL,
+	[email] [nvarchar](150) NULL,
+	[phone] [nvarchar](50) NULL,
+	[address] [nvarchar](250) NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[patient_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PatientHistory]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PatientHistory](
+	[history_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[condition] [nvarchar](150) NOT NULL,
+	[notes] [nvarchar](max) NULL,
+	[diagnosed_on] [date] NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[history_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PatientRiskFactor]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PatientRiskFactor](
+	[risk_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[risk_type_id] [int] NOT NULL,
+	[risk_level_id] [int] NOT NULL,
+	[identified_on] [date] NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[risk_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PatientRiskScore]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PatientRiskScore](
+	[score_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[score] [int] NOT NULL,
+	[risk_level_id] [int] NOT NULL,
+	[reason] [nvarchar](max) NULL,
+	[calculated_at] [datetime2](7) NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[score_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Provider]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Provider](
+	[provider_id] [int] IDENTITY(1,1) NOT NULL,
+	[full_name] [nvarchar](150) NOT NULL,
+	[specialty_id] [int] NULL,
+	[contact_email] [nvarchar](150) NULL,
+	[contact_phone] [nvarchar](50) NULL,
+	[is_active] [bit] NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[provider_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProviderException]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProviderException](
+	[exception_id] [int] IDENTITY(1,1) NOT NULL,
+	[provider_id] [int] NOT NULL,
+	[start_utc] [datetime2](7) NOT NULL,
+	[end_utc] [datetime2](7) NOT NULL,
+	[reason] [nvarchar](200) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[exception_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProviderSchedule]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProviderSchedule](
+	[ScheduleId] [int] IDENTITY(1,1) NOT NULL,
+	[ProviderId] [int] NOT NULL,
+	[ScheduleDate] [date] NOT NULL,
+	[StartTime] [time](7) NOT NULL,
+	[EndTime] [time](7) NOT NULL,
+	[SlotDurationMinutes] [int] NOT NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ScheduleId] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProviderSlots]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProviderSlots](
+	[SlotId] [int] IDENTITY(1,1) NOT NULL,
+	[ScheduleId] [int] NOT NULL,
+	[SlotStart] [time](7) NOT NULL,
+	[SlotEnd] [time](7) NOT NULL,
+	[IsBooked] [bit] NOT NULL,
+	[created_at] [datetime2](7) NULL,
+	[updated_at] [datetime2](7) NULL,
+	[is_deleted] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[SlotId] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RefreshTokens]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RefreshTokens](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Token] [nvarchar](500) NOT NULL,
+	[Expires] [datetime2](7) NOT NULL,
+	[Created] [datetime2](7) NOT NULL,
+	[CreatedByIp] [nvarchar](64) NOT NULL,
+	[Revoked] [datetime2](7) NULL,
+	[RevokedByIp] [nvarchar](64) NULL,
+	[ReplacedByToken] [nvarchar](500) NULL,
+	[UserId] [nvarchar](450) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RiskLevel]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RiskLevel](
+	[risk_level_id] [int] NOT NULL,
+	[risk_level_name] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[risk_level_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[RiskType]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[RiskType](
+	[risk_type_id] [int] NOT NULL,
+	[risk_type_name] [nvarchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[risk_type_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Specialty]    Script Date: 21-09-2025 15:26:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Specialty](
+	[specialty_id] [int] NOT NULL,
+	[specialty_name] [nvarchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[specialty_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Appointment] ADD  DEFAULT ((0)) FOR [reminder_sent]
+GO
+ALTER TABLE [dbo].[Appointment] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Appointment] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[AppointmentHistory] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[AppointmentHistory] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[AspNetUsers] ADD  DEFAULT ((0)) FOR [EmailConfirmed]
+GO
+ALTER TABLE [dbo].[AspNetUsers] ADD  DEFAULT ((0)) FOR [PhoneNumberConfirmed]
+GO
+ALTER TABLE [dbo].[AspNetUsers] ADD  DEFAULT ((0)) FOR [TwoFactorEnabled]
+GO
+ALTER TABLE [dbo].[AspNetUsers] ADD  DEFAULT ((1)) FOR [LockoutEnabled]
+GO
+ALTER TABLE [dbo].[AspNetUsers] ADD  DEFAULT ((0)) FOR [AccessFailedCount]
+GO
+ALTER TABLE [dbo].[NotificationLog] ADD  DEFAULT (sysutcdatetime()) FOR [sent_at]
+GO
+ALTER TABLE [dbo].[NotificationLog] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[NotificationLog] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Patient] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Patient] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[PatientHistory] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[PatientHistory] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[PatientRiskFactor] ADD  DEFAULT (CONVERT([date],sysutcdatetime())) FOR [identified_on]
+GO
+ALTER TABLE [dbo].[PatientRiskFactor] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[PatientRiskFactor] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[PatientRiskScore] ADD  DEFAULT (sysutcdatetime()) FOR [calculated_at]
+GO
+ALTER TABLE [dbo].[PatientRiskScore] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[PatientRiskScore] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Provider] ADD  DEFAULT ((1)) FOR [is_active]
+GO
+ALTER TABLE [dbo].[Provider] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Provider] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[ProviderSchedule] ADD  DEFAULT ((60)) FOR [SlotDurationMinutes]
+GO
+ALTER TABLE [dbo].[ProviderSchedule] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[ProviderSchedule] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[ProviderSlots] ADD  DEFAULT ((0)) FOR [IsBooked]
+GO
+ALTER TABLE [dbo].[ProviderSlots] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[ProviderSlots] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[RefreshTokens] ADD  DEFAULT (sysutcdatetime()) FOR [Created]
+GO
+ALTER TABLE [dbo].[Appointment]  WITH CHECK ADD  CONSTRAINT [FK_Appointment_Patient] FOREIGN KEY([patient_id])
+REFERENCES [dbo].[Patient] ([patient_id])
+GO
+ALTER TABLE [dbo].[Appointment] CHECK CONSTRAINT [FK_Appointment_Patient]
+GO
+ALTER TABLE [dbo].[Appointment]  WITH CHECK ADD  CONSTRAINT [FK_Appointment_Provider] FOREIGN KEY([provider_id])
+REFERENCES [dbo].[Provider] ([provider_id])
+GO
+ALTER TABLE [dbo].[Appointment] CHECK CONSTRAINT [FK_Appointment_Provider]
+GO
+ALTER TABLE [dbo].[Appointment]  WITH CHECK ADD  CONSTRAINT [FK_Appointment_Slot] FOREIGN KEY([slot_id])
+REFERENCES [dbo].[ProviderSlots] ([SlotId])
+GO
+ALTER TABLE [dbo].[Appointment] CHECK CONSTRAINT [FK_Appointment_Slot]
+GO
+ALTER TABLE [dbo].[Appointment]  WITH CHECK ADD  CONSTRAINT [FK_Appointment_Status] FOREIGN KEY([status_id])
+REFERENCES [dbo].[AppointmentStatus] ([status_id])
+GO
+ALTER TABLE [dbo].[Appointment] CHECK CONSTRAINT [FK_Appointment_Status]
+GO
+ALTER TABLE [dbo].[Appointment]  WITH CHECK ADD  CONSTRAINT [FK_Appointment_Type] FOREIGN KEY([type_id])
+REFERENCES [dbo].[AppointmentType] ([type_id])
+GO
+ALTER TABLE [dbo].[Appointment] CHECK CONSTRAINT [FK_Appointment_Type]
+GO
+ALTER TABLE [dbo].[AppointmentHistory]  WITH CHECK ADD FOREIGN KEY([appointment_id])
+REFERENCES [dbo].[Appointment] ([appointment_id])
+GO
+ALTER TABLE [dbo].[AppointmentHistory]  WITH CHECK ADD FOREIGN KEY([changed_by_role_id])
+REFERENCES [dbo].[AspNetRoles] ([Id])
+GO
+ALTER TABLE [dbo].[AppointmentHistory]  WITH CHECK ADD FOREIGN KEY([new_status_id])
+REFERENCES [dbo].[AppointmentStatus] ([status_id])
+GO
+ALTER TABLE [dbo].[AppointmentHistory]  WITH CHECK ADD FOREIGN KEY([old_status_id])
+REFERENCES [dbo].[AppointmentStatus] ([status_id])
+GO
+ALTER TABLE [dbo].[AspNetRoleClaims]  WITH CHECK ADD  CONSTRAINT [FK_RoleClaims_Roles] FOREIGN KEY([RoleId])
+REFERENCES [dbo].[AspNetRoles] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AspNetRoleClaims] CHECK CONSTRAINT [FK_RoleClaims_Roles]
+GO
+ALTER TABLE [dbo].[AspNetUserClaims]  WITH CHECK ADD  CONSTRAINT [FK_UserClaims_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AspNetUsers] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AspNetUserClaims] CHECK CONSTRAINT [FK_UserClaims_Users]
+GO
+ALTER TABLE [dbo].[AspNetUserLogins]  WITH CHECK ADD  CONSTRAINT [FK_UserLogins_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AspNetUsers] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AspNetUserLogins] CHECK CONSTRAINT [FK_UserLogins_Users]
+GO
+ALTER TABLE [dbo].[AspNetUserRoles]  WITH CHECK ADD  CONSTRAINT [FK_UserRoles_Roles] FOREIGN KEY([RoleId])
+REFERENCES [dbo].[AspNetRoles] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AspNetUserRoles] CHECK CONSTRAINT [FK_UserRoles_Roles]
+GO
+ALTER TABLE [dbo].[AspNetUserRoles]  WITH CHECK ADD  CONSTRAINT [FK_UserRoles_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AspNetUsers] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AspNetUserRoles] CHECK CONSTRAINT [FK_UserRoles_Users]
+GO
+ALTER TABLE [dbo].[AspNetUserTokens]  WITH CHECK ADD  CONSTRAINT [FK_UserTokens_Users] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AspNetUsers] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AspNetUserTokens] CHECK CONSTRAINT [FK_UserTokens_Users]
+GO
+ALTER TABLE [dbo].[NotificationLog]  WITH CHECK ADD FOREIGN KEY([appointment_id])
+REFERENCES [dbo].[Appointment] ([appointment_id])
+GO
+ALTER TABLE [dbo].[NotificationLog]  WITH CHECK ADD FOREIGN KEY([delivery_status_id])
+REFERENCES [dbo].[DeliveryStatus] ([delivery_status_id])
+GO
+ALTER TABLE [dbo].[NotificationLog]  WITH CHECK ADD FOREIGN KEY([patient_id])
+REFERENCES [dbo].[Patient] ([patient_id])
+GO
+ALTER TABLE [dbo].[Patient]  WITH CHECK ADD FOREIGN KEY([gender_id])
+REFERENCES [dbo].[Gender] ([gender_id])
+GO
+ALTER TABLE [dbo].[PatientHistory]  WITH CHECK ADD FOREIGN KEY([patient_id])
+REFERENCES [dbo].[Patient] ([patient_id])
+GO
+ALTER TABLE [dbo].[PatientRiskFactor]  WITH CHECK ADD FOREIGN KEY([patient_id])
+REFERENCES [dbo].[Patient] ([patient_id])
+GO
+ALTER TABLE [dbo].[PatientRiskFactor]  WITH CHECK ADD FOREIGN KEY([risk_type_id])
+REFERENCES [dbo].[RiskType] ([risk_type_id])
+GO
+ALTER TABLE [dbo].[PatientRiskFactor]  WITH CHECK ADD FOREIGN KEY([risk_level_id])
+REFERENCES [dbo].[RiskLevel] ([risk_level_id])
+GO
+ALTER TABLE [dbo].[PatientRiskScore]  WITH CHECK ADD FOREIGN KEY([patient_id])
+REFERENCES [dbo].[Patient] ([patient_id])
+GO
+ALTER TABLE [dbo].[PatientRiskScore]  WITH CHECK ADD FOREIGN KEY([risk_level_id])
+REFERENCES [dbo].[RiskLevel] ([risk_level_id])
+GO
+ALTER TABLE [dbo].[Provider]  WITH CHECK ADD FOREIGN KEY([specialty_id])
+REFERENCES [dbo].[Specialty] ([specialty_id])
+GO
+ALTER TABLE [dbo].[ProviderException]  WITH CHECK ADD FOREIGN KEY([provider_id])
+REFERENCES [dbo].[Provider] ([provider_id])
+GO
+ALTER TABLE [dbo].[ProviderSchedule]  WITH CHECK ADD  CONSTRAINT [FK_ProviderSchedule_Provider] FOREIGN KEY([ProviderId])
+REFERENCES [dbo].[Provider] ([provider_id])
+GO
+ALTER TABLE [dbo].[ProviderSchedule] CHECK CONSTRAINT [FK_ProviderSchedule_Provider]
+GO
+ALTER TABLE [dbo].[ProviderSlots]  WITH CHECK ADD  CONSTRAINT [FK_ProviderSlots_Schedule] FOREIGN KEY([ScheduleId])
+REFERENCES [dbo].[ProviderSchedule] ([ScheduleId])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProviderSlots] CHECK CONSTRAINT [FK_ProviderSlots_Schedule]
+GO
+ALTER TABLE [dbo].[RefreshTokens]  WITH CHECK ADD  CONSTRAINT [FK_RefreshTokens_User] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AspNetUsers] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[RefreshTokens] CHECK CONSTRAINT [FK_RefreshTokens_User]
+GO
+ALTER TABLE [dbo].[Appointment]  WITH CHECK ADD  CONSTRAINT [CK_Appointment_Time] CHECK  (([end_utc]>[start_utc]))
+GO
+ALTER TABLE [dbo].[Appointment] CHECK CONSTRAINT [CK_Appointment_Time]
+GO
+ALTER TABLE [dbo].[ProviderException]  WITH CHECK ADD  CONSTRAINT [CK_ProviderException_Time] CHECK  (([end_utc]>[start_utc]))
+GO
+ALTER TABLE [dbo].[ProviderException] CHECK CONSTRAINT [CK_ProviderException_Time]
+GO
+ALTER TABLE [dbo].[ProviderSchedule]  WITH CHECK ADD  CONSTRAINT [CK_ProviderSchedule_Time] CHECK  ((datediff(minute,[StartTime],[EndTime])>(0) AND datediff(minute,[StartTime],[EndTime])%[SlotDurationMinutes]=(0)))
+GO
+ALTER TABLE [dbo].[ProviderSchedule] CHECK CONSTRAINT [CK_ProviderSchedule_Time]
+GO
+ALTER TABLE [dbo].[ProviderSlots]  WITH CHECK ADD  CONSTRAINT [CK_ProviderSlots_Time] CHECK  (([SlotEnd]>[SlotStart]))
+GO
+ALTER TABLE [dbo].[ProviderSlots] CHECK CONSTRAINT [CK_ProviderSlots_Time]
+GO
