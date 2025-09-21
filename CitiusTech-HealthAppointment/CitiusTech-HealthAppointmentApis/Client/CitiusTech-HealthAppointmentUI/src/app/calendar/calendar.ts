@@ -24,13 +24,7 @@ export interface AppointmentInfo {
 export class CalendarComponent implements OnInit {
   constructor(private appointmentService: AppointmentService, private router: Router, private cdRef: ChangeDetectorRef) { }
   appointments: AppointmentInfo[] = [];
-  // Provided appointment data
-  // appointments: AppointmentInfo[] = [
-  //   { id: 1, doctor: "Dr. Sarah Smith", type: "Consultation", date: "2025-09-21T11:30", status: "Booked" },
-  //   { id: 2, doctor: "Dr. Alex Johnson", type: "Follow-Up", date: "2025-09-23T14:00", status: "Rescheduled" },
-  //   { id: 3, doctor: "Dr. Emily Clark", type: "Telehealth", date: "2025-09-25T17:00", status: "Cancelled" },
-  //   { id: 4, doctor: "Dr. Bob Lee", type: "Consultation", date: "2025-09-17T10:00", status: "Booked" }
-  // ];
+  isLoading: boolean = false;
 
   // UI state
   currentDate: Date = new Date();
@@ -48,11 +42,11 @@ export class CalendarComponent implements OnInit {
   };
 
   refresh() {
+    this.isLoading = true;
     this.appointmentService.fetchAppintments().subscribe(data => {
       this.appointments = data;
-      // console.log('mock:', this.appointments)
-      // console.log('Fetched appointments:', data);
-      // normalize appointments -> ensure ISO seconds (so parsing is consistent)
+      this.isLoading = false;
+
       this.appointments = this.appointments.map(a => {
         // if time has no seconds, add ':00'
         if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(a.date)) {

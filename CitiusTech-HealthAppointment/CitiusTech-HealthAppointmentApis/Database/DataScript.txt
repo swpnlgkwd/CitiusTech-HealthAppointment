@@ -1,0 +1,162 @@
+\-- =========================
+\-- Part 1 – Lookup Tables, Providers, Patients
+\-- =========================
+
+\-- Lookup Tables (Masters)
+INSERT INTO Gender (gender\_id, gender\_name) VALUES
+(1, 'Male'),
+(2, 'Female'),
+(3, 'Other');
+
+INSERT INTO AppointmentStatus (status\_id, status\_name) VALUES
+(1, 'Booked'),
+(2, 'Cancelled'),
+(3, 'Rescheduled'),
+(4, 'No Show');
+
+INSERT INTO AppointmentType (type\_id, type\_name) VALUES
+(1, 'Consultation'),
+(2, 'Follow-up'),
+(3, 'Emergency'),
+(4, 'Telehealth');
+
+INSERT INTO DeliveryStatus (delivery\_status\_id, delivery\_status\_name) VALUES
+(1, 'Pending'),
+(2, 'Sent'),
+(3, 'Delivered'),
+(4, 'Failed');
+
+INSERT INTO RiskLevel (risk\_level\_id, risk\_level\_name) VALUES
+(1, 'Low'),
+(2, 'Moderate'),
+(3, 'High');
+
+INSERT INTO RiskType (risk\_type\_id, risk\_type\_name) VALUES
+(1, 'Smoking'),
+(2, 'Alcohol'),
+(3, 'Obesity'),
+(4, 'Diabetes');
+
+INSERT INTO Specialty (specialty\_id, specialty\_name) VALUES
+(1, 'Cardiology'),
+(2, 'Dermatology'),
+(3, 'Pediatrics'),
+(4, 'General Medicine'),
+(5, 'Neurology');
+
+\-- Providers (5 providers)
+INSERT INTO Provider (full\_name, specialty\_id, contact\_email, contact\_phone, is\_deleted)
+VALUES
+('Dr. John Smith', 1, '[john.smith@hospital.com](mailto:john.smith@hospital.com)', '2025550101', 0),
+('Dr. Emily Johnson', 2, '[emily.johnson@hospital.com](mailto:emily.johnson@hospital.com)', '2025550102', 0),
+('Dr. Michael Brown', 3, '[michael.brown@hospital.com](mailto:michael.brown@hospital.com)', '2025550103', 0),
+('Dr. Olivia Davis', 4, '[olivia.davis@hospital.com](mailto:olivia.davis@hospital.com)', '2025550104', 0),
+('Dr. William Miller', 5, '[william.miller@hospital.com](mailto:william.miller@hospital.com)', '2025550105', 0);
+
+\-- Patients (Non-Indian names)
+INSERT INTO Patient (full\_name, dob, gender\_id, email, phone, address, is\_deleted)
+VALUES
+('Alice Cooper', '1985-04-12', 2, '[alice.cooper@example.com](mailto:alice.cooper@example.com)', '3015550011', 'New York, USA', 0),
+('Robert Taylor', '1992-09-20', 1, '[robert.taylor@example.com](mailto:robert.taylor@example.com)', '3015550022', 'Los Angeles, USA', 0),
+('Sophia Martinez', '1988-12-05', 2, '[sophia.martinez@example.com](mailto:sophia.martinez@example.com)', '3015550033', 'Chicago, USA', 0),
+('James Anderson', '1995-03-18', 1, '[james.anderson@example.com](mailto:james.anderson@example.com)', '3015550044', 'Houston, USA', 0),
+('Isabella Thomas', '1990-07-22', 2, '[isabella.thomas@example.com](mailto:isabella.thomas@example.com)', '3015550055', 'Phoenix, USA', 0),
+('Liam Jackson', '2000-11-30', 1, '[liam.jackson@example.com](mailto:liam.jackson@example.com)', '3015550066', 'Philadelphia, USA', 0);
+
+\-- =========================
+\-- Part 2 – ProviderSchedule & ProviderSlots
+\-- =========================
+
+\-- ProviderSchedule (20+ schedules)
+DECLARE @i INT = 0;
+DECLARE @provId INT;
+DECLARE @schDate DATE;
+
+WHILE @i < 25
+BEGIN
+SET @provId = ((@i % 5) + 1);
+SET @schDate = DATEADD(DAY, @i, '2025-09-15');
+
+```
+INSERT INTO ProviderSchedule (ProviderId, ScheduleDate, StartTime, EndTime, SlotDurationMinutes, is_deleted)
+VALUES (@provId, @schDate, '09:00:00', '13:00:00', 30, 0);
+
+SET @i = @i + 1;
+```
+
+END;
+
+\-- ProviderSlots for each schedule
+DECLARE @scheduleId INT, @start TIME, @end TIME;
+DECLARE schedule\_cursor CURSOR FOR
+SELECT ScheduleId, StartTime, EndTime FROM ProviderSchedule;
+
+OPEN schedule\_cursor
+FETCH NEXT FROM schedule\_cursor INTO @scheduleId, @start, @end
+
+WHILE @@FETCH\_STATUS = 0
+BEGIN
+DECLARE @slotStart TIME = @start;
+DECLARE @slotEnd TIME;
+
+```
+WHILE @slotStart < @end
+BEGIN
+    SET @slotEnd = DATEADD(MINUTE, 30, @slotStart);
+    IF @slotEnd > @end BREAK;
+
+    INSERT INTO ProviderSlots (ScheduleId, SlotStart, SlotEnd, IsBooked, is_deleted)
+    VALUES (@scheduleId, @slotStart, @slotEnd, 0, 0);
+
+    SET @slotStart = @slotEnd;
+END
+
+FETCH NEXT FROM schedule_cursor INTO @scheduleId, @start, @end
+```
+
+END
+
+CLOSE schedule\_cursor
+DEALLOCATE schedule\_cursor;
+
+\-- =========================
+\-- Part 3 – Appointments, History, Notifications, PatientHistory & Risk
+\-- =========================
+
+\-- Appointments
+INSERT INTO Appointment (patient\_id, provider\_id, slot\_id, start\_utc, end\_utc, status\_id, type\_id, notes, is\_deleted)
+VALUES
+(1, 1, 1, '2025-09-15T09:00:00', '2025-09-15T09:30:00', 1, 1, 'Consultation for chest pain', 0),
+(2, 2, 6, '2025-09-16T09:30:00', '2025-09-16T10:00:00', 3, 2, 'Follow-up on skin rash', 0),
+(3, 3, 11, '2025-09-17T10:00:00', '2025-09-17T10:30:00', 2, 4, 'Telehealth checkup', 0),
+(4, 4, 16, '2025-09-18T10:30:00', '2025-09-18T11:00:00', 1, 1, 'Routine consultation', 0),
+(5, 5, 21, '2025-09-19T11:00:00', '2025-09-19T11:30:00', 4, 4, 'Telehealth follow-up', 0);
+
+\-- AppointmentHistory
+INSERT INTO AppointmentHistory (appointment\_id, old\_start\_utc, old\_end\_utc, old\_status\_id, new\_start\_utc, new\_end\_utc, new\_status\_id, is\_deleted)
+VALUES
+(2, '2025-09-16T09:00:00', '2025-09-16T09:30:00', 1, '2025-09-16T09:30:00', '2025-09-16T10:00:00', 3, 0);
+
+\-- NotificationLog
+INSERT INTO NotificationLog (patient\_id, appointment\_id, channel, message, delivery\_status\_id, is\_deleted)
+VALUES
+(1, 1, 'Email', 'Reminder: Your appointment is tomorrow at 9 AM', 2, 0),
+(2, 2, 'SMS', 'Your appointment has been rescheduled to 9:30 AM', 2, 0);
+
+\-- PatientHistory
+INSERT INTO PatientHistory (patient\_id, condition, notes, diagnosed\_on, is\_deleted)
+VALUES
+(1, 'Hypertension', 'High blood pressure under control', '2024-06-15', 0),
+(2, 'Allergic Dermatitis', 'Mild skin allergy, using creams', '2025-01-12', 0);
+
+\-- PatientRiskFactor
+INSERT INTO PatientRiskFactor (patient\_id, risk\_type\_id, risk\_level\_id, is\_deleted)
+VALUES
+(1, 1, 2, 0),
+(2, 3, 1, 0);
+
+\-- PatientRiskScore
+INSERT INTO PatientRiskScore (patient\_id, score, risk\_level\_id, reason, is\_deleted)
+VALUES
+(1, 75, 2, 'Smoker and hypertension', 0),
+(2, 40, 1, 'Mild obesity', 0);
