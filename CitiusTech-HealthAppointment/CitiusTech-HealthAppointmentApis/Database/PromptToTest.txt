@@ -1,0 +1,12 @@
+﻿
+Book Appointment Prompts:
+"Book me an appointment with a cardiologist next Monday at 10 AM."
+"I want to see Dr. Sharma tomorrow morning."
+"Schedule a follow-up for my diabetes check-up next week."
+"Can you get me an appointment for hypertension review in the evening?"
+"Book my son’s pediatric appointment this Friday."
+"I need to book a check-up with a dermatologist next Friday afternoon."
+"Can I get an appointment with Dr. Patel tomorrow morning?"
+"Please schedule my follow-up visit for diabetes this weekend."
+"Book me an appointment for a routine blood pressure check on October 5th."
+"I’d like to see an orthopedic doctor for knee pain next Tuesday."
